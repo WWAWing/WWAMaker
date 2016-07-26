@@ -1,0 +1,26 @@
+body{
+	margin: 0;
+}
+
+#wm_toolBar:after{
+	content: ".";
+	display: block;
+	visibility: hidden;
+}
+
+#wm_toolBar > nav{
+	border: 1px solid #C0C0C0;
+	float: left;
+	margin: .1rem;
+	padding: .2rem;
+}
+
+#wm_toolBar > nav > ul{
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#wm_toolBar li{
+	display: inline-block;
+}
