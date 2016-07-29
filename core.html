@@ -6,6 +6,7 @@
 		<title>WWA Maker</title>
 	</head>
 	<body>
+		<!--
 		<div id="wm_toolBar">
 			<nav id="wm_toolBar_file">
 					<ul>
@@ -40,41 +41,58 @@
 				</ul>
 			</nav>
 		</div>
-		<div id="wm_map">
-
-		</div>
-		<div id="wm_parts">
-			
-		</div>
-		<div id="wm_edit">
-			<section id="wm_edit_Obj">
-				<h1>メッセージパーツ</h1>
-				<label for="wm_edit_Obj_type">パーツ種類</label>
-				<select id="wm_edit_Obj_type">
-					<option>通常物体</option>
-					<option>メッセージ</option>
-					<option>モンスター</option>
-					<option>アイテム</option>
-					<option>扉</option>
-					<option>物を売る</option>
-					<option>物を買う</option>
-					<option>二者択一</option>
-					<option>ランダム選択</option>
-					<option>スコア表示</option>
-					<option>URLゲート</option>
-					<option>ジャンプゲート</option>
-				</select>
-			</section>
-			<section id="wm_edit_Back">
-				<h1>道パーツ</h1>
-				<label for="wm_edit_Back_type">パーツ種類</label>
-				<select id="wm_edit_Back_type">
-					<option>道</option>
-					<option>壁</option>
-					<option>ジャンプゲート</option>
-					<option>URLゲート</option>
-				</select>
-			</section>
+		-->
+		<div id="wm_mainArea">
+			<div id="wm_map">
+				<!--ここにマップを載せる-->
+				<!--現時点Canvasにするつもり-->
+			</div>
+			<div id="wm_parts">
+				<div id="wm_parts_list">
+					<section id="wm_parts_list_Obj">
+						<h1>物体パーツ</h1>
+						<canvas id="wm_parts_list_Obj_map" width="440" height="120"></canvas>
+						<button id="wm_parts_list_Obj_edit">パーツ編集</button>
+						<button id="wm_parts_list_Obj_remove">パーツ削除</button>
+					</section>
+					<section id="wm_parts_list_Back">
+						<h1>背景パーツ</h1>
+						<canvas id="wm_parts_list_Back_map" width="440" height="120"></canvas>
+						<button id="wm_parts_list_Back_edit">パーツ編集</button>
+						<button id="wm_parts_list_Back_remove">パーツ削除</button>
+					</section>
+				</div>
+				<div id="wm_parts_edit">
+					<section id="wm_parts_edit_Obj">
+						<h1>メッセージパーツ</h1>
+						<label for="wm_parts_edit_Obj_type">パーツ種類</label>
+						<select id="wm_parts_edit_Obj_type">
+							<option>通常物体</option>
+							<option>メッセージ</option>
+							<option>モンスター</option>
+							<option>アイテム</option>
+							<option>扉</option>
+							<option>物を売る</option>
+							<option>物を買う</option>
+							<option>二者択一</option>
+							<option>ランダム選択</option>
+							<option>スコア表示</option>
+							<option>URLゲート</option>
+							<option>ジャンプゲート</option>
+						</select>
+					</section>
+					<section id="wm_parts_edit_Back">
+						<h1>道パーツ</h1>
+						<label for="wm_parts_edit_Back_type">パーツ種類</label>
+						<select id="wm_parts_edit_Back_type">
+							<option>道</option>
+							<option>壁</option>
+							<option>ジャンプゲート</option>
+							<option>URLゲート</option>
+						</select>
+					</section>
+				</div>
+			</div>
 		</div>
 	</body>
 </html>
