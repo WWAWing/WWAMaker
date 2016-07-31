@@ -46,31 +46,66 @@ body{
 	display: inline-block;
 }*/
 
+#wm_statusBar{
+	background-color: #C0C0C0;
+	border-bottom: 1px solid #808080;
+	color: #000;
+	padding: .25rem;
+}
+
+#wm_statusBar label{
+	font-weight: bold;
+}
+
+#wm_statusBar > ul{
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#wm_statusBar > ul > li{
+	display: inline-block;
+}
+
+#wm_statusBar input[type="text"]{
+	background-color: transparent;
+	border: none;
+	color: inherit;
+	cursor: default;
+	font-size: 1rem;
+	text-align: left;
+}
+
 #wm_mainArea{
-	position: relative;
+	display: flex;
+	flex-direction: row;
+}
+
+#wm_map{
+	flex: 1 1 auto;
 }
 
 #wm_parts{
-	box-sizing: content-box;
+	background-color: #E0E0E0;
+	flex: 0 0 auto;
 	margin: 0;
-	position: absolute;
-	padding: .5rem;
-	right: 0;
-	top: 0;
+	padding: 0;
 }
 
 #wm_parts section{
 	background-color: #E0E0E0;
-	border: 3px double #C0C0C0;
+	border-width: 0 0 0 3px;
+	border-style: double;
+	border-color: #808080;
 	color: #000;
-	margin: 1rem;
+	margin: 0;
 	padding: 0;
 }
 
 #wm_parts section h1{
 	background-color: #C0C0C0;
 	color: #000;
-	font-size: 1.5rem;
+	font-size: 1.25rem;
 	margin: 0;
 	padding: .25rem;
 }
