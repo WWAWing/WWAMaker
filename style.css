@@ -1,3 +1,9 @@
+html,
+body{
+	height: 100%;
+	overflow: hidden;
+}
+
 body{
 	margin: 0;
 }
@@ -21,6 +27,15 @@ body{
 	font-size: 1.2rem;
 	margin: 0;
 	padding: .25rem;
+}
+
+.readOnlyText{
+	background-color: transparent;
+	border: none;
+	color: inherit;
+	cursor: default;
+	font-size: 1rem;
+	text-align: left;
 }
 
 /*#wm_toolBar:after{
@@ -47,9 +62,10 @@ body{
 }*/
 
 #wm_statusBar{
-	background-color: #C0C0C0;
-	border-bottom: 1px solid #808080;
-	color: #000;
+	background-color: #404040;
+	box-sizing: border-box;
+	color: #FFF;
+	height: 2.5rem;
 	padding: .25rem;
 }
 
@@ -67,26 +83,20 @@ body{
 	display: inline-block;
 }
 
-#wm_statusBar input[type="text"]{
-	background-color: transparent;
-	border: none;
-	color: inherit;
-	cursor: default;
-	font-size: 1rem;
-	text-align: left;
-}
-
 #wm_mainArea{
 	display: flex;
 	flex-direction: row;
+	height: calc(100% - 2.5rem);
 }
 
 #wm_map{
 	flex: 1 1 auto;
+	overflow: scroll;
 }
 
 #wm_parts{
 	background-color: #E0E0E0;
+	border-left: 3px double #404040;
 	flex: 0 0 auto;
 	margin: 0;
 	padding: 0;
@@ -94,16 +104,14 @@ body{
 
 #wm_parts section{
 	background-color: #E0E0E0;
-	border-width: 0 0 0 3px;
-	border-style: double;
-	border-color: #808080;
+	border-bottom: 1px solid #404040;
 	color: #000;
 	margin: 0;
 	padding: 0;
 }
 
 #wm_parts section h1{
-	background-color: #C0C0C0;
+	background-color: #A0A0A0;
 	color: #000;
 	font-size: 1.25rem;
 	margin: 0;
@@ -112,6 +120,10 @@ body{
 
 #wm_parts_list canvas{
 	display: block;
+}
+
+#wm_parts_list label{
+	font-weight: bold;
 }
 
 #wm_parts_list button{

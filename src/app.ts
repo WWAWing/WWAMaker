@@ -1,3 +1,0 @@
-class Parts{
-	imageNo: number;
-}
