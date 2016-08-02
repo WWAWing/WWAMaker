@@ -1,7 +1,9 @@
-var EXTRACTING_MAPDATA_FILENAME = "wwamap.dat"; // 吸い出すファイル名
+/// <reference path="wwamk_parts.ts" />
 
-var t_start;
-var t_end;
+const EXTRACTING_MAPDATA_FILENAME:string = "wwamap.dat"; // 吸い出すファイル名
+
+var t_start: number; // 読み込み開始時間
+var t_end: number; // 読み込み完了時間
 var messageHandler = function (e) {
     if (e.data.error !== null && e.data.error !== void 0) {
         try {
@@ -10,9 +12,9 @@ var messageHandler = function (e) {
             alert("エラーの表示に失敗しました。");
         }
     } else if (e.data.progress !== null && e.data.progress !== null) {
-        ($id("progressCurrent")).value = e.data.progress.current;
-        ($id("progressTotal")).value = e.data.progress.total;
-        ($id("progressStage")).value = e.data.progress.stage;
+        ($id("progressCurrent")).setAttribute("value", e.data.progress.current);
+        ($id("progressTotal")).setAttribute("value", e.data.progress.total);
+        ($id("progressStage")).setAttribute("value", e.data.progress.stage);
     } else {
         disp(e.data.wwaData);
     }
@@ -22,10 +24,10 @@ var messageHandler = function (e) {
 var postMessage_noWorker = messageHandler;
 
 var main = function () {
-    t_start = new Date();
-    var worker = new Worker("./wwaload.js");
-    worker.postMessage({ "fileName": "./" + EXTRACTING_MAPDATA_FILENAME });
-    worker.addEventListener("message", messageHandler);
+    t_start = new Date().getTime();
+    var worker = new Worker("./wwaload.js"); // WebWorker作成
+    worker.postMessage({ "fileName": "./" + EXTRACTING_MAPDATA_FILENAME }); // ファイルを持っていく
+    worker.addEventListener("message", messageHandler); // messageHandlerへどぞ
 }
 
 var $id = function (id) {
@@ -33,11 +35,11 @@ var $id = function (id) {
 };
 
 var disp = function (data) {
-    t_end = new Date();
+    t_end = new Date().getTime();
 
-    console.log(data);   
-
-    ($id("loadTime")).value = t_end - t_start;
+	// 読み込んだデータをコンソール出力
+    console.log(data);
+	console.log("Load Complete! Loading Time is:" + (t_end - t_start));
 
     var ids = [
        "playerX",
@@ -60,7 +62,7 @@ var disp = function (data) {
     for (var i in ids) {
         var key = ids[i];
         try {
-            ($id(key)).value = data[key];
+            ($id(key)).setAttribute("value", data[key]);
         } catch (e) {
             throw new Error("Display Error!! index: " + key);
         }

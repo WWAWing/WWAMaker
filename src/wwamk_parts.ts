@@ -17,14 +17,17 @@ const MAP_WALL: number = 1; // 壁
 const MAP_LOCALGATE: number = 2; // ジャンプゲート
 const MAP_URLGATE: number = 4; // URLゲート
 
+const PARTS_PARAMETERS_MAX: number = 10;
+
 class Parts{
 	imageNo: number;
 	attribute: number;
 	appearParts: AppearParts[] = new Array(10); //  話しかける時に配置されるパーツ一覧
-	status: Status;
+	parameters: number[] = new Array(PARTS_PARAMETERS_MAX); // パラメータ
+	message: string;
 }
 
-class ObjParts extends Parts{
+class ObjectParts extends Parts{
 	imageAnimationNo: number;
 }
 
@@ -32,19 +35,14 @@ class MapParts extends Parts{
 
 }
 
-class Status{
-	energy: number;
-	strength: number;
-	defence: number;
-	gold: number;
-}
-
 class AppearParts{
-	PartsNo: number;
+	partsNo: number;
+	partsType: number;
 	X: number;
 	Y: number;
-	constructor(partsNo: number, X: number, Y: number){
-		this.PartsNo = partsNo;
+	constructor(partsNo: number, partsType: number, X: number, Y: number){
+		this.partsNo = partsNo;
+		this.partsType = partsType;
 		this.X = X;
 		this.Y = Y;
 	}

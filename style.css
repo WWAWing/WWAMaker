@@ -38,15 +38,18 @@ body{
 	text-align: left;
 }
 
-/*#wm_toolBar:after{
-	content: ".";
-	display: block;
+#wm_toolBar{
+	height: 2.5rem;
 	visibility: hidden;
+}
+
+#wm_toolBar > nav,
+#wm_toolBar > nav > ul{
+	display: inline-block;
 }
 
 #wm_toolBar > nav{
 	border: 1px solid #C0C0C0;
-	float: left;
 	margin: .1rem;
 	padding: .2rem;
 }
@@ -57,9 +60,9 @@ body{
 	padding: 0;
 }
 
-#wm_toolBar li{
-	display: inline-block;
-}*/
+#wm_toolBar > nav li{
+	display: inline;
+}
 
 #wm_statusBar{
 	background-color: #404040;
@@ -86,7 +89,7 @@ body{
 #wm_mainArea{
 	display: flex;
 	flex-direction: row;
-	height: calc(100% - 2.5rem);
+	height: calc(100% - 5rem);
 }
 
 #wm_map{
