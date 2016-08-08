@@ -20,7 +20,8 @@ const MAP_URLGATE: number = 4; // URLゲート
 const PARTS_PARAMETERS_MAX: number = 10;
 
 class Parts{
-	imageNo: number;
+	imageX: number;
+	imageY: number;
 	attribute: number;
 	appearParts: AppearParts[] = new Array(10); //  話しかける時に配置されるパーツ一覧
 	parameters: number[] = new Array(PARTS_PARAMETERS_MAX); // パラメータ
@@ -28,7 +29,8 @@ class Parts{
 }
 
 class ObjectParts extends Parts{
-	imageAnimationNo: number;
+	imageAnimationX: number;
+	imageAnimationY: number;
 }
 
 class MapParts extends Parts{

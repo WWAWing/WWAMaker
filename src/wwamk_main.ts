@@ -12,6 +12,8 @@ const PARTS_ATTRIBUTE_NUMBER_ATTRIBUTE: number = 3; // Attribute配列の各配�
 const PARTS_ATTRIBUTE_NUMBER_MESSAGE: number = 5; // Attribute配列の各配列のうち、メッセージを示す場所
 const PARTS_ATTRIBUTE_NUMBER_IMAGE_X: number = 6; // Attribute配列の各配列のうち、画像X位置を示す場所
 const PARTS_ATTRIBUTE_NUMBER_IMAGE_Y: number = 7; // Attribute配列の各配列のうち、画像Y座標を示す場所
+const PARTS_ATTRIBUTE_NUMBER_ANIMATION_X: number = 8; // Attribute配列の各配列のうち、アニメーション用画像X位置を示す場所
+const PARTS_ATTRIBUTE_NUMBER_ANIMATION_Y: number = 9; // Attribute配列の各配列のうち、アニメーション用画像Y位置を示す場所
 const PARTS_ATTRIBUTE_START_PARAMETERS: number = 10; // Attribute配列の各配列のうち、パラメータを示す開始場所
 const PARTS_ATTRIBUTE_START_APPEAR: number = 20; // Attribute配列の各配列のうち、指定位置のパーツ出現を示す開始場所
 
@@ -38,6 +40,43 @@ class WWAMk{
     mapMap: number[][] = new Array(MAP_WIDTH_MAXIMUM);
     objectParts:ObjectParts[] = new Array(OBJECT_PARTS_MAXIMUM);
     mapParts:MapParts[] = new Array(MAP_PARTS_MAXIMUM);
+    constructor(){
+
+    }
+    setData(data): void{
+        this.worldName = data["worldName"];
+        this.mapCGName = data["mapCGName"];
+        this.playerX = data["playerX"];
+        this.playerY = data["playerY"];
+        this.gameoverX = data["gameoverX"];
+        this.gameoverY = data["gameoverY"];
+        this.statusEnergyMax = data["statusEnergyMax"];
+        this.statusEnergy = data["statusEnergy"];
+        this.statusStrength = data["statusStrength"];
+        this.statusDefence = data["statusDefence"];
+        this.statusGold = data["statusGold"];
+        this.mapWidth = data["mapWidth"];
+        this.objectPartsMax = data["objPartsMax"];
+        this.mapPartsMax = data["mapPartsMax"];
+        var i: number = 0;
+        this.objectParts.forEach(parts => { // 物体パーツのforeach
+            parts.message = data["message"][data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ATTRIBUTE]]; // メッセージ
+            parts.imageX = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_IMAGE_X] / CHIP_WIDTH;
+            parts.imageY = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_IMAGE_Y] / CHIP_HEIGHT;
+            parts.imageAnimationX = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ANIMATION_X] / CHIP_WIDTH;
+            parts.imageAnimationY = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ANIMATION_Y] / CHIP_HEIGHT;
+            parts.attribute = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ATTRIBUTE];
+            i++;
+        });
+        i = 0;
+        this.mapParts.forEach(parts => { // 背景パーツのforeach
+            parts.message = data["message"][data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ATTRIBUTE]];
+            parts.imageX = data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_IMAGE_X] / CHIP_WIDTH;
+            parts.imageY = data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_IMAGE_Y] / CHIP_HEIGHT;
+            parts.attribute = data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ATTRIBUTE];
+            i++;
+        });
+    }
 }
 
 class SystemMessage{
@@ -49,6 +88,20 @@ class SystemMessage{
     limitItemMessage: string;
     soundMessage: string;
 }
+
+var postMessage_noWorker = messageHandler;
+var wwaMk: WWAMk;
+
+var main = function () {
+    t_start = new Date().getTime();
+    var worker = new Worker("./wwaload.js"); // WebWorker作成
+    worker.postMessage({ "fileName": "./" + EXTRACTING_MAPDATA_FILENAME }); // ファイルを持っていく
+    worker.addEventListener("message", messageHandler); // messageHandlerへどぞ
+}
+
+var $id = function (id) {
+    return document.getElementById(id);
+};
 
 var messageHandler = function (e) {
     if (e.data.error !== null && e.data.error !== void 0) {
@@ -62,23 +115,9 @@ var messageHandler = function (e) {
         ($id("progressTotal")).setAttribute("value", e.data.progress.total);
         ($id("progressStage")).setAttribute("value", e.data.progress.stage);
     } else {
-        disp(e.data.wwaData);
+        wwaMk.setData(e.data.wwaData);
     }
 }
-
-
-var postMessage_noWorker = messageHandler;
-
-var main = function () {
-    t_start = new Date().getTime();
-    var worker = new Worker("./wwaload.js"); // WebWorker作成
-    worker.postMessage({ "fileName": "./" + EXTRACTING_MAPDATA_FILENAME }); // ファイルを持っていく
-    worker.addEventListener("message", messageHandler); // messageHandlerへどぞ
-}
-
-var $id = function (id) {
-    return document.getElementById(id);
-};
 
 var disp = function (data) {
     t_end = new Date().getTime();
