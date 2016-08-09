@@ -58,22 +58,58 @@ class WWAMk{
         this.mapWidth = data["mapWidth"];
         this.objectPartsMax = data["objPartsMax"];
         this.mapPartsMax = data["mapPartsMax"];
+        for(var i: number = 0; i < OBJECT_PARTS_MAXIMUM; i++) { // パーツをとりあえず作る
+            if(data["objectAttribute"][i] == undefined) {
+                break; // パーツが未定義の場合はfor文から外す
+            }
+            this.objectParts[i] = new ObjectParts();
+        }
         var i: number = 0;
-        this.objectParts.forEach(parts => { // 物体パーツのforeach
-            parts.message = data["message"][data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ATTRIBUTE]]; // メッセージ
+        this.objectParts.forEach(parts => { // foreachで定義(newしないとforeachで認識しない)
+            var messageNo: number = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_MESSAGE];
+            parts.message = data["message"][messageNo]; // メッセージ
             parts.imageX = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_IMAGE_X] / CHIP_WIDTH;
             parts.imageY = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_IMAGE_Y] / CHIP_HEIGHT;
             parts.imageAnimationX = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ANIMATION_X] / CHIP_WIDTH;
             parts.imageAnimationY = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ANIMATION_Y] / CHIP_HEIGHT;
             parts.attribute = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ATTRIBUTE];
-            i++;
+            for(var j: number = 0; j < 10; j++) { // パラメータ読み込み
+                parts.parameters[j] = data["objectAttribute"][i][PARTS_ATTRIBUTE_START_PARAMETERS + j];
+            }
+            for(var j: number = 0; j < 10; j++) { // 指定位置にパーツを出現読み込み
+                parts.appearParts[j] = new AppearParts(
+                    data["objectAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4)], // パーツ番号
+                    data["objectAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 3], // 物体 or 背景？
+                    data["objectAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 1], // X座標
+                    data["objectAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 2] // Y座標
+                );
+            }
+            i++; 
         });
-        i = 0;
-        this.mapParts.forEach(parts => { // 背景パーツのforeach
-            parts.message = data["message"][data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ATTRIBUTE]];
+        for(var i: number = 0; i < MAP_PARTS_MAXIMUM; i++) {
+            if(data["mapAttribute"][i] == undefined) {
+                break;
+            }
+            this.mapParts[i] = new MapParts();
+        }
+        var i: number = 0;
+        this.mapParts.forEach(parts => {
+            var messageNo: number = data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_MESSAGE];
+            parts.message = data["message"][messageNo];
             parts.imageX = data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_IMAGE_X] / CHIP_WIDTH;
             parts.imageY = data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_IMAGE_Y] / CHIP_HEIGHT;
             parts.attribute = data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ATTRIBUTE];
+            for(var j: number = 0; j < 10; j++) {
+                parts.parameters[j] = data["mapAttribute"][i][PARTS_ATTRIBUTE_START_PARAMETERS + j];
+            }
+            for(var j: number = 0; j < 10; j++) {
+                parts.appearParts[j] = new AppearParts(
+                    data["mapAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4)],
+                    data["mapAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 3],
+                    data["mapAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 1],
+                    data["mapAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 2]
+                );
+            }
             i++;
         });
     }
@@ -90,7 +126,7 @@ class SystemMessage{
 }
 
 var postMessage_noWorker = messageHandler;
-var wwaMk: WWAMk;
+var wwaMk: WWAMk = new WWAMk();
 
 var main = function () {
     t_start = new Date().getTime();
@@ -116,6 +152,7 @@ var messageHandler = function (e) {
         ($id("progressStage")).setAttribute("value", e.data.progress.stage);
     } else {
         wwaMk.setData(e.data.wwaData);
+        console.log(e.data.wwaData);
     }
 }
 
