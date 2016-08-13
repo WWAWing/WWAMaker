@@ -53,7 +53,7 @@ var AppearParts = (function () {
 }());
 /// <reference path="wwamk_parts.ts" />
 var EXTRACTING_MAPDATA_FILENAME = "wwamap.dat"; // 吸い出すファイル名
-var MAP_WIDTH_MAXIMUM = 1001;
+var MAP_SIZE_MAXIMUM = 1001;
 var OBJECT_PARTS_MAXIMUM = 4000;
 var MAP_PARTS_MAXIMUM = 4000;
 // データ読み込みの定数
@@ -71,8 +71,8 @@ var t_start; // 読み込み開始時間
 var t_end; // 読み込み完了時間
 var WWAMk = (function () {
     function WWAMk() {
-        this.objectMap = new Array(MAP_WIDTH_MAXIMUM);
-        this.mapMap = new Array(MAP_WIDTH_MAXIMUM);
+        this.objectMap = new Array(MAP_SIZE_MAXIMUM);
+        this.mapMap = new Array(MAP_SIZE_MAXIMUM);
         this.objectParts = new Array(OBJECT_PARTS_MAXIMUM);
         this.mapParts = new Array(MAP_PARTS_MAXIMUM);
     }
@@ -88,60 +88,85 @@ var WWAMk = (function () {
         this.statusStrength = data["statusStrength"];
         this.statusDefence = data["statusDefence"];
         this.statusGold = data["statusGold"];
-        this.mapWidth = data["mapWidth"];
+        this.mapSize = data["mapWidth"];
         this.objectPartsMax = data["objPartsMax"];
         this.mapPartsMax = data["mapPartsMax"];
-        for (var i = 0; i < OBJECT_PARTS_MAXIMUM; i++) {
-            if (data["objectAttribute"][i] == undefined) {
-                break; // パーツが未定義の場合はfor文から外す
+        for (var i = 0; i < this.mapSize; i++) {
+            this.objectMap[i] = new Array(MAP_SIZE_MAXIMUM);
+            this.mapMap[i] = new Array(MAP_SIZE_MAXIMUM);
+            for (var j = 0; j < this.mapSize; j++) {
+                /*
+                 * マップをとりあえず作る
+                 */
+                this.objectMap[i][j] = data["mapObject"][i][j];
+                this.mapMap[i][j] = data["map"][i][j];
             }
+        }
+        for (var i = 0; i < this.objectPartsMax; i++) {
+            /*
+             * パーツをとりあえず作る
+             * ・どうしてそんなことが必要なの→foreach分は作ったパーツ分でしか反応しない(ただ数を設定しただけでは無視される)
+             * ・条件について→今のパーツ最大数(objectPartsMax)未満
+             */
             this.objectParts[i] = new ObjectParts();
         }
         var i = 0;
         this.objectParts.forEach(function (parts) {
-            var messageNo = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_MESSAGE];
-            parts.message = data["message"][messageNo]; // メッセージ
-            parts.imageX = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_IMAGE_X] / CHIP_WIDTH;
-            parts.imageY = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_IMAGE_Y] / CHIP_HEIGHT;
-            parts.imageAnimationX = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ANIMATION_X] / CHIP_WIDTH;
-            parts.imageAnimationY = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ANIMATION_Y] / CHIP_HEIGHT;
-            parts.attribute = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ATTRIBUTE];
-            for (var j = 0; j < 10; j++) {
-                parts.parameters[j] = data["objectAttribute"][i][PARTS_ATTRIBUTE_START_PARAMETERS + j];
+            /*
+             * 作ったパーツを順次代入
+             * ・for文の中には入れないの→this.objectParts配列を書くのがすごくめんどい
+             */
+            if (data["objectAttribute"][i] == undefined) {
             }
-            for (var j = 0; j < 10; j++) {
-                parts.appearParts[j] = new AppearParts(data["objectAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4)], // パーツ番号
-                data["objectAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 3], // 物体 or 背景？
-                data["objectAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 1], // X座標
-                data["objectAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 2] // Y座標
-                );
-            }
+            else {
+                var messageNo = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_MESSAGE];
+                parts.message = data["message"][messageNo]; // メッセージ
+                parts.imageX = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_IMAGE_X] / CHIP_WIDTH;
+                parts.imageY = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_IMAGE_Y] / CHIP_HEIGHT;
+                parts.imageAnimationX = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ANIMATION_X] / CHIP_WIDTH;
+                parts.imageAnimationY = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ANIMATION_Y] / CHIP_HEIGHT;
+                parts.attribute = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ATTRIBUTE];
+                for (var j = 0; j < 10; j++) {
+                    parts.parameters[j] = data["objectAttribute"][i][PARTS_ATTRIBUTE_START_PARAMETERS + j];
+                }
+                for (var j = 0; j < 10; j++) {
+                    parts.appearParts[j] = new AppearParts(data["objectAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4)], // パーツ番号
+                    data["objectAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 3], // 物体 or 背景？
+                    data["objectAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 1], // X座標
+                    data["objectAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 2] // Y座標
+                    );
+                } // for
+            } // else
             i++;
         });
-        for (var i = 0; i < MAP_PARTS_MAXIMUM; i++) {
-            if (data["mapAttribute"][i] == undefined) {
-                break;
-            }
+        for (var i = 0; i < this.mapPartsMax; i++) {
             this.mapParts[i] = new MapParts();
         }
         var i = 0;
         this.mapParts.forEach(function (parts) {
-            var messageNo = data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_MESSAGE];
-            parts.message = data["message"][messageNo];
-            parts.imageX = data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_IMAGE_X] / CHIP_WIDTH;
-            parts.imageY = data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_IMAGE_Y] / CHIP_HEIGHT;
-            parts.attribute = data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ATTRIBUTE];
-            for (var j = 0; j < 10; j++) {
-                parts.parameters[j] = data["mapAttribute"][i][PARTS_ATTRIBUTE_START_PARAMETERS + j];
+            if (data["mapAttribute"][i] == undefined) {
             }
-            for (var j = 0; j < 10; j++) {
-                parts.appearParts[j] = new AppearParts(data["mapAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4)], data["mapAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 3], data["mapAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 1], data["mapAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 2]);
-            }
+            else {
+                var messageNo = data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_MESSAGE];
+                parts.message = data["message"][messageNo];
+                parts.imageX = data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_IMAGE_X] / CHIP_WIDTH;
+                parts.imageY = data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_IMAGE_Y] / CHIP_HEIGHT;
+                parts.attribute = data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_ATTRIBUTE];
+                for (var j = 0; j < 10; j++) {
+                    parts.parameters[j] = data["mapAttribute"][i][PARTS_ATTRIBUTE_START_PARAMETERS + j];
+                }
+                for (var j = 0; j < 10; j++) {
+                    parts.appearParts[j] = new AppearParts(data["mapAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4)], data["mapAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 3], data["mapAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 1], data["mapAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 2]);
+                } // for
+            } // else
             i++;
         });
     };
+    WWAMk.prototype.drawmap = function () {
+        var mapCanvasElement;
+    }; // drawmap
     return WWAMk;
-}());
+}()); // WWAMk
 var SystemMessage = (function () {
     function SystemMessage() {
     }
