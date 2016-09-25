@@ -4,6 +4,7 @@ const EXTRACTING_MAPDATA_FILENAME:string = "wwamap.dat"; // 吸い出すファ�
 const MAP_SIZE_MAXIMUM:number = 1001;
 const OBJECT_PARTS_MAXIMUM:number = 4000;
 const MAP_PARTS_MAXIMUM:number = 4000;
+const SYSTEM_MESSAGE_MAXIMUM:number = 20;
 
 // データ読み込みの定数
 const CHIP_WIDTH: number = 40; // 1マスの横幅
@@ -16,6 +17,7 @@ const PARTS_ATTRIBUTE_NUMBER_ANIMATION_X: number = 8; // Attribute配列の各�
 const PARTS_ATTRIBUTE_NUMBER_ANIMATION_Y: number = 9; // Attribute配列の各配列のうち、アニメーション用画像Y位置を示す場所
 const PARTS_ATTRIBUTE_START_PARAMETERS: number = 10; // Attribute配列の各配列のうち、パラメータを示す開始場所
 const PARTS_ATTRIBUTE_START_APPEAR: number = 20; // Attribute配列の各配列のうち、指定位置のパーツ出現を示す開始場所
+const CANVAS_ELEMENT_ID: string = "wm_mapCanvas";
 
 var t_start: number; // 読み込み開始時間
 var t_end: number; // 読み込み完了時間
@@ -35,7 +37,7 @@ class WWAMk{
     mapSize: number;
     objectPartsMax: number;
     mapPartsMax: number;
-    systemMessage: SystemMessage;
+    systemMessage: number[] = new Array(SYSTEM_MESSAGE_MAXIMUM);
     objectMap: number[][] = new Array(MAP_SIZE_MAXIMUM);
     mapMap: number[][] = new Array(MAP_SIZE_MAXIMUM);
     objectParts:ObjectParts[] = new Array(OBJECT_PARTS_MAXIMUM);
@@ -105,7 +107,7 @@ class WWAMk{
                     );
                 } // for
             } // else
-            i++; 
+            i++;
         });
         for(var i: number = 0; i < this.mapPartsMax; i++) {
             this.mapParts[i] = new MapParts();
@@ -137,7 +139,7 @@ class WWAMk{
     }
     drawmap(): void{
         var mapCanvasElement: HTMLCanvasElement;
-        
+        mapCanvasElement = <HTMLCanvasElement>document.getElementById(CANVAS_ELEMENT_ID);
     } // drawmap
 } // WWAMk
 
