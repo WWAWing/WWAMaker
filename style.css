@@ -121,6 +121,11 @@ body{
 	padding: .25rem;
 }
 
+#wm_parts section div {
+	height: 120px;
+	overflow: scroll;
+}
+
 #wm_parts_list canvas{
 	display: block;
 }

@@ -51,7 +51,7 @@
 		</div>
 		<div id="wm_mainArea">
 			<div id="wm_map">
-				<canvas id="wm_mapCanvas" width="1000" height="1000">
+				<canvas id="wm_mapCanvas" width="4000" height="4000">
 				<!--ここにマップを載せる-->
 				<!--現時点Canvasにするつもり-->
 			</div>
@@ -59,14 +59,18 @@
 				<div id="wm_parts_list">
 					<section id="wm_parts_list_Obj">
 						<h1>物体パーツ</h1>
-						<canvas id="wm_parts_list_Obj_map" width="440" height="120"></canvas>
+						<div id="wm_parts_list_Obj_wrap">
+							<canvas id="wm_parts_list_Obj_map" width="400" height="120"></canvas>
+						</div>
 						<label>選択パーツ:</label><input id="selectPartsObj" class="readOnlyText" type="text" size="5" readonly>
 						<button id="wm_parts_list_Obj_edit">パーツ編集</button>
 						<button id="wm_parts_list_Obj_remove">パーツ削除</button>
 					</section>
 					<section id="wm_parts_list_Back">
 						<h1>背景パーツ</h1>
-						<canvas id="wm_parts_list_Back_map" width="440" height="120"></canvas>
+						<div id="wm_parts_list_Back_wrap">
+							<canvas id="wm_parts_list_Back_map" width="400" height="120"></canvas>
+						</div>
 						<label>選択パーツ:</label><input id="selectPartsMap" class="readOnlyText" type="text" size="5" readonly>
 						<button id="wm_parts_list_Back_edit">パーツ編集</button>
 						<button id="wm_parts_list_Back_remove">パーツ削除</button>

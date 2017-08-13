@@ -1,8 +1,13 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var OBJECT_NORMAL = 0; // 通常物体
 var OBJECT_MESSAGE = 1; // メッセージ
 var OBJECT_URLGATE = 2; // URLゲート
@@ -31,14 +36,14 @@ var Parts = (function () {
 var ObjectParts = (function (_super) {
     __extends(ObjectParts, _super);
     function ObjectParts() {
-        _super.apply(this, arguments);
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     return ObjectParts;
 }(Parts));
 var MapParts = (function (_super) {
     __extends(MapParts, _super);
     function MapParts() {
-        _super.apply(this, arguments);
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     return MapParts;
 }(Parts));
@@ -52,10 +57,12 @@ var AppearParts = (function () {
     return AppearParts;
 }());
 /// <reference path="wwamk_parts.ts" />
+/// <reference path="wwamk_data.ts" />
 var EXTRACTING_MAPDATA_FILENAME = "wwamap.dat"; // 吸い出すファイル名
 var MAP_SIZE_MAXIMUM = 1001;
 var OBJECT_PARTS_MAXIMUM = 4000;
 var MAP_PARTS_MAXIMUM = 4000;
+var SYSTEM_MESSAGE_MAXIMUM = 20;
 // データ読み込みの定数
 var CHIP_WIDTH = 40; // 1マスの横幅
 var CHIP_HEIGHT = 40; // 1マスの縦幅
@@ -67,56 +74,61 @@ var PARTS_ATTRIBUTE_NUMBER_ANIMATION_X = 8; // Attribute配列の各配列のう
 var PARTS_ATTRIBUTE_NUMBER_ANIMATION_Y = 9; // Attribute配列の各配列のうち、アニメーション用画像Y位置を示す場所
 var PARTS_ATTRIBUTE_START_PARAMETERS = 10; // Attribute配列の各配列のうち、パラメータを示す開始場所
 var PARTS_ATTRIBUTE_START_APPEAR = 20; // Attribute配列の各配列のうち、指定位置のパーツ出現を示す開始場所
+var CANVAS_ELEMENT_ID = "wm_mapCanvas";
+var CANVAS_OBJECT_ELEMENT_ID = "wm_parts_list_Obj_map";
+var CANVAS_BACK_ELEMENT_ID = "wm_parts_list_Back_map";
 var t_start; // 読み込み開始時間
 var t_end; // 読み込み完了時間
 var WWAMk = (function () {
     function WWAMk() {
-        this.objectMap = new Array(MAP_SIZE_MAXIMUM);
-        this.mapMap = new Array(MAP_SIZE_MAXIMUM);
-        this.objectParts = new Array(OBJECT_PARTS_MAXIMUM);
-        this.mapParts = new Array(MAP_PARTS_MAXIMUM);
+        this._cvs = document.getElementById(CANVAS_ELEMENT_ID);
+        this._cvsObject = document.getElementById(CANVAS_OBJECT_ELEMENT_ID);
+        this._cvsBack = document.getElementById(CANVAS_BACK_ELEMENT_ID);
     }
     WWAMk.prototype.setData = function (data) {
-        this.worldName = data["worldName"];
-        this.mapCGName = data["mapCGName"];
-        this.playerX = data["playerX"];
-        this.playerY = data["playerY"];
-        this.gameoverX = data["gameoverX"];
-        this.gameoverY = data["gameoverY"];
-        this.statusEnergyMax = data["statusEnergyMax"];
-        this.statusEnergy = data["statusEnergy"];
-        this.statusStrength = data["statusStrength"];
-        this.statusDefence = data["statusDefence"];
-        this.statusGold = data["statusGold"];
-        this.mapSize = data["mapWidth"];
-        this.objectPartsMax = data["objPartsMax"];
-        this.mapPartsMax = data["mapPartsMax"];
-        for (var i = 0; i < this.mapSize; i++) {
-            this.objectMap[i] = new Array(MAP_SIZE_MAXIMUM);
-            this.mapMap[i] = new Array(MAP_SIZE_MAXIMUM);
-            for (var j = 0; j < this.mapSize; j++) {
+        var _this = this;
+        this._wwamkData = new wwamk_data.WWAData();
+        this._wwamkData.worldName = data["worldName"];
+        this._wwamkData.mapCGName = data["mapCGName"];
+        this._wwamkData.playerX = data["playerX"];
+        this._wwamkData.playerY = data["playerY"];
+        this._wwamkData.gameoverX = data["gameoverX"];
+        this._wwamkData.gameoverY = data["gameoverY"];
+        this._wwamkData.statusEnergyMax = data["statusEnergyMax"];
+        this._wwamkData.statusEnergy = data["statusEnergy"];
+        this._wwamkData.statusStrength = data["statusStrength"];
+        this._wwamkData.statusDefence = data["statusDefence"];
+        this._wwamkData.statusGold = data["statusGold"];
+        this._wwamkData.mapSize = data["mapWidth"];
+        this._wwamkData.objectPartsMax = data["objPartsMax"];
+        this._wwamkData.mapPartsMax = data["mapPartsMax"];
+        for (var i = 0; i < this._wwamkData.mapSize; i++) {
+            this._wwamkData.objectMap[i] = new Array(MAP_SIZE_MAXIMUM);
+            this._wwamkData.mapMap[i] = new Array(MAP_SIZE_MAXIMUM);
+            for (var j = 0; j < this._wwamkData.mapSize; j++) {
                 /*
                  * マップをとりあえず作る
                  */
-                this.objectMap[i][j] = data["mapObject"][i][j];
-                this.mapMap[i][j] = data["map"][i][j];
+                this._wwamkData.objectMap[i][j] = data["mapObject"][i][j];
+                this._wwamkData.mapMap[i][j] = data["map"][i][j];
             }
         }
-        for (var i = 0; i < this.objectPartsMax; i++) {
+        for (var i = 0; i < this._wwamkData.objectPartsMax; i++) {
             /*
              * パーツをとりあえず作る
              * ・どうしてそんなことが必要なの→foreach分は作ったパーツ分でしか反応しない(ただ数を設定しただけでは無視される)
              * ・条件について→今のパーツ最大数(objectPartsMax)未満
              */
-            this.objectParts[i] = new ObjectParts();
+            this._wwamkData.objectParts[i] = new ObjectParts();
         }
         var i = 0;
-        this.objectParts.forEach(function (parts) {
+        this._wwamkData.objectParts.forEach(function (parts) {
             /*
              * 作ったパーツを順次代入
              * ・for文の中には入れないの→this.objectParts配列を書くのがすごくめんどい
              */
             if (data["objectAttribute"][i] == undefined) {
+                // パーツが何も定義されていない場合は...
             }
             else {
                 var messageNo = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_MESSAGE];
@@ -139,11 +151,11 @@ var WWAMk = (function () {
             } // else
             i++;
         });
-        for (var i = 0; i < this.mapPartsMax; i++) {
-            this.mapParts[i] = new MapParts();
+        for (var i = 0; i < this._wwamkData.mapPartsMax; i++) {
+            this._wwamkData.mapParts[i] = new MapParts();
         }
         var i = 0;
-        this.mapParts.forEach(function (parts) {
+        this._wwamkData.mapParts.forEach(function (parts) {
             if (data["mapAttribute"][i] == undefined) {
             }
             else {
@@ -161,9 +173,37 @@ var WWAMk = (function () {
             } // else
             i++;
         });
+        this._image = new Image();
+        this._image.src = this._wwamkData.mapCGName;
+        this._cvs.width = this._wwamkData.mapSize * CHIP_WIDTH;
+        this._cvs.height = this._wwamkData.mapSize * CHIP_HEIGHT;
+        this._cvsObject.height = Math.ceil(this._wwamkData.objectPartsMax / 10) * CHIP_HEIGHT;
+        this._cvsBack.height = Math.ceil(this._wwamkData.mapPartsMax / 10) * CHIP_HEIGHT;
+        var ctxObject = this._cvsObject.getContext('2d');
+        this._wwamkData.objectParts.forEach(function (parts, i) {
+            ctxObject.drawImage(_this._image, parts.imageX * CHIP_WIDTH, parts.imageY * CHIP_HEIGHT, CHIP_WIDTH, CHIP_HEIGHT, (i % 10) * CHIP_WIDTH, Math.floor(i / 10) * CHIP_HEIGHT, CHIP_WIDTH, CHIP_HEIGHT);
+        });
+        var ctxBack = this._cvsBack.getContext('2d');
+        this._wwamkData.mapParts.forEach(function (parts, i) {
+            ctxBack.drawImage(_this._image, parts.imageX * CHIP_WIDTH, parts.imageY * CHIP_HEIGHT, CHIP_WIDTH, CHIP_HEIGHT, (i % 10) * CHIP_WIDTH, Math.floor(i / 10) * CHIP_HEIGHT, CHIP_WIDTH, CHIP_HEIGHT);
+        });
     };
     WWAMk.prototype.drawmap = function () {
-        var mapCanvasElement;
+        var ctx = this._cvs.getContext('2d');
+        for (var y = 0; y < this._wwamkData.mapSize; y++) {
+            for (var x = 0; x < this._wwamkData.mapSize; x++) {
+                var clipX, clipY;
+                clipX = this._wwamkData.mapParts[this._wwamkData.mapMap[y][x]].imageX;
+                clipY = this._wwamkData.mapParts[this._wwamkData.mapMap[y][x]].imageY;
+                //console.log(this._wwamkData.mapMap[y][x], clipX, clipY);
+                ctx.drawImage(this._image, clipX * CHIP_WIDTH, clipY * CHIP_HEIGHT, CHIP_WIDTH, CHIP_HEIGHT, x * CHIP_WIDTH, y * CHIP_HEIGHT, CHIP_WIDTH, CHIP_HEIGHT);
+                if (this._wwamkData.objectMap[y][x] != 0) {
+                    clipX = this._wwamkData.objectParts[this._wwamkData.objectMap[y][x]].imageX;
+                    clipY = this._wwamkData.objectParts[this._wwamkData.objectMap[y][x]].imageY;
+                    ctx.drawImage(this._image, clipX * CHIP_WIDTH, clipY * CHIP_HEIGHT, CHIP_WIDTH, CHIP_HEIGHT, x * CHIP_WIDTH, y * CHIP_HEIGHT, CHIP_WIDTH, CHIP_HEIGHT);
+                }
+            }
+        }
     }; // drawmap
     return WWAMk;
 }()); // WWAMk
@@ -173,9 +213,10 @@ var SystemMessage = (function () {
     return SystemMessage;
 }());
 var postMessage_noWorker = messageHandler;
-var wwaMk = new WWAMk();
+var wwaMk;
 var main = function () {
     t_start = new Date().getTime();
+    wwaMk = new WWAMk();
     var worker = new Worker("./wwaload.js"); // WebWorker作成
     worker.postMessage({ "fileName": "./" + EXTRACTING_MAPDATA_FILENAME }); // ファイルを持っていく
     worker.addEventListener("message", messageHandler); // messageHandlerへどぞ
@@ -200,6 +241,7 @@ var messageHandler = function (e) {
     else {
         wwaMk.setData(e.data.wwaData);
         console.log(e.data.wwaData);
+        wwaMk.drawmap();
     }
 };
 var disp = function (data) {
@@ -237,3 +279,18 @@ var disp = function (data) {
 window.addEventListener("load", function () {
     main();
 });
+/// <reference path="wwamk_main.ts" />
+var wwamk_data;
+(function (wwamk_data) {
+    var WWAData = (function () {
+        function WWAData() {
+            this.systemMessage = new Array(SYSTEM_MESSAGE_MAXIMUM);
+            this.objectMap = new Array(MAP_SIZE_MAXIMUM);
+            this.mapMap = new Array(MAP_SIZE_MAXIMUM);
+            this.objectParts = new Array(OBJECT_PARTS_MAXIMUM);
+            this.mapParts = new Array(MAP_PARTS_MAXIMUM);
+        }
+        return WWAData;
+    }());
+    wwamk_data.WWAData = WWAData;
+})(wwamk_data || (wwamk_data = {}));
