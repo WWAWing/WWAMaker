@@ -19,7 +19,7 @@ const MAP_URLGATE: number = 4; // URLゲート
 
 const PARTS_PARAMETERS_MAX: number = 10;
 
-class Parts{
+export class Parts{
 	imageX: number;
 	imageY: number;
 	attribute: number;
@@ -28,16 +28,16 @@ class Parts{
 	message: string;
 }
 
-class ObjectParts extends Parts{
+export class ObjectParts extends Parts{
 	imageAnimationX: number;
 	imageAnimationY: number;
 }
 
-class MapParts extends Parts{
+export class MapParts extends Parts{
 
 }
 
-class AppearParts{
+export class AppearParts{
 	partsNo: number;
 	partsType: number;
 	X: number;

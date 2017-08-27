@@ -1,11 +1,8 @@
-/// <reference path="wwamk_parts.ts" />
-/// <reference path="wwamk_data.ts" />
+import Vue from 'vue';
+import * as wm_data from './wwamk_data';
+import * as wm_parts from './wwamk_parts';
 
 const EXTRACTING_MAPDATA_FILENAME:string = "wwamap.dat"; // 吸い出すファイル名
-const MAP_SIZE_MAXIMUM:number = 1001;
-const OBJECT_PARTS_MAXIMUM:number = 4000;
-const MAP_PARTS_MAXIMUM:number = 4000;
-const SYSTEM_MESSAGE_MAXIMUM:number = 20;
 
 // データ読み込みの定数
 const CHIP_WIDTH: number = 40; // 1マスの横幅
@@ -25,12 +22,20 @@ const CANVAS_BACK_ELEMENT_ID: string = "wm_parts_list_Back_map";
 var t_start: number; // 読み込み開始時間
 var t_end: number; // 読み込み完了時間
 
+var vm = new Vue({
+    el: "#wm",
+    data: {
+        mapX: 0,
+        mapY: 0
+    }
+});
+
 class WWAMk{
     private _cvs: HTMLCanvasElement;
     private _cvsObject: HTMLCanvasElement;
     private _cvsBack: HTMLCanvasElement;
 
-    private _wwamkData: wwamk_data.WWAData;
+    private _wwamkData: wm_data.WWAData;
     private _image: HTMLImageElement;
     constructor(){
         this._cvs = <HTMLCanvasElement>document.getElementById(CANVAS_ELEMENT_ID);
@@ -38,7 +43,7 @@ class WWAMk{
         this._cvsBack = <HTMLCanvasElement>document.getElementById(CANVAS_BACK_ELEMENT_ID);
     }
     setData(data): void{ // WWALoaderから持ってきたデータをクラスの各インスタンス変数に代入します
-        this._wwamkData = new wwamk_data.WWAData();
+        this._wwamkData = new data.WWAData();
         this._wwamkData.worldName = data["worldName"];
         this._wwamkData.mapCGName = data["mapCGName"];
         this._wwamkData.playerX = data["playerX"];
@@ -55,8 +60,8 @@ class WWAMk{
         this._wwamkData.mapPartsMax = data["mapPartsMax"];
 
         for(var i: number = 0; i < this._wwamkData.mapSize; i++) {
-            this._wwamkData.objectMap[i] = new Array(MAP_SIZE_MAXIMUM);
-            this._wwamkData.mapMap[i] = new Array(MAP_SIZE_MAXIMUM);
+            this._wwamkData.objectMap[i] = new Array(data.MAP_SIZE_MAXIMUM);
+            this._wwamkData.mapMap[i] = new Array(data.MAP_SIZE_MAXIMUM);
             for(var j: number = 0; j < this._wwamkData.mapSize; j++) {
                 /*
                  * マップをとりあえず作る
@@ -71,7 +76,7 @@ class WWAMk{
              * ・どうしてそんなことが必要なの→foreach分は作ったパーツ分でしか反応しない(ただ数を設定しただけでは無視される)
              * ・条件について→今のパーツ最大数(objectPartsMax)未満
              */
-            this._wwamkData.objectParts[i] = new ObjectParts();
+            this._wwamkData.objectParts[i] = new wm_parts.ObjectParts();
         }
         var i: number = 0;
         this._wwamkData.objectParts.forEach(parts => {
@@ -79,7 +84,7 @@ class WWAMk{
              * 作ったパーツを順次代入
              * ・for文の中には入れないの→this.objectParts配列を書くのがすごくめんどい
              */
-            if(data["objectAttribute"][i] == undefined) {
+            if(data["objectAttribute"][i] === undefined) {
                 // パーツが何も定義されていない場合は...
             } else {
                 var messageNo: number = data["objectAttribute"][i][PARTS_ATTRIBUTE_NUMBER_MESSAGE];
@@ -93,7 +98,7 @@ class WWAMk{
                     parts.parameters[j] = data["objectAttribute"][i][PARTS_ATTRIBUTE_START_PARAMETERS + j];
                 }
                 for(var j: number = 0; j < 10; j++) { // 指定位置にパーツを出現読み込み
-                    parts.appearParts[j] = new AppearParts(
+                    parts.appearParts[j] = new wm_parts.AppearParts(
                         data["objectAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4)], // パーツ番号
                         data["objectAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 3], // 物体 or 背景？
                         data["objectAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 1], // X座標
@@ -104,11 +109,11 @@ class WWAMk{
             i++;
         });
         for(var i: number = 0; i < this._wwamkData.mapPartsMax; i++) {
-            this._wwamkData.mapParts[i] = new MapParts();
+            this._wwamkData.mapParts[i] = new wm_parts.MapParts();
         }
         var i: number = 0;
         this._wwamkData.mapParts.forEach(parts => {
-            if(data["mapAttribute"][i] == undefined) {
+            if(data["mapAttribute"][i] === undefined) {
 
             } else {
                 var messageNo: number = data["mapAttribute"][i][PARTS_ATTRIBUTE_NUMBER_MESSAGE];
@@ -120,7 +125,7 @@ class WWAMk{
                     parts.parameters[j] = data["mapAttribute"][i][PARTS_ATTRIBUTE_START_PARAMETERS + j];
                 }
                 for(var j: number = 0; j < 10; j++) {
-                    parts.appearParts[j] = new AppearParts(
+                    parts.appearParts[j] = new wm_parts.AppearParts(
                         data["mapAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4)],
                         data["mapAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 3],
                         data["mapAttribute"][i][PARTS_ATTRIBUTE_START_APPEAR + (j * 4) + 1],

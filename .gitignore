@@ -1,3 +1,4 @@
+node_modules
 WWALoader
-wwasource
 .vscode
+*.log

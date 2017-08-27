@@ -1,0 +1,25 @@
+{
+  "name": "wwa_maker",
+  "version": "0.1.0",
+  "description": "WWA Making Tool",
+  "main": "index.html",
+  "scripts": {
+    "test": "nw",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WWAWing/WWAMaker.git"
+  },
+  "author": "Aokashi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WWAWing/WWAMaker/issues"
+  },
+  "homepage": "https://github.com/WWAWing/WWAMaker#readme",
+  "dependencies": {
+    "ts-loader": "^2.3.4",
+    "typescript": "^2.4.2",
+    "vue": "^2.4.2"
+  }
+}

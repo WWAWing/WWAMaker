@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+      "vue": ["node_modules/vue/dist/vue"]
+    },
+    "module": "es2015",
+    "moduleResolution": "node",
+    "lib": [
+      "dom",
+      "es5",
+      "es2015.promise"
+    ],
+    "target": "es5"
+  }
+}
