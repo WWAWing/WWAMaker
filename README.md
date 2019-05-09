@@ -1,17 +1,19 @@
-WWA MakerはWWA Wingに近い動作でWWAマップを作成できることを目標に制作を進めているWWAマップ作成ツールです。
+WWA Maker
+===
 
-WWA Editorを使う人、WWA Makerを使う人と分けるためにキーボード操作を重点に置いた作成ツールとなります。
+## 始めるには？
+この WWA Maker には `yarn` を利用しています。
+以下のコマンドを入力することで、 WWA Maker を実行することが出来ます。
 
-# 予定
-- Electronで動作する
-- HJKLでカーソル移動
-  - Shiftキーの同時押しで画面単位の移動
-- 指定キー＋パーツ番号を押すことでパーツを配置する(指定キー+0でパーツの削除)
+```
+yarn
+yarn start
+```
 
-今のところ大きな動きはありません。core.htmlで出力例を見ることができます。
+## より詳しい情報は
+[GitHub のWiki](https://github.com/WWAWing/WWAMaker/wiki/) をご参照ください。
 
-# ライセンス
-
-当プログラムは同梱しているWWALoader含めMITライセンスとします。しかし、まだ制作途上です。
+## ライセンス
+当プログラムは同梱しているWWALoader含めMITライセンスとします。
 
 また、当プログラムに同梱しているサンプルのwwamap.datは[キャラバンサークル](http://www.wwajp.com)に従うものとします。
