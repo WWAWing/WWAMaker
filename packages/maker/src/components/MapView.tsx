@@ -1,10 +1,11 @@
 import React from 'react';
+import styles from './MapView.module.scss';
 
 export default class MapView extends React.Component {
     public render() {
         return (
-            <div>
-                <canvas width="1000" height="1000"></canvas>
+            <div className={styles.mapView}>
+                <div className={styles.dummyMap}></div>
             </div>
         );
     }
