@@ -8,11 +8,11 @@ import styles from './ToolPanel.module.scss';
 export default class ToolPanel extends React.Component {
     public render() {
         return (
-            <div className={styles.ToolPanel}>
-                <div className={styles.Left}>
+            <div className={styles.toolPanel}>
+                <div className={styles.left}>
                     物体パーツ一覧
                 </div>
-                <div className={styles.Right}>
+                <div className={styles.right}>
                     背景パーツ一覧
                 </div>
             </div>

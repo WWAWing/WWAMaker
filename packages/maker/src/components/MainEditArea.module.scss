@@ -1,4 +1,4 @@
-.MainEditArea {
+.mainEditArea {
     display: grid;
     grid-template:
         [edit-map]  "map  info" 1fr   [edit-info]
@@ -8,16 +8,16 @@
     width: 100vw;
 }
 
-.InfoPanel {
+.infoPanel {
     background-color: #d0d0d0;
     grid-area: info;
 }
 
-.MapView {
+.mapView {
     overflow: auto;
     grid-area: map;
 }
 
-.ToolPanel {
+.toolPanel {
     grid-area: tool;
 }

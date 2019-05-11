@@ -11,14 +11,14 @@ import MapView from './MapView';
 export default class MainEditArea extends React.Component {
     public render() {
         return (
-            <div className={styles.MainEditArea}>
-                <div className={styles.MapView}>
+            <div className={styles.mainEditArea}>
+                <div className={styles.mapView}>
                     <MapView></MapView>
                 </div>
-                <div className={styles.InfoPanel}>
+                <div className={styles.infoPanel}>
                     <InfoPanel></InfoPanel>
                 </div>
-                <div className={styles.ToolPanel}>
+                <div className={styles.toolPanel}>
                     <ToolPanel></ToolPanel>
                 </div>
             </div>
