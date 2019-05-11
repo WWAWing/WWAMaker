@@ -1,0 +1,23 @@
+.MainEditArea {
+    display: grid;
+    grid-template:
+        [edit-map]  "map  info" 1fr   [edit-info]
+        [edit-tool] "tool info" 320px [tool-info]
+                    / 1fr 320px;
+    height: 100vh;
+    width: 100vw;
+}
+
+.InfoPanel {
+    background-color: #d0d0d0;
+    grid-area: info;
+}
+
+.MapView {
+    overflow: auto;
+    grid-area: map;
+}
+
+.ToolPanel {
+    grid-area: tool;
+}
