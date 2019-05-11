@@ -1,0 +1,28 @@
+.app {
+    display: grid;
+    grid-template:
+        [toolbar]   "toolbar   toolbar"   60px  [toolbar]
+        [mapview]   "mapview   infopanel" 1fr   [infopanel]
+        [toolpanel] "toolpanel infopanel" 240px [infopanel]
+                  / 1fr        320px;
+    height: 100vh;
+    width: 100vw;
+}
+
+.mainToolbar {
+    grid-area: toolbar;
+}
+
+.infoPanel {
+    background-color: #d0d0d0;
+    grid-area: infopanel;
+}
+
+.mapView {
+    overflow: auto;
+    grid-area: mapview;
+}
+
+.toolPanel {
+    grid-area: toolpanel;
+}
