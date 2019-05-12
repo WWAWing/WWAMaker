@@ -19,8 +19,10 @@
 }
 
 .mapView {
-    overflow: auto;
+    background-color: rgb(158, 158, 158);
     grid-area: mapview;
+    overflow: auto;
+    text-align: left;
 }
 
 .toolPanel {

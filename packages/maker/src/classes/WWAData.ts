@@ -1,20 +1,91 @@
-export default class WWAData {
-    private wwaData: Object|null;
+export interface Coord {
+    x: number;
+    y: number;
+}
 
-    constructor (fileName: string) {
-        this.wwaData = null;
-        const loaderWorker = new Worker('./wwaload.js');
+/**
+ * @todo 近い内に @wwawing/common-interface と統合する
+ */
+export default interface WWAData {
+    version: number;
 
-        loaderWorker.postMessage({
-            fileName: fileName
-        });
-        loaderWorker.addEventListener('message', event => {
-            if (event.data.error !== null) {
-                throw new Error(event.data.error.message);
-            }
-            if (event.data.progress === null) {
-                this.wwaData = event.data.wwaData;
-            }
-        });
-    }
+    gameoverX: number;
+    gameoverY: number;
+
+    playerX: number;
+    playerY: number;
+
+    mapPartsMax: number;
+    objPartsMax: number;
+
+    isOldMap: boolean;
+
+    statusEnergyMax: number;
+    statusEnergy: number;
+    statusStrength: number;
+    statusDefence: number;
+    statusGold: number;
+
+    itemBox: number[];
+
+    mapWidth: number;
+    messageNum: number;
+
+    map: number[][];
+    mapObject: number[][];
+
+    mapCompressed: number[][][];
+    mapObjectCompressed: number[][][];
+
+    mapAttribute: number[][];
+    objectAttribute: number[][];
+
+    worldPassword: string;
+    message: string[];
+    worldName: string;
+    worldPassNumber: number;
+    charCGName: string;
+    mapCGName: string;
+    systemMessage: string[];
+    moves: number;
+
+    yesnoImgPosX: number;
+    yesnoImgPosY: number;
+    playerImgPosX: number;
+    playerImgPosY: number;
+    clickableItemSignImgPosX: number; // 0の時, 標準枠 注) 面倒なことがわかったので未実装
+    clickableItemSignImgPosY: number; // undefined時, 標準枠 注) 面倒なことがわかったので未実装
+
+    disableSaveFlag: boolean;
+    compatibleForOldMapFlag: boolean;
+    objectNoCollapseDefaultFlag: boolean;
+
+    delPlayerFlag: boolean;
+
+    bgm: number;
+    effectCoords: Coord[];
+    effectWaits: number;
+
+    imgClickX: number;
+    imgClickY: number;
+
+    frameColorR: number;
+    frameColorG: number;
+    frameColorB: number;
+
+    frameOutColorR: number;
+    frameOutColorG: number;
+    frameOutColorB: number;
+
+    fontColorR: number;
+    fontColorG: number;
+    fontColorB: number;
+
+    statusColorR: number;
+    statusColorG: number;
+    statusColorB: number;
+    checkOriginalMapString: string;
+    checkString: string;
+
+    isItemEffectEnabled: boolean; 
 }
