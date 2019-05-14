@@ -1,4 +1,4 @@
-import { createStore } from "redux";
-import WWAData from './reducers/WWAData';
+import { createStore } from 'redux';
+import { rootReducer } from './reducers';
 
-export default createStore(WWAData);
+export default createStore(rootReducer);
