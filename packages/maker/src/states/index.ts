@@ -1,5 +1,5 @@
-import { createStore } from 'redux';
-import { combineReducers } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import ReduxThunk from 'redux-thunk';
 import * as WWAData from './WWAData';
 
 export const rootReducer = combineReducers({
@@ -8,4 +8,4 @@ export const rootReducer = combineReducers({
 
 export type AppState = ReturnType<typeof rootReducer>;
 
-export const Store = createStore(rootReducer);
+export const Store = createStore(rootReducer, applyMiddleware(ReduxThunk));
