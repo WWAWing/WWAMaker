@@ -1,7 +1,8 @@
 import { eventChannel, END } from 'redux-saga';
 import { call, put, take, takeEvery } from 'redux-saga/effects';
 import { LoadWWADataAction, progressWWAData, setWWAData, errorWWAData, LoadImageAction, setImage, errorImage, ImageActionType, loadImage } from './MapData';
-import { LoaderResponse, MakerError } from '../classes/WWAData';
+import { LoaderResponse } from '../classes/Loader';
+import { MakerError } from '../classes/MakerSystem';
 
 function loadWWAData(mapdataFileName: string) {
     return eventChannel(emitter => {

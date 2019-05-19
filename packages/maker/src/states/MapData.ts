@@ -1,4 +1,6 @@
-import WWAData, { LoaderProgress, LoaderError, LoaderResponse, LoadState, LoadStage, MakerError } from "../classes/WWAData";
+import WWAData, { defaultWWAData } from '../classes/WWAData';
+import { LoaderProgress, LoaderError, LoaderResponse, LoadState, LoadStage } from '../classes/Loader';
+import { MakerError } from '../classes/MakerSystem';
 import { ActionCreator, Action } from 'redux';
 
 /**
@@ -119,105 +121,6 @@ interface MapDataState {
     image: CanvasImageSource
 }
 
-/**
- * 空の2次元配列を作成します。WWAData.map の初期化に利用します。
- * @param size 
- * @return 
- */
-function createEmptyMap(size: number): number[][] {
-    return new Array<Array<number>>(size).fill(
-        new Array<number>(size).fill(0)
-    );
-}
-
-/**
- * @todo これらの定数は WWAData.ts か common-interface に移行する予定
- */
-const currentVersion = 32;
-const defaultMapWidth = 101;
-const defaultWWAData: WWAData = {
-    version: currentVersion,
-
-    gameoverX: 0,
-    gameoverY: 0,
-
-    playerX: 0,
-    playerY: 0,
-
-    mapPartsMax: 100,
-    objPartsMax: 100,
-
-    isOldMap: false,
-
-    statusEnergyMax: 0,
-    statusEnergy: 0,
-    statusStrength: 0,
-    statusDefence: 0,
-    statusGold: 0,
-
-    itemBox: [],
-
-    mapWidth: defaultMapWidth,
-    messageNum: 0,
-
-    map: createEmptyMap(defaultMapWidth),
-    mapObject: createEmptyMap(defaultMapWidth),
-
-    mapCompressed: [],
-    mapObjectCompressed: [],
-
-    mapAttribute: [],
-    objectAttribute: [],
-
-    worldPassword: '',
-    message: [],
-    worldName: '',
-    worldPassNumber: 0,
-    charCGName: '',
-    mapCGName: '',
-    systemMessage: [],
-    moves: 0,
-
-    yesnoImgPosX: 3,
-    yesnoImgPosY: 4,
-    playerImgPosX: 2,
-    playerImgPosY: 0,
-    clickableItemSignImgPosX: 0,
-    clickableItemSignImgPosY: 0,
-
-    disableSaveFlag: false,
-    compatibleForOldMapFlag: false,
-    objectNoCollapseDefaultFlag: false,
-
-    delPlayerFlag: false,
-
-    bgm: 0,
-    effectCoords: [],
-    effectWaits: 0,
-
-    imgClickX: 0,
-    imgClickY: 0,
-
-    frameColorR: 0,
-    frameColorG: 0,
-    frameColorB: 0,
-
-    frameOutColorR: 0,
-    frameOutColorG: 0,
-    frameOutColorB: 0,
-
-    fontColorR: 0,
-    fontColorG: 0,
-    fontColorB: 0,
-
-    statusColorR: 0,
-    statusColorG: 0,
-    statusColorB: 0,
-    checkOriginalMapString: '',
-    checkString: '',
-    
-    isItemEffectEnabled: false
-}
 const defaultMapData: MapDataState = {
     loadState: LoadState.LOADING_MAPDATA,
     progress: {

@@ -5,6 +5,7 @@
  *     例えば、 MAX_SIZE とかにはせず、 SIZE_MAX と、補助的な役割を持つ MAX を後ろに持たせます。
  */
 export default class WWAConsts {
+    static CURRENT_VERSION = 32;
     static CHIP_SIZE = 40;
     
     static ATR_TYPE: number = 3;

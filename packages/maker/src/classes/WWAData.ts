@@ -1,3 +1,5 @@
+import WWAConsts from "./WWAConsts";
+
 export interface Coord {
     x: number;
     y: number;
@@ -90,46 +92,99 @@ export default interface WWAData {
     isItemEffectEnabled: boolean; 
 }
 
-export interface LoaderResponse {
-    error: LoaderError|null,
-    progress: LoaderProgress|null,
-    wwaData: WWAData|null
+export const defaultWWAData: WWAData = {
+    version: WWAConsts.CURRENT_VERSION,
+
+    gameoverX: 0,
+    gameoverY: 0,
+
+    playerX: 0,
+    playerY: 0,
+
+    mapPartsMax: 100,
+    objPartsMax: 100,
+
+    isOldMap: false,
+
+    statusEnergyMax: 0,
+    statusEnergy: 0,
+    statusStrength: 0,
+    statusDefence: 0,
+    statusGold: 0,
+
+    itemBox: [],
+
+    mapWidth: WWAConsts.MAP_SIZE_DEFAULT,
+    messageNum: 0,
+
+    map: createEmptyMap(WWAConsts.MAP_SIZE_DEFAULT),
+    mapObject: createEmptyMap(WWAConsts.MAP_SIZE_DEFAULT),
+
+    mapCompressed: [],
+    mapObjectCompressed: [],
+
+    mapAttribute: [],
+    objectAttribute: [],
+
+    worldPassword: '',
+    message: [],
+    worldName: '',
+    worldPassNumber: 0,
+    charCGName: '',
+    mapCGName: '',
+    systemMessage: [],
+    moves: 0,
+
+    yesnoImgPosX: 3,
+    yesnoImgPosY: 4,
+    playerImgPosX: 2,
+    playerImgPosY: 0,
+    clickableItemSignImgPosX: 0,
+    clickableItemSignImgPosY: 0,
+
+    disableSaveFlag: false,
+    compatibleForOldMapFlag: false,
+    objectNoCollapseDefaultFlag: false,
+
+    delPlayerFlag: false,
+
+    bgm: 0,
+    effectCoords: [],
+    effectWaits: 0,
+
+    imgClickX: 0,
+    imgClickY: 0,
+
+    frameColorR: 0,
+    frameColorG: 0,
+    frameColorB: 0,
+
+    frameOutColorR: 0,
+    frameOutColorG: 0,
+    frameOutColorB: 0,
+
+    fontColorR: 0,
+    fontColorG: 0,
+    fontColorB: 0,
+
+    statusColorR: 0,
+    statusColorG: 0,
+    statusColorB: 0,
+    checkOriginalMapString: '',
+    checkString: '',
+    
+    isItemEffectEnabled: false
 }
 
 /**
- * 作成ツールで起こりうるエラーを定義するインターフェイスです。
- *     作成ツールの拡張によってこの内容は増えるかもしれないです。
+ * 空の2次元配列を作成します。WWAData.map の初期化に利用します。
+ * @param size 
+ * @return 
  */
-export interface MakerError {
-    title: string;
-    message: string;
-}
-
-export interface LoaderError extends MakerError {}
-
-export interface LoaderProgress {
-    current: number;
-    total: number;
-    stage: LoadStage;
-}
-
-export enum LoadStage {
-    INIT = 0,
-    MAP_LOAD = 1,
-    OBJ_LOAD = 2,
-    MAP_ATTR = 3,
-    OBJ_ATTR = 4,
-    RAND_PARTS = 5,
-    MESSAGE = 6
-}
-
-export enum LoadState {
-    EMPTY = 0, // EMPTY は何も開いていない状態を表しますが、もしかしたら利用しないかもしれないです。
-    LOADING_MAPDATA = 1,
-    LOADING_IMAGE = 2,
-    DONE = 3,
-    ERROR_MAPDATA = -1,
-    ERROR_IMAGE = -2
+function createEmptyMap(size: number): number[][] {
+    return new Array<Array<number>>(size).fill(
+        new Array<number>(size).fill(0)
+    );
 }
 
 export enum PartsType {

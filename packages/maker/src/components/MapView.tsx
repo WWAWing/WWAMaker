@@ -2,7 +2,7 @@ import React, { RefObject } from 'react';
 import WWAConsts from '../classes/WWAConsts';
 import { connect, MapStateToProps } from 'react-redux';
 import { AppState } from '../states';
-import { LoadState } from '../classes/WWAData';
+import { LoadState } from '../classes/Loader';
 
 interface Props {
     state: LoadState;
