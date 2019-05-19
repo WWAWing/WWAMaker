@@ -1,50 +1,74 @@
-import { call, put, takeEvery } from 'redux-saga/effects';
+import { eventChannel, END } from 'redux-saga';
+import { call, put, take, takeEvery } from 'redux-saga/effects';
 import { LoadWWADataAction, progressWWAData, setWWAData, errorWWAData, LoadImageAction } from './MapData';
 import { LoaderResponse, LoaderError } from '../classes/WWAData';
 
-/**
- * @param mapdataFileName マップデータのファイル名
- */
-function wwaLoadPromise(mapdataFileName: string): Promise<void> {
-    return new Promise((resolve, reject) => {
+function loadMapData(mapdataFileName: string) {
+    /**
+     * @todo emitter で指定する引数は何の役割を持つか調べる。
+     */
+    return eventChannel(emitter => {
+        const loaderMessageHandler = (event: MessageEvent) => {
+            emitter(event.data);
+
+            if (event.data.progress === null) {
+                emitter(END);
+            }
+        }
+
         const loaderWorker = new Worker('./wwaload.js');
         loaderWorker.postMessage({
             fileName: mapdataFileName
         });
-        loaderWorker.onmessage = (event: MessageEvent) => {
-            if (event.data.wwaData !== null) {
-                resolve();
-            } else if (event.data.error !== null) {
-                reject();
-            }
-        };
+        loaderWorker.addEventListener('message', loaderMessageHandler);
+
+        return () => {
+            loaderWorker.removeEventListener('message', loaderMessageHandler);
+        }
     });
 }
 
-function imageLoadPromise(mapCGName: string): Promise<void> {
-    return new Promise((resolve, reject) => {
+/**
+ * 
+ * @param mapCGName 
+ */
+function loadImage(mapCGName: string) {
+    return eventChannel(emitter => {
+        const imageErrorHandler = (event: ErrorEvent) => {
+            emitter({ error: event });
+            emitter(END);
+        }
+        const imageLoadHandler = () => {
+            emitter({ image: image });
+            emitter(END);
+        }
+
         const image = new Image();
         image.src = mapCGName;
-        image.onerror = () => {
-            reject();
-        }
-        image.onload = () => {
-            resolve();
+        image.addEventListener('error', imageErrorHandler);
+        image.addEventListener('load', imageLoadHandler);
+
+        return () => {
+            image.removeEventListener('error', imageErrorHandler);
+            image.removeEventListener('load', imageLoadHandler);
         }
     });
 }
 
-function* loadWWAData(action: LoadWWADataAction) {
+function* loadMapDataSaga(action: LoadWWADataAction) {
+    /**
+     * @todo WWAマップデータ読み込みが完了した後にイメージを読み込む流れで進んでいるけれども、もしかしたら間違っているかもしれない。
+     */
+    const mapDataChannel = yield call(loadMapData, action.payload.mapdataFileName);
     try {
-        /**
-         * @todo WWAマップデータ読み込みが完了した後にイメージを読み込む流れで進んでいるけれども、もしかしたら間違っているかもしれない。
-         */
-        const wwaData = yield call(wwaLoadPromise, action.payload.mapdataFileName);
-        yield put(setWWAData(wwaData));
-        const image = yield call(imageLoadPromise, wwaData.mapCGName);
-        /**
-         * @todo ここからどうしよう？
-         */
+        const channelResult: LoaderResponse = yield take(mapDataChannel);
+        if (channelResult.progress !== null) {
+            yield put(progressWWAData(channelResult.progress));
+        } else if (channelResult.wwaData !== null) {
+            yield put(setWWAData(channelResult.wwaData));
+        } else {
+            yield put(setWWAData(channelResult.error));
+        }
     } catch (error) {
         const loaderError: LoaderError = {
             message: error.message,
@@ -54,8 +78,28 @@ function* loadWWAData(action: LoadWWADataAction) {
     }
 }
 
+function* loadImageSaga(action: LoadImageAction) {
+    const imageChannel = yield call(loadImage, action.payload.mapCGName);
+    try {
+        const channelResult = take(imageChannel);
+        if (imageChannel.image !== null) {
+            /**
+             * @todo イメージのセット処理を記述する。
+             */
+        } else {
+            /**
+             * @todo イメージのエラー発生を記述する
+             */
+        }
+    } catch (error) {
+        /**
+         * @todo イメージのエラー発生を記述する
+         */
+    }
+}
+
 function* mySaga() {
-    yield takeEvery('LOAD_WWADATA', loadWWAData);
+    yield takeEvery('LOAD_WWADATA', loadMapDataSaga);
 }
 
 export default mySaga;

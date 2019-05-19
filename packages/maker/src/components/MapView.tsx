@@ -2,8 +2,10 @@ import React, { RefObject } from 'react';
 import WWAConsts from '../classes/WWAConsts';
 import { connect, MapStateToProps } from 'react-redux';
 import { AppState } from '../states';
+import { LoadState } from '../classes/WWAData';
 
 interface Props {
+    state: LoadState;
     map: number[][];
     mapObject: number[][];
     mapAttribute: number[][];
@@ -17,6 +19,7 @@ class MapView extends React.Component<Props, {}> {
     private canvasRef: RefObject<HTMLCanvasElement>;
     private canvasContext: CanvasRenderingContext2D|null;
     public static defaultProps: Props = {
+        state: LoadState.EMPTY,
         map: [],
         mapObject: [],
         mapAttribute: [],
@@ -46,7 +49,7 @@ class MapView extends React.Component<Props, {}> {
     }
 
     public drawMap() {
-        if (this.props.image === null) {
+        if (this.props.state !== LoadState.DONE) {
             return;
         }
         
@@ -73,6 +76,7 @@ class MapView extends React.Component<Props, {}> {
 const mapStateToProps: MapStateToProps<Props, Props, AppState> = state => {
     const wwaData = state.mapData.wwaData;
     return {
+        state: state.mapData.loadState,
         map: wwaData.map,
         mapObject: wwaData.mapObject,
         mapAttribute: wwaData.mapAttribute,
@@ -82,4 +86,4 @@ const mapStateToProps: MapStateToProps<Props, Props, AppState> = state => {
     };
 }
 
-export default connect()(MapView);
+export default connect(mapStateToProps)(MapView);

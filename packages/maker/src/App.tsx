@@ -1,4 +1,4 @@
-import React, { RefObject } from 'react';
+import React from 'react';
 import styles from './App.module.scss';
 import MainToolbar from './components/MainToolbar';
 import ToolPanel from './components/ToolPanel';

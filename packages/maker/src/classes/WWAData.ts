@@ -118,9 +118,12 @@ export enum LoadStage {
 }
 
 export enum LoadState {
-    LOADING = 0,
-    DONE = 1,
-    ERROR = 2
+    EMPTY = 0, // EMPTY は何も開いていない状態を表しますが、もしかしたら利用しないかもしれないです。
+    LOADING_MAPDATA = 1,
+    LOADING_IMAGE = 2,
+    DONE = 3,
+    ERROR_MAPDATA = -1,
+    ERROR_IMAGE = -2
 }
 
 export enum PartsType {

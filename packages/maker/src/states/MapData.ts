@@ -1,5 +1,5 @@
 import WWAData, { LoaderProgress, LoaderError, LoaderResponse, LoadState, LoadStage } from "../classes/WWAData";
-import { ActionCreator, Action, Dispatch } from 'redux';
+import { ActionCreator, Action } from 'redux';
 
 /**
  * MapData 概略
@@ -198,7 +198,7 @@ const defaultWWAData: WWAData = {
     isItemEffectEnabled: false
 }
 const defaultMapData: MapDataState = {
-    loadState: LoadState.LOADING,
+    loadState: LoadState.LOADING_MAPDATA,
     progress: {
         current: 0,
         stage: LoadStage.INIT,
@@ -219,18 +219,21 @@ export function MapDataReducer (state: MapDataState = defaultMapData, action: WW
     switch (action.type) {
         case 'PROGRESS_WWADATA': {
             const newState = Object.assign({}, state);
+            newState.loadState = LoadState.LOADING_MAPDATA;
             newState.progress = action.payload;
             
             return newState;
         }
         case 'ERROR_WWADATA': {
             const newState = Object.assign({}, state);
+            newState.loadState = LoadState.ERROR_MAPDATA;
             newState.error = action.payload;
 
             return newState;
         }
         case 'SET_WWADATA': {
             const newState = Object.assign({}, defaultMapData);
+            newState.loadState = LoadState.LOADING_IMAGE;
             newState.wwaData = action.payload;
 
             return newState;

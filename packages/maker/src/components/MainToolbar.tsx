@@ -8,10 +8,6 @@ interface Props {
 }
 
 class MainToolbar extends React.Component<Props> {
-    constructor(props: Props) {
-        super(props);
-    }
-
     public render() {
         return (
             <div>
