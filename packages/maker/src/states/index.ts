@@ -1,11 +1,17 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
-import ReduxThunk from 'redux-thunk';
-import * as WWAData from './WWAData';
+import * as MapData from './MapData';
+import createSagaMiddleware from '@redux-saga/core';
+import mySaga from './sagas';
 
-export const rootReducer = combineReducers({
-    wwaData: WWAData.WWADataReducer
+const rootReducer = combineReducers({
+    mapData: MapData.MapDataReducer
 });
 
-export type AppState = ReturnType<typeof rootReducer>;
+const sagaMiddleware = createSagaMiddleware();
+sagaMiddleware.run(mySaga);
 
-export const Store = createStore(rootReducer, applyMiddleware(ReduxThunk));
+export type AppState = ReturnType<typeof rootReducer>;
+export const Store = createStore(
+    rootReducer,
+    applyMiddleware(sagaMiddleware)
+);

@@ -1,9 +1,26 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import { loadWWAData } from '../states/MapData';
 
-export default class MainToolbar extends React.Component {
+interface Props {
+    dispatch: Dispatch;
+}
+
+class MainToolbar extends React.Component<Props> {
+    constructor(props: Props) {
+        super(props);
+    }
+
     public render() {
         return (
-            <div></div>
+            <div>
+                <button onClick={() => {
+                    this.props.dispatch(loadWWAData('wwamap.dat'));
+                }}>open</button>
+            </div>
         );
     }
 }
+
+export default connect()(MainToolbar);

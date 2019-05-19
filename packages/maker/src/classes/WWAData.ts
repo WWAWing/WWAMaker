@@ -89,3 +89,41 @@ export default interface WWAData {
 
     isItemEffectEnabled: boolean; 
 }
+
+export interface LoaderResponse {
+    error: LoaderError|null,
+    progress: LoaderProgress|null,
+    wwaData: WWAData|null
+}
+
+export interface LoaderError {
+    name: string;
+    message: string;
+}
+
+export interface LoaderProgress {
+    current: number;
+    total: number;
+    stage: LoadStage;
+}
+
+export enum LoadStage {
+    INIT = 0,
+    MAP_LOAD = 1,
+    OBJ_LOAD = 2,
+    MAP_ATTR = 3,
+    OBJ_ATTR = 4,
+    RAND_PARTS = 5,
+    MESSAGE = 6
+}
+
+export enum LoadState {
+    LOADING = 0,
+    DONE = 1,
+    ERROR = 2
+}
+
+export enum PartsType {
+    MAP = 1,
+    OBJECT = 0
+}
