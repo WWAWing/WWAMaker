@@ -1,7 +1,11 @@
 import React, { RefObject } from 'react';
 import WWAConsts from '../classes/WWAConsts';
+import { connect, MapStateToProps } from 'react-redux';
+import { AppState } from '../states';
+import { LoadState } from '../classes/Loader';
 
 interface Props {
+    state: LoadState;
     map: number[][];
     mapObject: number[][];
     mapAttribute: number[][];
@@ -10,16 +14,17 @@ interface Props {
     image: CanvasImageSource;
 }
 
-export default class MapView extends React.Component<Props, {}> {
+class MapView extends React.Component<Props, {}> {
 
     private canvasRef: RefObject<HTMLCanvasElement>;
     private canvasContext: CanvasRenderingContext2D|null;
     public static defaultProps: Props = {
+        state: LoadState.EMPTY,
         map: [],
         mapObject: [],
         mapAttribute: [],
         objectAttribute: [],
-        mapSize: 0,
+        mapSize: WWAConsts.MAP_SIZE_DEFAULT,
         image: new Image()
     }
 
@@ -29,13 +34,6 @@ export default class MapView extends React.Component<Props, {}> {
         this.canvasContext = null;
     }
 
-    public componentDidMount() {
-        if (this.canvasRef.current !== null) {
-            this.canvasContext = this.canvasRef.current.getContext('2d');
-        }
-        this.drawMap();
-    }
-
     public render() {
         const elementSize = this.props.mapSize * WWAConsts.CHIP_SIZE;
         return (
@@ -43,8 +41,14 @@ export default class MapView extends React.Component<Props, {}> {
         );
     }
 
-    public drawMap() {
-        if (this.props.image === null) {
+    public componentDidMount() {
+        if (this.canvasRef.current !== null) {
+            this.canvasContext = this.canvasRef.current.getContext('2d');
+        }
+    }
+
+    public componentDidUpdate() {
+        if (this.props.state !== LoadState.DONE) {
             return;
         }
         
@@ -67,3 +71,20 @@ export default class MapView extends React.Component<Props, {}> {
         });
     }
 }
+
+const mapStateToProps: MapStateToProps<Props, Props, AppState> = state => {
+    const wwaData = state.mapData.wwaData;
+    return {
+        state: state.mapData.loadState,
+        map: wwaData.map,
+        mapObject: wwaData.mapObject,
+        mapAttribute: wwaData.mapAttribute,
+        objectAttribute: wwaData.objectAttribute,
+        mapSize: wwaData.mapWidth,
+        image: state.mapData.image
+    };
+}
+
+const MapViewComponent = connect(mapStateToProps)(MapView);
+
+export default MapViewComponent
