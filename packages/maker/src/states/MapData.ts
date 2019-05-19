@@ -1,4 +1,4 @@
-import WWAData, { LoaderProgress, LoaderError, LoaderResponse, LoadState, LoadStage } from "../classes/WWAData";
+import WWAData, { LoaderProgress, LoaderError, LoaderResponse, LoadState, LoadStage, MakerError } from "../classes/WWAData";
 import { ActionCreator, Action } from 'redux';
 
 /**
@@ -7,35 +7,38 @@ import { ActionCreator, Action } from 'redux';
  *     アクションの種類も2種類に分かれています。
  */
 
-type WWADataActionType = 'LOAD_WWADATA' | 'PROGRESS_WWADATA' | 'SET_WWADATA' | 'SAVE_WWADATA' | 'ERROR_WWADATA';
+type MapDataActionType = 'LOAD_WWADATA' | 'PROGRESS_WWADATA' | 'SET_WWADATA' | 'SAVE_WWADATA' | 'ERROR_WWADATA';
 
 export interface LoadWWADataAction extends Action {
-    type: WWADataActionType
+    type: MapDataActionType
     payload: {
         mapdataFileName: string
     }
 }
 
 interface ProgressWWADataAction extends Action {
-    type: WWADataActionType
+    type: MapDataActionType
     payload: LoaderProgress
 }
 
 interface ErrorWWADataAction extends Action {
-    type: WWADataActionType
+    type: MapDataActionType
     payload: LoaderError
 }
 
 interface SetWWADataAction extends Action {
-    type: WWADataActionType
+    type: MapDataActionType
     payload: WWAData
 }
 
-type WWADataActions = LoadWWADataAction & ProgressWWADataAction & ErrorWWADataAction & SetWWADataAction;
+type MapDataActions = LoadWWADataAction & ProgressWWADataAction & ErrorWWADataAction & SetWWADataAction;
 
 // ここからイメージ
 
-type ImageActionType = 'LOAD_IMAGE' | 'ERROR_IMAGE' | 'SET_IMAGE';
+/**
+ * ImageActionType は Redux Saga の ChannelEvent で利用する値の型チェックに利用します。
+ */
+export type ImageActionType = 'LOAD_IMAGE' | 'ERROR_IMAGE' | 'SET_IMAGE';
 
 export interface LoadImageAction extends Action {
     type: ImageActionType
@@ -46,7 +49,7 @@ export interface LoadImageAction extends Action {
 
 interface ErrorImageAction extends Action {
     type: ImageActionType
-    payload: ErrorEvent
+    payload: MakerError
 }
 
 interface SetImageAction extends Action {
@@ -54,34 +57,52 @@ interface SetImageAction extends Action {
     payload: CanvasImageSource
 }
 
-/**
- * @todo 現在未使用
- */
 type ImageActions = LoadImageAction & ErrorImageAction & SetImageAction;
+type WWADataActions = MapDataActions & ImageActions;
 
 // ここからアクションクリエイター
 
-export const errorWWAData: ActionCreator<WWADataActions> = (response: LoaderResponse) => ({
-    type: 'ERROR_WWADATA',
-    payload: response.error
-} as WWADataActions);
-
-export const progressWWAData: ActionCreator<WWADataActions> = (response: LoaderResponse) => ({
-    type: 'PROGRESS_WWADATA',
-    payload: response.progress
-} as WWADataActions);
-
-export const setWWAData: ActionCreator<WWADataActions> = (response: LoaderResponse) => ({
-    type: 'SET_WWADATA',
-    payload: response.wwaData
-} as WWADataActions);
-
-export const loadWWAData: ActionCreator<WWADataActions> = (mapdataFileName: string) => ({
+export const loadWWAData: ActionCreator<MapDataActions> = (mapdataFileName: string) => ({
     type: 'LOAD_WWADATA',
     payload: {
         mapdataFileName: mapdataFileName
     }
-} as WWADataActions);
+} as MapDataActions);
+
+export const errorWWAData: ActionCreator<MapDataActions> = (response: LoaderResponse) => ({
+    type: 'ERROR_WWADATA',
+    payload: response.error
+} as MapDataActions);
+
+export const progressWWAData: ActionCreator<MapDataActions> = (response: LoaderResponse) => ({
+    type: 'PROGRESS_WWADATA',
+    payload: response.progress
+} as MapDataActions);
+
+export const setWWAData: ActionCreator<MapDataActions> = (response: LoaderResponse) => ({
+    type: 'SET_WWADATA',
+    payload: response.wwaData
+} as MapDataActions);
+
+export const loadImage: ActionCreator<ImageActions> = (mapCGName: string) => ({
+    type: 'LOAD_IMAGE',
+    payload: {
+        mapCGName: mapCGName
+    }
+} as ImageActions);
+
+export const errorImage: ActionCreator<ImageActions> = (event: ErrorEvent) => ({
+    type: 'ERROR_IMAGE',
+    payload: {
+        title: 'エラー',
+        message: event.message
+    }
+} as ImageActions);
+
+export const setImage: ActionCreator<ImageActions> = (image: CanvasImageSource) => ({
+    type: 'SET_IMAGE',
+    payload: image
+} as ImageActions);
 
 /**
  * ステートの MapData の中身を定義するインターフェイスです。
@@ -93,7 +114,7 @@ export const loadWWAData: ActionCreator<WWADataActions> = (mapdataFileName: stri
 interface MapDataState {
     loadState: LoadState,
     progress: LoaderProgress,
-    error: LoaderError,
+    error: MakerError,
     wwaData: WWAData,
     image: CanvasImageSource
 }
@@ -205,8 +226,8 @@ const defaultMapData: MapDataState = {
         total: 0
     },
     error: {
-        message: '',
-        name: ''
+        title: '',
+        message: ''
     },
     wwaData: defaultWWAData,
     image: new Image()
@@ -232,9 +253,23 @@ export function MapDataReducer (state: MapDataState = defaultMapData, action: WW
             return newState;
         }
         case 'SET_WWADATA': {
-            const newState = Object.assign({}, defaultMapData);
+            const newState = Object.assign({}, state);
             newState.loadState = LoadState.LOADING_IMAGE;
             newState.wwaData = action.payload;
+
+            return newState;
+        }
+        case 'ERROR_IMAGE': {
+            const newState = Object.assign({}, state);
+            newState.loadState = LoadState.ERROR_IMAGE;
+            newState.error = action.payload;
+
+            return newState;
+        }
+        case 'SET_IMAGE': {
+            const newState = Object.assign({}, state);
+            newState.loadState = LoadState.DONE;
+            newState.image = action.payload;
 
             return newState;
         }

@@ -24,7 +24,7 @@ class MapView extends React.Component<Props, {}> {
         mapObject: [],
         mapAttribute: [],
         objectAttribute: [],
-        mapSize: 0,
+        mapSize: WWAConsts.MAP_SIZE_DEFAULT,
         image: new Image()
     }
 
@@ -34,13 +34,6 @@ class MapView extends React.Component<Props, {}> {
         this.canvasContext = null;
     }
 
-    public componentDidMount() {
-        if (this.canvasRef.current !== null) {
-            this.canvasContext = this.canvasRef.current.getContext('2d');
-        }
-        this.drawMap();
-    }
-
     public render() {
         const elementSize = this.props.mapSize * WWAConsts.CHIP_SIZE;
         return (
@@ -48,7 +41,13 @@ class MapView extends React.Component<Props, {}> {
         );
     }
 
-    public drawMap() {
+    public componentDidMount() {
+        if (this.canvasRef.current !== null) {
+            this.canvasContext = this.canvasRef.current.getContext('2d');
+        }
+    }
+
+    public componentDidUpdate() {
         if (this.props.state !== LoadState.DONE) {
             return;
         }
@@ -86,4 +85,6 @@ const mapStateToProps: MapStateToProps<Props, Props, AppState> = state => {
     };
 }
 
-export default connect(mapStateToProps)(MapView);
+const MapViewComponent = connect(mapStateToProps)(MapView);
+
+export default MapViewComponent

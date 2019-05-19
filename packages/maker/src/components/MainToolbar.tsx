@@ -8,12 +8,14 @@ interface Props {
 }
 
 class MainToolbar extends React.Component<Props> {
+    private handleClick() {
+        this.props.dispatch(loadWWAData('wwamap.dat'));
+    }
+
     public render() {
         return (
             <div>
-                <button onClick={() => {
-                    this.props.dispatch(loadWWAData('wwamap.dat'));
-                }}>open</button>
+                <span onClick={this.handleClick.bind(this)}>open</span>
             </div>
         );
     }
