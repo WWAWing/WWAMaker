@@ -1,8 +1,10 @@
-import React, { RefObject } from 'react';
+import React from 'react';
 import WWAConsts from '../classes/WWAConsts';
 import { connect, MapStateToProps } from 'react-redux';
 import { AppState } from '../states';
 import { LoadState } from '../classes/Loader';
+import styles from './MapView.module.scss';
+import MapLayer from './common/MapLayer';
 
 interface Props {
     state: LoadState;
@@ -15,9 +17,6 @@ interface Props {
 }
 
 class MapView extends React.Component<Props, {}> {
-
-    private canvasRef: RefObject<HTMLCanvasElement>;
-    private canvasContext: CanvasRenderingContext2D|null;
     public static defaultProps: Props = {
         state: LoadState.EMPTY,
         map: [],
@@ -30,46 +29,38 @@ class MapView extends React.Component<Props, {}> {
 
     constructor(props: Props) {
         super(props);
-        this.canvasRef = React.createRef();
-        this.canvasContext = null;
     }
 
     public render() {
-        const elementSize = this.props.mapSize * WWAConsts.CHIP_SIZE;
         return (
-            <canvas ref={this.canvasRef} width={elementSize} height={elementSize}></canvas>
+            <div className={styles.mapView}>
+                <div className={styles.mapLayer}>
+                    <MapLayer
+                        state={this.props.state}
+                        hasTransparent={false}
+                        map={this.props.map}
+                        attribute={this.props.mapAttribute}
+                        mapSize={this.props.mapSize}
+                        image={this.props.image}
+                    ></MapLayer>
+                </div>
+                <div className={styles.mapLayer}>
+                    <MapLayer
+                        state={this.props.state}
+                        hasTransparent={true}
+                        map={this.props.mapObject}
+                        attribute={this.props.objectAttribute}
+                        mapSize={this.props.mapSize}
+                        image={this.props.image}
+                    ></MapLayer>
+                </div>
+            </div>
         );
     }
 
-    public componentDidMount() {
-        if (this.canvasRef.current !== null) {
-            this.canvasContext = this.canvasRef.current.getContext('2d');
-        }
-    }
-
-    public componentDidUpdate() {
-        if (this.props.state !== LoadState.DONE) {
-            return;
-        }
-        
-        this.props.map.forEach((line, y) => {
-            line.forEach((partsNumber, x) => {
-                if (this.canvasContext === null) {
-                    return;
-                }
-                this.canvasContext.drawImage(
-                    this.props.image,
-                    this.props.mapAttribute[partsNumber][WWAConsts.ATR_X],
-                    this.props.mapAttribute[partsNumber][WWAConsts.ATR_Y],
-                    WWAConsts.CHIP_SIZE,
-                    WWAConsts.CHIP_SIZE,
-                    x * WWAConsts.CHIP_SIZE,
-                    y * WWAConsts.CHIP_SIZE,
-                    WWAConsts.CHIP_SIZE,
-                    WWAConsts.CHIP_SIZE);
-            });
-        });
-    }
+    /**
+     * @todo Props の値が変化された場合に MapLayer.drawMap を呼び出すようにしたい。
+     */
 }
 
 const mapStateToProps: MapStateToProps<Props, Props, AppState> = state => {
@@ -85,6 +76,4 @@ const mapStateToProps: MapStateToProps<Props, Props, AppState> = state => {
     };
 }
 
-const MapViewComponent = connect(mapStateToProps)(MapView);
-
-export default MapViewComponent
+export default connect(mapStateToProps)(MapView);
