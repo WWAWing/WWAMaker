@@ -27,10 +27,6 @@ class MapView extends React.Component<Props, {}> {
         image: new Image()
     }
 
-    constructor(props: Props) {
-        super(props);
-    }
-
     public render() {
         return (
             <div className={styles.mapView}>
@@ -57,10 +53,6 @@ class MapView extends React.Component<Props, {}> {
             </div>
         );
     }
-
-    /**
-     * @todo Props の値が変化された場合に MapLayer.drawMap を呼び出すようにしたい。
-     */
 }
 
 const mapStateToProps: MapStateToProps<Props, Props, AppState> = state => {
