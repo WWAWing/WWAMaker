@@ -35,7 +35,14 @@ export default class MapLayer extends React.Component<Props, {}> {
         }
     }
 
-    public drawMap() {
+    public componentDidUpdate(prevProps: Props) {
+        /**
+         * @todo 遠くないうちに、マップまたはパーツ画像が変更されたことを検出するようにしたい。
+         */
+        this.drawMap();
+    }
+
+    private drawMap() {
         if (this.props.state !== LoadState.DONE) {
             return;
         }
