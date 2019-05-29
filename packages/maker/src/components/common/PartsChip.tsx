@@ -4,28 +4,35 @@ import WWAConsts from '../../classes/WWAConsts';
 interface Props {
     cropX: number,
     cropY: number,
-    image: ImageData
+    image: CanvasImageSource,
+    onClick: () => void
 }
 
 export default class PartsChip extends React.Component<Props, {}> {
-    private imgRef: RefObject<HTMLImageElement>;
+    private canvasRef: RefObject<HTMLCanvasElement>;
+    private canvasContext: CanvasRenderingContext2D | null;
 
     constructor(props: Props) {
         super(props);
-        this.imgRef = React.createRef();
+        this.canvasRef = React.createRef();
+        this.canvasContext = null;
     }
 
     public componentDidMount() {
-        if (this.imgRef !== null) {
-            /**
-             * @todo this.props.image から読み出して、 img 要素の src に割り当てるようにしたい。
-             */
+        if (this.canvasRef.current !== null) {
+            this.canvasContext = this.canvasRef.current.getContext('2d');
+        }
+    }
+
+    public componentDidUpdate() {
+        if (this.canvasContext !== null) {
+            this.canvasContext.drawImage(this.props.image, this.props.cropX, this.props.cropY, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE, 0, 0, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE);
         }
     }
 
     public render() {
         return (
-            <img ref={this.imgRef} width={WWAConsts.CHIP_SIZE} height={WWAConsts.CHIP_SIZE}></img>
+            <canvas ref={this.canvasRef} width={WWAConsts.CHIP_SIZE} height={WWAConsts.CHIP_SIZE} onClick={this.props.onClick}></canvas>
         )
     }
 }
