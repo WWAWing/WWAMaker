@@ -27,10 +27,10 @@ export default class MapLayer extends React.Component<Props, {}> {
         const cropY = this.props.attribute[partsNumber][WWAConsts.ATR_Y];
         return (
             <PartsChip
+                key={partsNumber.toString()}
                 image={this.props.image}
                 cropX={cropX}
                 cropY={cropY}
-                onClick={() => {}}
             ></PartsChip>
         );
     }
