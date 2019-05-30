@@ -18,6 +18,7 @@
     "react-dom": "^16.8.6",
     "react-redux": "^7.0.3",
     "react-scripts": "3.0.1",
+    "react-split-grid": "^1.0.2",
     "redux": "^4.0.1",
     "redux-saga": "^1.0.2",
     "typescript": "^3.4.5",

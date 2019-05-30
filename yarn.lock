@@ -8012,7 +8012,7 @@ prompts@^2.0.1:
     kleur "^3.0.2"
     sisteransi "^1.0.0"
 
-prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.7, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -8309,6 +8309,14 @@ react-scripts@3.0.1:
     workbox-webpack-plugin "4.2.0"
   optionalDependencies:
     fsevents "2.0.6"
+
+react-split-grid@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/react-split-grid/-/react-split-grid-1.0.2.tgz#86e6fd9e93a62a7c8fa209a8fded05d478741508"
+  integrity sha512-4ju4s48L/y+LqWXynh3rEaWB7Fsq7HpQY1xxUcIkI+kW9grmz3qL5N1MoJa1SX6fkBfUcSgdfARynJYzb/9tyg==
+  dependencies:
+    prop-types "^15.5.7"
+    split-grid "^1.0.9"
 
 react@^16.8.6:
   version "16.8.6"
@@ -9191,6 +9199,11 @@ spdy@^4.0.0:
     http-deceiver "^1.2.7"
     select-hose "^2.0.0"
     spdy-transport "^3.0.0"
+
+split-grid@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/split-grid/-/split-grid-1.0.9.tgz#d946e4d6d1767a98d6b1a97b338fc60e1f1bc930"
+  integrity sha512-D7Tgibf7ksIEZKxmAKbXb7kKFANcXRj9j2VgM097KIr146zMXErt9MIHQeEiRxL+HM7WwkJdDyPTxDDsSVUSBA==
 
 split-string@^3.0.1, split-string@^3.0.2:
   version "3.1.0"
