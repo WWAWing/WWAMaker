@@ -1,5 +1,9 @@
 .mapView {
+    height: 100%;
+    line-height: 0;
+    overflow: auto;
     position: relative;
+    width: 100%;
 }
 
 .mapLayer {

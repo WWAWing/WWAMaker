@@ -4,6 +4,8 @@ import MainToolbar from './components/MainToolbar';
 import ToolPanel from './components/ToolPanel';
 import InfoPanel from './components/InfoPanel';
 import MapView from './components/MapView';
+import SplitPane from 'react-split-pane';
+import './components/common/SplitPane.scss';
 
 /**
  * WWA Maker 全体のコンポーネントです。
@@ -16,14 +18,14 @@ export default class App extends React.Component {
                 <div className={styles.mainToolbar}>
                     <MainToolbar></MainToolbar>
                 </div>
-                <div className={styles.mapView}>
-                    <MapView></MapView>
+                <div className={styles.editArea}>
+                    <SplitPane className={styles.editAreaSplitPane} split="horizontal" defaultSize={200} primary="second">
+                        <MapView></MapView>
+                        <ToolPanel></ToolPanel>
+                    </SplitPane>
                 </div>
-                <div className={styles.infoPanel}>
+                <div className={styles.InfoPanel}>
                     <InfoPanel></InfoPanel>
-                </div>
-                <div className={styles.toolPanel}>
-                    <ToolPanel></ToolPanel>
                 </div>
             </div>
         );
