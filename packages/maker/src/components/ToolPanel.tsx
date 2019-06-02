@@ -4,12 +4,13 @@ import PartsList from './common/PartsList';
 import { connect, MapStateToProps } from 'react-redux';
 import { AppState } from '../states';
 import WWAConsts from '../classes/WWAConsts';
+import ObjectPartsList from './ObjectPartsList';
 
 interface Props {
-    mapAttribute: number[][];
     objectAttribute: number[][];
-    mapPartsCount: number;
+    mapAttribute: number[][];
     objPartsCount: number;
+    mapPartsCount: number;
     image: CanvasImageSource;
 }
 
@@ -21,27 +22,20 @@ class ToolPanel extends React.Component<Props, {}> {
     public static defaultProps: Props = {
         mapAttribute: [],
         objectAttribute: [],
-        mapPartsCount: 0,
         objPartsCount: 0,
+        mapPartsCount: 0,
         image: new Image()
     }
 
     public render() {
         return (
             <div className={styles.toolPanel}>
-                <div className={styles.toolPanelItem}>
-                    <header className={styles.toolPanelItemHeader}>物体パーツ一覧</header>
-                    <div className={styles.toolPanelItemContent}>
-                        <PartsList
-                            attribute={this.props.objectAttribute}
-                            partsMax={this.props.objPartsCount}
-                            image={this.props.image}
-                        ></PartsList>
-                    </div>
-                    <footer className={styles.toolPanelItemFooter}>
-                        <div>選択パーツ: 0番</div>
-                    </footer>
-                </div>
+                <ObjectPartsList
+                    objectAttribute={this.props.objectAttribute}
+                    objectPartsCount={this.props.objPartsCount}
+                    selectPartsNumber={0}
+                    image={this.props.image}
+                ></ObjectPartsList>
                 <div className={styles.toolPanelItem}>
                     <header className={styles.toolPanelItemHeader}>背景パーツ一覧</header>
                     <div className={styles.toolPanelItemContent}>
@@ -72,8 +66,10 @@ const mapStateToProps: MapStateToProps<Props, Props, AppState> = state => {
     return {
         mapAttribute: wwaData.mapAttribute,
         objectAttribute: wwaData.objectAttribute,
-        mapPartsCount: getPartsCountPerIncreaseUnit(wwaData.mapPartsMax),
         objPartsCount: getPartsCountPerIncreaseUnit(wwaData.objPartsMax),
+        objSelectParts: state.mapData.objSelectParts,
+        mapPartsCount: getPartsCountPerIncreaseUnit(wwaData.mapPartsMax),
+        mapSelectParts: state.mapData.mapSelectParts,
         image: state.mapData.image
     }
 };

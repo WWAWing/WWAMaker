@@ -61,7 +61,27 @@ interface SetImageAction extends Action {
 }
 
 type ImageActions = LoadImageAction & ErrorImageAction & SetImageAction;
-type WWADataActions = MapDataActions & ImageActions;
+
+// ここからパーツ選択
+export type PartsSelectActionType = 'SELECT_OBJECT_PARTS' | 'SELECT_MAP_PARTS';
+
+interface SelectPartsCommonAction extends Action {
+    type: PartsSelectActionType
+    payload: {
+        selectPartsNumber: number
+    }
+}
+
+interface SelectObjPartsAction extends SelectPartsCommonAction {
+}
+
+interface SelectMapPartsAction extends SelectPartsCommonAction {
+}
+
+type SelectPartsActions = SelectObjPartsAction & SelectMapPartsAction;
+
+// ここに集める
+type WWADataActions = MapDataActions & ImageActions & SelectPartsActions;
 
 // ここからアクションクリエイター
 
@@ -114,7 +134,9 @@ export const setImage: ActionCreator<ImageActions> = (image: CanvasImageSource) 
  *     error: エラー情報
  *     image: イメージ
  *     objPartsCount: 物体パーツ数
+ *     objSelectParts: 選択している物体パーツ
  *     mapPartsCount: 背景パーツ数
+ *     mapSelectParts: 選択している背景パーツ
  */
 interface MapDataState {
     loadState: LoadState,
@@ -123,7 +145,9 @@ interface MapDataState {
     wwaData: WWAData,
     image: CanvasImageSource,
     objPartsCount: number,
-    mapPartsCount: number
+    objSelectParts: number,
+    mapPartsCount: number,
+    mapSelectParts: number
 }
 
 const defaultMapData: MapDataState = {
@@ -140,7 +164,9 @@ const defaultMapData: MapDataState = {
     wwaData: defaultWWAData,
     image: new Image(),
     objPartsCount: WWAConsts.PARTS_SIZE_DEFAULT,
-    mapPartsCount: WWAConsts.PARTS_SIZE_DEFAULT
+    objSelectParts: 0,
+    mapPartsCount: WWAConsts.PARTS_SIZE_DEFAULT,
+    mapSelectParts: 0
 }
 
 export function MapDataReducer (state: MapDataState = defaultMapData, action: WWADataActions): MapDataState {
@@ -180,6 +206,18 @@ export function MapDataReducer (state: MapDataState = defaultMapData, action: WW
             const newState = Object.assign({}, state);
             newState.loadState = LoadState.DONE;
             newState.image = action.payload;
+
+            return newState;
+        }
+        case 'SELECT_OBJECT_PARTS': {
+            const newState = Object.assign({}, state);
+            newState.objSelectParts = action.payload.selectPartsNumber;
+            
+            return newState;
+        }
+        case 'SELECT_MAP_PARTS': {
+            const newState = Object.assign({}, state);
+            newState.mapSelectParts = action.payload.selectPartsNumber;
 
             return newState;
         }
