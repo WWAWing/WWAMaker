@@ -6,7 +6,7 @@ export interface Coord {
 }
 
 /**
- * @todo 近い内に @wwawing/common-interface と統合する
+ * @todo 近い内に wwawing/common-interface と統合する
  */
 export default interface WWAData {
     version: number;
@@ -185,6 +185,13 @@ function createEmptyMap(size: number): number[][] {
     return new Array<Array<number>>(size).fill(
         new Array<number>(size).fill(0)
     );
+}
+
+/**
+ * 空のパーツ属性配列を作成します。
+ */
+export function createEmptyPartsAttribute(): number[] {
+    return new Array<number>(WWAConsts.ATR_MAX).fill(0);
 }
 
 export enum PartsType {
