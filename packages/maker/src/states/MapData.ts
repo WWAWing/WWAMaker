@@ -2,6 +2,7 @@ import WWAData, { defaultWWAData } from '../classes/WWAData';
 import { LoaderProgress, LoaderError, LoaderResponse, LoadState, LoadStage } from '../classes/Loader';
 import { MakerError } from '../classes/MakerSystem';
 import { ActionCreator, Action } from 'redux';
+import WWAConsts from '../classes/WWAConsts';
 
 /**
  * MapData 概略
@@ -112,13 +113,17 @@ export const setImage: ActionCreator<ImageActions> = (image: CanvasImageSource) 
  *     progress: 読み込み途中の情報
  *     error: エラー情報
  *     image: イメージ
+ *     objPartsCount: 物体パーツ数
+ *     mapPartsCount: 背景パーツ数
  */
 interface MapDataState {
     loadState: LoadState,
     progress: LoaderProgress,
     error: MakerError,
     wwaData: WWAData,
-    image: CanvasImageSource
+    image: CanvasImageSource,
+    objPartsCount: number,
+    mapPartsCount: number
 }
 
 const defaultMapData: MapDataState = {
@@ -133,7 +138,9 @@ const defaultMapData: MapDataState = {
         message: ''
     },
     wwaData: defaultWWAData,
-    image: new Image()
+    image: new Image(),
+    objPartsCount: WWAConsts.PARTS_SIZE_DEFAULT,
+    mapPartsCount: WWAConsts.PARTS_SIZE_DEFAULT
 }
 
 export function MapDataReducer (state: MapDataState = defaultMapData, action: WWADataActions): MapDataState {

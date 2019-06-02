@@ -1,5 +1,25 @@
 .toolPanel {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    height: 100%;
+    grid-template-rows: 1fr;
+    width: 100%;
+}
+
+.toolPanelItem {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1.5em 1fr 1.5em;
+    /**
+     * .toolPanelItemContent の長いコンテンツで .toolPanelItem がはみ出ないようにするためのプロパティ
+     */
+    overflow-y: hidden;
+}
+
+.toolPanelItemHeader {
+    background-color: #c0c0c0;
+    font-weight: bold;
+}
+
+.toolPanelItemContent {
+    overflow-y: scroll;
 }
