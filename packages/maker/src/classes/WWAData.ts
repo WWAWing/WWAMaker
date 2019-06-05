@@ -198,3 +198,11 @@ export enum PartsType {
     MAP = 1,
     OBJECT = 0
 }
+
+export enum ObjectPartsType {
+    
+}
+
+export enum MapPartsType {
+
+}
