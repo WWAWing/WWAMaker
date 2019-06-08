@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from './ToolPanel.module.scss';
-import PartsList from './common/PartsList';
+import styles from './PartsSelect.module.scss';
+import PartsList from '../components/common/PartsList';
 import { connect, MapStateToProps } from 'react-redux';
 import { AppState } from '../states';
 import WWAConsts from '../classes/WWAConsts';
@@ -15,10 +15,9 @@ interface Props {
 }
 
 /**
- * ToolPanel は画面下に配置されるパネルのことで、主にパーツ一覧ではこの ToolPanel から表示されます。
- * PartsListPanel としないのは、今後のバージョンアップで表示内容が変更されても、コンポーネント名を維持するためです。
+ * PartsSelect パーツ一覧のコンポーネントです。
  */
-class ToolPanel extends React.Component<Props, {}> {
+class PartsSelect extends React.Component<Props, {}> {
     public static defaultProps: Props = {
         mapAttribute: [],
         objectAttribute: [],
@@ -28,6 +27,9 @@ class ToolPanel extends React.Component<Props, {}> {
     }
 
     public render() {
+        /**
+         * @todo toolPanel は PartsSelect が元々 ToolPanel であったな残りであるため、できれば partsSelect に直す。
+         */
         return (
             <div className={styles.toolPanel}>
                 <ObjectPartsList
@@ -67,11 +69,11 @@ const mapStateToProps: MapStateToProps<Props, Props, AppState> = state => {
         mapAttribute: wwaData.mapAttribute,
         objectAttribute: wwaData.objectAttribute,
         objPartsCount: getPartsCountPerIncreaseUnit(wwaData.objPartsMax),
-        objSelectParts: state.mapData.objSelectParts,
+        objSelectParts: state.mapData.parts.selectObject,
         mapPartsCount: getPartsCountPerIncreaseUnit(wwaData.mapPartsMax),
-        mapSelectParts: state.mapData.mapSelectParts,
+        mapSelectParts: state.mapData.parts.selectMap,
         image: state.mapData.image
     }
 };
 
-export default connect(mapStateToProps)(ToolPanel);
+export default connect(mapStateToProps)(PartsSelect);

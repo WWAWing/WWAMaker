@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from './ToolPanel.module.scss';
-import PartsList from './common/PartsList';
+import styles from './PartsSelect.module.scss';
+import PartsList from '../components/common/PartsList';
 
 /**
  * @todo redux から接続出来るように実装する

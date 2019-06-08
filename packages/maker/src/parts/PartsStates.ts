@@ -31,7 +31,7 @@ export const selectMapParts: ActionCreator<SelectMapPartsAction> = (partsNumber:
     }
 } as PartsAction);
 
-type PartsAction = SelectObjPartsAction & SelectMapPartsAction;
+export type PartsAction = SelectObjPartsAction & SelectMapPartsAction;
 
 /**
  * パーツ種類の絞り込みに利用する enum です。
@@ -50,7 +50,7 @@ export interface PartsState {
     specifyMapType: PartsTypeForPartsSpecify | MapPartsType;
 }
 
-const defaultPartsState: PartsState = {
+export const defaultPartsState: PartsState = {
     selectObject: 0,
     specifyObjectType: PartsTypeForPartsSpecify.ALL,
     selectMap: 0,
@@ -62,6 +62,8 @@ export function PartsReducer(state: PartsState, action: PartsAction): PartsState
         case 'SELECT_OBJECT_PARTS': {
             const newState = Object.assign({}, state);
             newState.selectMap = action.payload.selectPartsNumber;
+
+            return newState;
         }
         case 'SELECT_MAP_PARTS': {
             const newState = Object.assign({}, state);

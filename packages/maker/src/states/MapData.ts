@@ -2,7 +2,7 @@ import WWAData, { defaultWWAData } from '../classes/WWAData';
 import { LoaderProgress, LoaderError, LoaderResponse, LoadState, LoadStage } from '../classes/Loader';
 import { MakerError } from '../classes/MakerSystem';
 import { ActionCreator, Action } from 'redux';
-import WWAConsts from '../classes/WWAConsts';
+import { defaultPartsState, PartsState, PartsAction, PartsReducer } from '../parts/PartsStates';
 
 /**
  * MapData 概略
@@ -62,26 +62,8 @@ interface SetImageAction extends Action {
 
 type ImageActions = LoadImageAction & ErrorImageAction & SetImageAction;
 
-// ここからパーツ選択
-export type PartsSelectActionType = 'SELECT_OBJECT_PARTS' | 'SELECT_MAP_PARTS';
-
-interface SelectPartsCommonAction extends Action {
-    type: PartsSelectActionType
-    payload: {
-        selectPartsNumber: number
-    }
-}
-
-interface SelectObjPartsAction extends SelectPartsCommonAction {
-}
-
-interface SelectMapPartsAction extends SelectPartsCommonAction {
-}
-
-type SelectPartsActions = SelectObjPartsAction & SelectMapPartsAction;
-
 // ここに集める
-type WWADataActions = MapDataActions & ImageActions & SelectPartsActions;
+type WWADataActions = MapDataActions & ImageActions & PartsAction;
 
 // ここからアクションクリエイター
 
@@ -133,10 +115,7 @@ export const setImage: ActionCreator<ImageActions> = (image: CanvasImageSource) 
  *     progress: 読み込み途中の情報
  *     error: エラー情報
  *     image: イメージ
- *     objPartsCount: 物体パーツ数
- *     objSelectParts: 選択している物体パーツ
- *     mapPartsCount: 背景パーツ数
- *     mapSelectParts: 選択している背景パーツ
+ *     parts: parts/PartsState を参照
  */
 interface MapDataState {
     loadState: LoadState,
@@ -144,10 +123,7 @@ interface MapDataState {
     error: MakerError,
     wwaData: WWAData,
     image: CanvasImageSource,
-    objPartsCount: number,
-    objSelectParts: number,
-    mapPartsCount: number,
-    mapSelectParts: number
+    parts: PartsState
 }
 
 const defaultMapData: MapDataState = {
@@ -163,10 +139,7 @@ const defaultMapData: MapDataState = {
     },
     wwaData: defaultWWAData,
     image: new Image(),
-    objPartsCount: WWAConsts.PARTS_SIZE_DEFAULT,
-    objSelectParts: 0,
-    mapPartsCount: WWAConsts.PARTS_SIZE_DEFAULT,
-    mapSelectParts: 0
+    parts: defaultPartsState
 }
 
 export function MapDataReducer (state: MapDataState = defaultMapData, action: WWADataActions): MapDataState {
@@ -209,18 +182,14 @@ export function MapDataReducer (state: MapDataState = defaultMapData, action: WW
 
             return newState;
         }
-        case 'SELECT_OBJECT_PARTS': {
+        default: {
+            /**
+             * パーツの場合はしばらくはここで対応します。
+             */
             const newState = Object.assign({}, state);
-            newState.objSelectParts = action.payload.selectPartsNumber;
-            
-            return newState;
-        }
-        case 'SELECT_MAP_PARTS': {
-            const newState = Object.assign({}, state);
-            newState.mapSelectParts = action.payload.selectPartsNumber;
+            newState.parts = PartsReducer(state.parts, action);
 
             return newState;
         }
     }
-    return state;
 }
