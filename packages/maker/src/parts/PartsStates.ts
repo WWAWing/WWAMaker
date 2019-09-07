@@ -1,5 +1,8 @@
 import { ObjectPartsType, MapPartsType } from "../classes/WWAData";
 import { Action, ActionCreator } from "redux";
+import actionCreatorFactory from "typescript-fsa";
+
+const actionCreator = actionCreatorFactory();
 
 export type PartsSelectActionType = 'SELECT_OBJECT_PARTS' | 'SELECT_MAP_PARTS';
 
@@ -15,12 +18,7 @@ interface SelectPartsCommonAction extends Action {
 
 interface SelectObjPartsAction extends SelectPartsCommonAction {
 }
-export const selectObjParts: ActionCreator<SelectObjPartsAction> = (partsNumber: number) => ({
-    type: 'SELECT_OBJECT_PARTS',
-    payload: {
-        selectPartsNumber: partsNumber
-    }
-} as PartsAction);
+export const selectObjParts = actionCreator<{selectPartsNumber: number}>('SELECT_OBJECT_PARTS');
 
 interface SelectMapPartsAction extends SelectPartsCommonAction {
 }
@@ -61,7 +59,7 @@ export function PartsReducer(state: PartsState, action: PartsAction): PartsState
     switch (action.type) {
         case 'SELECT_OBJECT_PARTS': {
             const newState = Object.assign({}, state);
-            newState.selectMap = action.payload.selectPartsNumber;
+            newState.selectObject = action.payload.selectPartsNumber;
 
             return newState;
         }

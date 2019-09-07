@@ -3,7 +3,7 @@ import styles from './PartsSelect.module.scss';
 import PartsList from '../components/common/PartsList';
 import { connect } from 'react-redux';
 import { selectObjParts } from './PartsStates';
-import { bindActionCreators, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 
 /**
  * @todo redux から接続出来るように実装する
@@ -13,7 +13,7 @@ interface Props {
     objectPartsCount: number;
     selectPartsNumber: number;
     image: CanvasImageSource;
-    selectObjParts: Dispatch;
+    selectObjParts: (partsNumber: number) => void;
 }
 
 /**
@@ -21,7 +21,7 @@ interface Props {
  */
 class ObjectPartsList extends React.Component<Props> {
     private clickPartsChip(partsNumber: number) {
-        this.props.selectObjParts(selectObjParts(partsNumber));
+        this.props.selectObjParts(partsNumber);
     }
 
     public render() {
@@ -48,7 +48,11 @@ class ObjectPartsList extends React.Component<Props> {
 }
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
-    return bindActionCreators(selectObjParts, dispatch);
+    return {
+        selectObjParts: (partsNumber: number) => {
+            dispatch(selectObjParts({ selectPartsNumber: partsNumber }))
+        }
+    };
 }
 
 export default connect(null, mapDispatchToProps)(ObjectPartsList);

@@ -11,6 +11,8 @@ interface Props {
     mapAttribute: number[][];
     objPartsCount: number;
     mapPartsCount: number;
+    objSelectParts: number;
+    mapSelectParts: number;
     image: CanvasImageSource;
 }
 
@@ -23,6 +25,8 @@ class PartsSelect extends React.Component<Props, {}> {
         objectAttribute: [],
         objPartsCount: 0,
         mapPartsCount: 0,
+        objSelectParts: 0,
+        mapSelectParts: 0,
         image: new Image()
     }
 
@@ -35,7 +39,7 @@ class PartsSelect extends React.Component<Props, {}> {
                 <ObjectPartsList
                     objectAttribute={this.props.objectAttribute}
                     objectPartsCount={this.props.objPartsCount}
-                    selectPartsNumber={0}
+                    selectPartsNumber={this.props.objSelectParts}
                     image={this.props.image}
                 ></ObjectPartsList>
                 <div className={styles.toolPanelItem}>
@@ -66,11 +70,11 @@ function getPartsCountPerIncreaseUnit(partsCount: number): number {
 const mapStateToProps: MapStateToProps<Props, Props, AppState> = state => {
     const wwaData = state.mapData.wwaData;
     return {
-        mapAttribute: wwaData.mapAttribute,
         objectAttribute: wwaData.objectAttribute,
+        mapAttribute: wwaData.mapAttribute,
         objPartsCount: getPartsCountPerIncreaseUnit(wwaData.objPartsMax),
-        objSelectParts: state.mapData.parts.selectObject,
         mapPartsCount: getPartsCountPerIncreaseUnit(wwaData.mapPartsMax),
+        objSelectParts: state.mapData.parts.selectObject,
         mapSelectParts: state.mapData.parts.selectMap,
         image: state.mapData.image
     }
