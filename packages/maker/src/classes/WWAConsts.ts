@@ -26,8 +26,17 @@ export default class WWAConsts {
     static ATR_JUMP_Y: number = 17;
     static ATR_SOUND: number = 19;
     static ATR_APPERANCE_BASE: number = 20;
+    /**
+     * ATR_MAX は所有できるパーツ属性の上限個数です。
+     *     パーツ属性を新たに設ける場合は、この値を増やしてください。
+     */
+    static ATR_MAX: number = 20;
 
     static MAP_SIZE_DEFAULT: number = 101;
     static MAP_SIZE_INCREASE_UNIT: number = 100;
     static MAP_SIZE_MAX: number = 1001;
+
+    static PARTS_SIZE_DEFAULT: number = 200;
+    static PARTS_SIZE_INCREASE_UNIT: number = 50;
+    static PARTS_SIZE_MAX: number = 4000;
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './App.module.scss';
 import MainToolbar from './components/MainToolbar';
-import ToolPanel from './components/ToolPanel';
+import PartsSelect from './parts/PartsSelect';
 import InfoPanel from './components/InfoPanel';
 import MapView from './components/MapView';
 import SplitPane from 'react-split-pane';
@@ -21,7 +21,7 @@ export default class App extends React.Component {
                 <div className={styles.editArea}>
                     <SplitPane className={styles.editAreaSplitPane} split="horizontal" defaultSize={200} primary="second">
                         <MapView></MapView>
-                        <ToolPanel></ToolPanel>
+                        <PartsSelect></PartsSelect>
                     </SplitPane>
                 </div>
                 <div className={styles.InfoPanel}>
