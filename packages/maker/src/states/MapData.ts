@@ -2,7 +2,7 @@ import WWAData, { defaultWWAData } from '../classes/WWAData';
 import { LoaderProgress, LoaderError, LoaderResponse, LoadState, LoadStage } from '../classes/Loader';
 import { MakerError } from '../classes/MakerSystem';
 import { ActionCreator, Action } from 'redux';
-import { defaultPartsState, PartsState, PartsAction, PartsReducer } from '../parts/PartsStates';
+import { defaultPartsState, PartsState, PartsAction, partsReducer } from '../parts/PartsStates';
 
 /**
  * MapData 概略
@@ -187,7 +187,7 @@ export function MapDataReducer (state: MapDataState = defaultMapData, action: WW
              * パーツの場合はしばらくはここで対応します。
              */
             const newState = Object.assign({}, state);
-            newState.parts = PartsReducer(state.parts, action);
+            newState.parts = partsReducer(state.parts, action);
 
             return newState;
         }

@@ -35,6 +35,7 @@ class ObjectPartsList extends React.Component<Props> {
                     <PartsList
                         attribute={this.props.objectAttribute}
                         partsMax={this.props.objectPartsCount}
+                        selectParts={this.props.selectPartsNumber}
                         image={this.props.image}
                         onClick={(partsNumber: number) => { this.clickPartsChip(partsNumber) }}
                     ></PartsList>
@@ -50,7 +51,7 @@ class ObjectPartsList extends React.Component<Props> {
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return {
         selectObjParts: (partsNumber: number) => {
-            dispatch(selectObjParts({ selectPartsNumber: partsNumber }))
+            dispatch(selectObjParts(partsNumber))
         }
     };
 }

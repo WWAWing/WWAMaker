@@ -1,6 +1,7 @@
 import { ObjectPartsType, MapPartsType } from "../classes/WWAData";
-import { Action, ActionCreator } from "redux";
+import { Action } from "redux";
 import actionCreatorFactory from "typescript-fsa";
+import { reducerWithInitialState } from "typescript-fsa-reducers";
 
 const actionCreator = actionCreatorFactory();
 
@@ -18,16 +19,17 @@ interface SelectPartsCommonAction extends Action {
 
 interface SelectObjPartsAction extends SelectPartsCommonAction {
 }
-export const selectObjParts = actionCreator<{selectPartsNumber: number}>('SELECT_OBJECT_PARTS');
+/**
+ * 物体パーツを選択します。
+ */
+export const selectObjParts = actionCreator<number>('SELECT_OBJECT_PARTS');
 
 interface SelectMapPartsAction extends SelectPartsCommonAction {
 }
-export const selectMapParts: ActionCreator<SelectMapPartsAction> = (partsNumber: number) => ({
-    type: 'SELECT_MAP_PARTS',
-    payload: {
-        selectPartsNumber: partsNumber
-    }
-} as PartsAction);
+/**
+ * 背景パーツを選択します。
+ */
+export const selectMapParts = actionCreator<number>('SELECT_MAP_PARTS');
 
 export type PartsAction = SelectObjPartsAction & SelectMapPartsAction;
 
@@ -55,21 +57,12 @@ export const defaultPartsState: PartsState = {
     specifyMapType: PartsTypeForPartsSpecify.ALL
 }
 
-export function PartsReducer(state: PartsState, action: PartsAction): PartsState {
-    switch (action.type) {
-        case 'SELECT_OBJECT_PARTS': {
-            const newState = Object.assign({}, state);
-            newState.selectObject = action.payload.selectPartsNumber;
-
-            return newState;
-        }
-        case 'SELECT_MAP_PARTS': {
-            const newState = Object.assign({}, state);
-            newState.selectMap = action.payload.selectPartsNumber;
-
-            return newState;
-        }
-    }
-    
-    return state;
-}
+export const partsReducer = reducerWithInitialState(defaultPartsState)
+    .case(selectObjParts, (state, selectPartsNumber) => ({
+        ...state,
+        selectObject: selectPartsNumber
+    }))
+    .case(selectMapParts, (state, selectPartsNumber) => ({
+        ...state,
+        selectMap: selectPartsNumber
+    }));

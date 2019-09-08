@@ -17,9 +17,6 @@ export default class PartsChip extends React.Component<Props, {}> {
         super(props);
         this.canvasRef = React.createRef();
         this.canvasContext = null;
-        this.state = {
-            isSelected: false
-        }
     }
 
     public componentDidMount() {
@@ -30,6 +27,7 @@ export default class PartsChip extends React.Component<Props, {}> {
 
     public componentDidUpdate() {
         if (this.canvasContext !== null) {
+            this.canvasContext.clearRect(0, 0, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE);
             this.canvasContext.drawImage(this.props.image, this.props.cropX, this.props.cropY, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE, 0, 0, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE);
             if (this.props.isSelected) {
                 /**
