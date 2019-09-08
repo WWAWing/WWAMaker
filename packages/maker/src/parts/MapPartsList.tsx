@@ -4,6 +4,7 @@ import PartsList from '../components/common/PartsList';
 import { connect } from 'react-redux';
 import { selectMapParts } from './PartsStates';
 import { Dispatch } from 'redux';
+import PartsListFooter from '../components/common/PartsListFooter';
 
 interface Props {
     mapAttribute: number[][];
@@ -31,9 +32,11 @@ class MapPartsList extends React.Component<Props> {
                         onClick={(partsNumber: number) => { this.clickPartsChip(partsNumber) }}
                     ></PartsList>
                 </div>
-                <footer className={styles.toolPanelItemFooter}>
-                    <div>選択パーツ: {this.props.selectPartsNumber}番</div>
-                </footer>
+                <PartsListFooter
+                    selectPartsNumber={this.props.selectPartsNumber}
+                    onEditParts={() => {}}
+                    onDeleteParts={() => {}}
+                ></PartsListFooter>
             </div>
         );
     }
