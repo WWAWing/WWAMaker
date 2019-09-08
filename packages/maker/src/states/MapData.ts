@@ -2,6 +2,7 @@ import WWAData, { defaultWWAData } from '../classes/WWAData';
 import { LoaderProgress, LoaderError, LoaderResponse, LoadState, LoadStage } from '../classes/Loader';
 import { MakerError } from '../classes/MakerSystem';
 import { ActionCreator, Action } from 'redux';
+import { defaultPartsState, PartsState, PartsAction, partsReducer } from '../parts/PartsStates';
 
 /**
  * MapData 概略
@@ -60,7 +61,9 @@ interface SetImageAction extends Action {
 }
 
 type ImageActions = LoadImageAction & ErrorImageAction & SetImageAction;
-type WWADataActions = MapDataActions & ImageActions;
+
+// ここに集める
+type WWADataActions = MapDataActions & ImageActions & PartsAction;
 
 // ここからアクションクリエイター
 
@@ -112,13 +115,15 @@ export const setImage: ActionCreator<ImageActions> = (image: CanvasImageSource) 
  *     progress: 読み込み途中の情報
  *     error: エラー情報
  *     image: イメージ
+ *     parts: parts/PartsState を参照
  */
 interface MapDataState {
     loadState: LoadState,
     progress: LoaderProgress,
     error: MakerError,
     wwaData: WWAData,
-    image: CanvasImageSource
+    image: CanvasImageSource,
+    parts: PartsState
 }
 
 const defaultMapData: MapDataState = {
@@ -133,7 +138,8 @@ const defaultMapData: MapDataState = {
         message: ''
     },
     wwaData: defaultWWAData,
-    image: new Image()
+    image: new Image(),
+    parts: defaultPartsState
 }
 
 export function MapDataReducer (state: MapDataState = defaultMapData, action: WWADataActions): MapDataState {
@@ -176,6 +182,14 @@ export function MapDataReducer (state: MapDataState = defaultMapData, action: WW
 
             return newState;
         }
+        default: {
+            /**
+             * パーツの場合はしばらくはここで対応します。
+             */
+            const newState = Object.assign({}, state);
+            newState.parts = partsReducer(state.parts, action);
+
+            return newState;
+        }
     }
-    return state;
 }

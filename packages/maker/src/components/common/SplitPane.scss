@@ -1,0 +1,34 @@
+/**
+ * react-split-pane 専用のCSSです。
+ *     react-split-pane で定義する場合はこれを利用します。
+ * @todo この CSS の各セレクタを extends で取り込み出来るようにしたい。
+ */
+$resizer-color: #c0c0c0;
+$border-color: #808080;
+$border-style: outset;
+$resizer-size: 10px;
+
+.Resizer {
+    box-sizing: border-box;
+    background: #c0c0c0;
+    z-index: 1;
+    background-clip: padding-box;
+}
+
+.Resizer.horizontal {
+    height: $resizer-size;
+    border-top: 1px $border-style $border-color;
+    border-bottom: 1px $border-style $border-color;
+    cursor: row-resize;
+}
+
+.Resizer.vertical {
+    width: $resizer-size;
+    border-left: 5px $border-style $border-color;
+    border-right: 5px $border-style $border-color;
+    cursor: col-resize;
+}
+
+.Resizer.disabled {
+    cursor: not-allowed;
+}
