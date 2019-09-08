@@ -1,10 +1,10 @@
 import React from 'react';
 import styles from './PartsSelect.module.scss';
-import PartsList from '../components/common/PartsList';
 import { connect, MapStateToProps } from 'react-redux';
 import { AppState } from '../states';
 import WWAConsts from '../classes/WWAConsts';
 import ObjectPartsList from './ObjectPartsList';
+import MapPartsList from './MapPartsList';
 
 interface Props {
     objectAttribute: number[][];
@@ -42,19 +42,12 @@ class PartsSelect extends React.Component<Props, {}> {
                     selectPartsNumber={this.props.objSelectParts}
                     image={this.props.image}
                 ></ObjectPartsList>
-                <div className={styles.toolPanelItem}>
-                    <header className={styles.toolPanelItemHeader}>背景パーツ一覧</header>
-                    <div className={styles.toolPanelItemContent}>
-                        <PartsList
-                            attribute={this.props.mapAttribute}
-                            partsMax={this.props.mapPartsCount}
-                            image={this.props.image}
-                        ></PartsList>
-                    </div>
-                    <footer className={styles.toolPanelItemFooter}>
-                        <div>選択パーツ: 0番</div>
-                    </footer>
-                </div>
+                <MapPartsList
+                    mapAttribute={this.props.mapAttribute}
+                    mapPartsCount={this.props.mapPartsCount}
+                    selectPartsNumber={this.props.mapSelectParts}
+                    image={this.props.image}
+                ></MapPartsList>
             </div>
         );
     }

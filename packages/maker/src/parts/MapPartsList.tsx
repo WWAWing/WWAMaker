@@ -2,33 +2,30 @@ import React from 'react';
 import styles from './PartsSelect.module.scss';
 import PartsList from '../components/common/PartsList';
 import { connect } from 'react-redux';
-import { selectObjParts } from './PartsStates';
+import { selectMapParts } from './PartsStates';
 import { Dispatch } from 'redux';
 
 interface Props {
-    objectAttribute: number[][];
-    objectPartsCount: number;
+    mapAttribute: number[][];
+    mapPartsCount: number;
     selectPartsNumber: number;
     image: CanvasImageSource;
-    selectObjParts: (partsNumber: number) => void;
+    selectMapParts: (partsNumber: number) => void;
 }
 
-/**
- * @todo 物体パーツ一覧と背景パーツ一覧を共通運用する SelectPartsList コンポーネントを作る
- */
-class ObjectPartsList extends React.Component<Props> {
+class MapPartsList extends React.Component<Props> {
     private clickPartsChip(partsNumber: number) {
-        this.props.selectObjParts(partsNumber);
+        this.props.selectMapParts(partsNumber);
     }
 
     public render() {
         return (
             <div className={styles.toolPanelItem}>
-                <header className={styles.toolPanelItemHeader}>物体パーツ一覧</header>
+                <header className={styles.toolPanelItemHeader}>背景パーツ一覧</header>
                 <div className={styles.toolPanelItemContent}>
                     <PartsList
-                        attribute={this.props.objectAttribute}
-                        partsMax={this.props.objectPartsCount}
+                        attribute={this.props.mapAttribute}
+                        partsMax={this.props.mapPartsCount}
                         selectParts={this.props.selectPartsNumber}
                         image={this.props.image}
                         onClick={(partsNumber: number) => { this.clickPartsChip(partsNumber) }}
@@ -44,10 +41,10 @@ class ObjectPartsList extends React.Component<Props> {
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return {
-        selectObjParts: (partsNumber: number) => {
-            dispatch(selectObjParts(partsNumber))
+        selectMapParts: (partsNumber: number) => {
+            dispatch(selectMapParts(partsNumber))
         }
     };
 }
 
-export default connect(null, mapDispatchToProps)(ObjectPartsList);
+export default connect(null, mapDispatchToProps)(MapPartsList);
