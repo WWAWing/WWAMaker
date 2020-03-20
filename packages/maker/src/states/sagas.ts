@@ -1,9 +1,14 @@
 import { eventChannel, END } from 'redux-saga';
 import { call, put, take, takeEvery } from 'redux-saga/effects';
 import { LoadWWADataAction, progressWWAData, setWWAData, errorWWAData, LoadImageAction, setImage, errorImage, ImageActionType, loadImage } from './MapData';
-import { LoaderResponse } from '../classes/Loader';
+import { LoaderResponse } from '../load/Loader';
 import { MakerError } from '../classes/MakerSystem';
 
+/**
+ * WWAのマップデータを読み込みます。
+ * @param mapdataFileName 
+ * @todo load モジュールに redux-thunk 付きで移行できないか確かめる
+ */
 function loadWWAData(mapdataFileName: string) {
     return eventChannel(emitter => {
         const loaderMessageHandler = (event: MessageEvent) => {

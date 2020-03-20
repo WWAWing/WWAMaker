@@ -2,9 +2,9 @@ import React from 'react';
 import WWAConsts from '../classes/WWAConsts';
 import { connect, MapStateToProps } from 'react-redux';
 import { AppState } from '../states';
-import { LoadState } from '../classes/Loader';
+import { LoadState } from '../load/Loader';
 import styles from './MapView.module.scss';
-import MapLayer from './common/MapLayer';
+import MapLayer from '../components/common/MapLayer';
 
 interface Props {
     state: LoadState;

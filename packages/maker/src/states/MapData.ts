@@ -1,5 +1,5 @@
 import WWAData, { defaultWWAData } from '../classes/WWAData';
-import { LoaderProgress, LoaderError, LoaderResponse, LoadState, LoadStage } from '../classes/Loader';
+import { LoaderProgress, LoaderError, LoaderResponse, LoadState, LoadStage } from '../load/Loader';
 import { MakerError } from '../classes/MakerSystem';
 import { ActionCreator, Action } from 'redux';
 import { defaultPartsState, PartsState, PartsAction, partsReducer } from '../parts/PartsStates';

@@ -1,6 +1,6 @@
 import React, { RefObject } from 'react';
 import WWAConsts from '../../classes/WWAConsts';
-import { LoadState } from '../../classes/Loader';
+import { LoadState } from '../../load/Loader';
 
 interface Props {
     state: LoadState;
