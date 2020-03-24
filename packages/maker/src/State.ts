@@ -1,4 +1,5 @@
 import { LoadState, LoadReducer, INITIAL_STATE as LOAD_INITIAL_STATE } from "./load/LoadStates";
+import { PartsState, PartsReducer, INITIAL_STATE as PARTS_INITIAL_STATE } from "./parts/PartsState";
 import WWAData, { defaultWWAData } from "./classes/WWAData";
 import { createStore, applyMiddleware } from "redux";
 import thunkMiddleware from 'redux-thunk';
@@ -13,12 +14,8 @@ interface StoreType {
     load: LoadState,
     wwaData: WWAData|null,
     editMode: EditMode
-    objParts: {
-        number: number
-    },
-    mapParts: {
-        number: number
-    }
+    objParts: PartsState,
+    mapParts: PartsState
 }
 
 /**
@@ -29,12 +26,8 @@ const INITIAL_STATE: StoreType = {
     load: LOAD_INITIAL_STATE,
     wwaData: defaultWWAData,
     editMode: EditMode.PUT_MAP,
-    objParts: {
-        number: 0
-    },
-    mapParts: {
-        number: 0
-    }
+    objParts: PARTS_INITIAL_STATE,
+    mapParts: PARTS_INITIAL_STATE
 }
 
 const actionCreator = actionCreatorFactory();
@@ -58,7 +51,9 @@ const reducer = reducerWithInitialState(INITIAL_STATE)
     })
     .default((state, action) => ({
         ...state,
-        load: LoadReducer(state.load, action)
+        load: LoadReducer(state.load, action),
+        objParts: PartsReducer(state.objParts, action),
+        mapParts: PartsReducer(state.mapParts, action)
     }))
 
 export const Store = createStore(

@@ -3,6 +3,8 @@ import { Action } from "redux";
 import actionCreatorFactory from "typescript-fsa";
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 
+// TODO: 近いうちに PartsState.ts に移行する
+
 const actionCreator = actionCreatorFactory();
 
 export type PartsSelectActionType = 'SELECT_OBJECT_PARTS' | 'SELECT_MAP_PARTS';
