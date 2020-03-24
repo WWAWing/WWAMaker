@@ -1,68 +1,65 @@
-import { LoadState } from "./load/LoadStates";
-import WWAData from "./classes/WWAData";
-import { createStore, combineReducers, applyMiddleware, Reducer, Action } from "redux";
+import { LoadState, LoadReducer, INITIAL_STATE as LOAD_INITIAL_STATE } from "./load/LoadStates";
+import WWAData, { defaultWWAData } from "./classes/WWAData";
+import { createStore, applyMiddleware } from "redux";
 import thunkMiddleware from 'redux-thunk';
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 import actionCreatorFactory from "typescript-fsa";
-import { LoadStage } from "./load/Loader";
+import { EditMode } from "./map/MapStates";
 
 /**
  * Store の Type です。
  */
 interface StoreType {
-    mapdata: WWAMapData[],
-    currentMapdata: number
-}
-
-/**
- * 開いている1つ1つのマップデータの Redux ステートです。
- */
-interface WWAMapData {
     load: LoadState,
-    wwaData: WWAData|null
+    wwaData: WWAData|null,
+    editMode: EditMode
+    objParts: {
+        number: number
+    },
+    mapParts: {
+        number: number
+    }
 }
 
 /**
  * StoreType の初期値です。
+ * @todo 物体/背景パーツのステートについては別ファイルにまとめておく
  */
 const INITIAL_STATE: StoreType = {
-    mapdata: [],
-    currentMapdata: 0
+    load: LOAD_INITIAL_STATE,
+    wwaData: defaultWWAData,
+    editMode: EditMode.PUT_MAP,
+    objParts: {
+        number: 0
+    },
+    mapParts: {
+        number: 0
+    }
 }
 
 const actionCreator = actionCreatorFactory();
-const openMapdata = actionCreator('OPEN_MAPDATA');
-const completeOpenMapdata = actionCreator<{ mapdataNumber: number, wwaData: WWAData }>('COMPLETE_OPEN_MAPDATA');
-const closeMapdata = actionCreator<{ mapdataNumber: number }>('CLOSE_MAPDATA');
+export const setMapdata = actionCreator<{ wwaData: WWAData }>('COMPLETE_OPEN_MAPDATA');
+const closeMapdata = actionCreator('CLOSE_MAPDATA');
 
 /**
  * root の Reducer です。
- * @todo マップデータ操作に関わるアクションが増えすぎた場合は別の措置を考える
- * @todo ある程度完成したら、 state/index.ts からこのファイルに store を切り替える
+ * @see mapdataReducer
  */
 const reducer = reducerWithInitialState(INITIAL_STATE)
-    .case(openMapdata, (state) => {
+    .case(setMapdata, (state, params) => {
         const newState = Object.assign({}, state);
-        newState.mapdata.push({
-            load: {
-                progress: LoadStage.INIT,
-                error: null
-            },
-            wwaData: null
-        });
-        newState.currentMapdata = newState.mapdata.length - 1;
+        newState.wwaData = params.wwaData;
         return newState;
     })
-    .case(completeOpenMapdata, (state, params) => {
+    .case(closeMapdata, (state) => {
         const newState = Object.assign({}, state);
-        newState.mapdata[params.mapdataNumber].wwaData = params.wwaData;
+        newState.wwaData = null;
         return newState;
     })
-    .case(closeMapdata, (state, { mapdataNumber }) => {
-        const newState = Object.assign({}, state);
-        newState.mapdata.splice(mapdataNumber, 1);
-        return newState;
-    })
+    .default((state, action) => ({
+        ...state,
+        load: LoadReducer(state.load, action)
+    }))
 
 export const Store = createStore(
     reducer,

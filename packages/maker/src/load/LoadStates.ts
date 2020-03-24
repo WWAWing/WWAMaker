@@ -3,6 +3,7 @@ import actionCreatorFactory from "typescript-fsa";
 import { LoadStage, LoaderError, LoaderProgress } from "./Loader";
 import { asyncFactory } from "typescript-fsa-redux-thunk";
 import WWAData from "../classes/WWAData";
+import { setMapdata } from "../State";
 
 /**
  * [WIP] Load モジュールについて
@@ -67,7 +68,7 @@ function loadWWADataPromise(
 /**
  * マップデータ読み込みを行うアクションです。
  */
-export const loadMapdata = actionCreatorAsync<LoadWWADataState, WWAData, LoaderError>(
+export const loadMapdata = actionCreatorAsync<LoadWWADataState, void, LoaderError>(
     'Load',
     async (params, dispatch) => {
         const wwaData = await loadWWADataPromise(
@@ -76,7 +77,7 @@ export const loadMapdata = actionCreatorAsync<LoadWWADataState, WWAData, LoaderE
             event => { throw new Error(event.message); }
         );
 
-        return wwaData;
+        dispatch(setMapdata({ wwaData: wwaData }));
     }
 )
 
@@ -87,12 +88,12 @@ export const loadMapdata = actionCreatorAsync<LoadWWADataState, WWAData, LoaderE
  */
 const setLoadingProgress = actionCreator<LoaderProgress>("SET_LOADING_PROGRESS");
 
-const INITIAL_STATE: LoadState = {
+export const INITIAL_STATE: LoadState = {
     progress: LoadStage.INIT,
     error: null
 };
 
-reducerWithInitialState(INITIAL_STATE)
+export const LoadReducer = reducerWithInitialState(INITIAL_STATE)
     .case(setLoadingProgress, (state, progress) => ({
         ...state,
         progress: progress.stage
