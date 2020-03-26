@@ -10,11 +10,28 @@ export enum EditMode {
 }
 
 export interface MapState {
+    /**
+     * 編集モードはマップ編集で使用するモードを表します。
+     *     WWA は物体パーツと背景パーツの2層でマップを表現しているため、物体パーツを置くか、背景パーツを置くか識別する必要があります。
+     *     物体パーツと背景パーツそれぞれの配置と編集を加えています。
+     */
     editMode: EditMode;
+    /**
+     * 現在のマウスの位置を表します。
+     *     マス単位で表示されていて、主にツールバーの表示に使用されています。
+     */
+    currentPos: {
+        x: number,
+        y: number
+    }
 }
 
 export const INITIAL_STATE: MapState = {
-    editMode: EditMode.PUT_MAP
+    editMode: EditMode.PUT_MAP,
+    currentPos: {
+        x: 0,
+        y: 0
+    }
 };
 
 const actionCreator = actionCreatorFactory();
@@ -22,9 +39,20 @@ const actionCreator = actionCreatorFactory();
  * 編集モードを変更します。
  */
 export const setEditMode = actionCreator<{ editMode: EditMode }>("SET_EDIT_MODE");
+/**
+ * 現在のマウス位置を変更します。
+ */
+export const setCurrentPos = actionCreator<{ chipX: number, chipY: number }>("SET_CURRENT_POS");
 
 export const MapReducer = reducerWithInitialState(INITIAL_STATE)
     .case(setEditMode, (state, payload) => ({
         ...state,
         editMode: payload.editMode
+    }))
+    .case(setCurrentPos, (state, payload) => ({
+        ...state,
+        currentPos: {
+            x: payload.chipX,
+            y: payload.chipY
+        }
     }));
