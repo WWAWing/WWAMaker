@@ -1,15 +1,24 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import { loadWWAData } from '../states/MapData';
+import { Dispatch, bindActionCreators } from 'redux';
+import { loadMapdata } from '../load/LoadStates';
+import { thunkToAction } from 'typescript-fsa-redux-thunk';
 
-interface Props {
-    dispatch: Dispatch;
+const mapDispatchToProps = (dispatch: Dispatch) => {
+    // TODO: bindActionCreators の動きについて調べる
+    return bindActionCreators(
+        {
+            openMapdata: thunkToAction(loadMapdata.action)
+        },
+        dispatch
+    )
 }
+
+type Props = ReturnType<typeof mapDispatchToProps>;
 
 class MainToolbar extends React.Component<Props> {
     private handleClick() {
-        this.props.dispatch(loadWWAData('wwamap.dat'));
+        this.props.openMapdata({ mapdataFileName: 'wwamap.dat' });
     }
 
     public render() {
@@ -21,4 +30,4 @@ class MainToolbar extends React.Component<Props> {
     }
 }
 
-export default connect()(MainToolbar);
+export default connect(null, mapDispatchToProps)(MainToolbar);

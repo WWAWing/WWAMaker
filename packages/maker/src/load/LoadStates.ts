@@ -3,13 +3,12 @@ import actionCreatorFactory from "typescript-fsa";
 import { LoadStage, LoaderError, LoaderProgress } from "./Loader";
 import { asyncFactory } from "typescript-fsa-redux-thunk";
 import WWAData from "../classes/WWAData";
-import { setMapdata } from "../State";
+import { setMapdata, setImage } from "../State";
 
 /**
- * [WIP] Load モジュールについて
+ * Load モジュールについて
  *     WWA Maker の Load モジュールはマップデータの読み込みに関する状態を管理しています。
  *     読み込みの開始 → 読み込みの途中経過 → 読み込み完了/読み込みエラー の際にこの Load モジュールが働きます。
- * @todo MapData.ts から順次移行する
  * @see MapData
  */
 export interface LoadState {
@@ -38,30 +37,62 @@ const actionCreatorAsync = asyncFactory<LoadWWADataState>(actionCreator);
  */
 function loadWWADataPromise(
     mapdataFileName: string,
-    messageCallbackFn: (event: MessageEvent) => void,
-    errorCallbackFn: (event: ErrorEvent) => void
+    messageCallbackFn: (event: MessageEvent) => void
 ) {
-    return new Promise<WWAData>((resolve) => {
-
-        const loaderMessageHandler = (event: MessageEvent) => {
-            if (event.data.progress === null) {
-                loaderWorker.addEventListener('message', loaderMessageHandler);
-                resolve(event.data.WWAData);
-            } else {
-                messageCallbackFn(event);
-            }
-        }
-
-        const loaderErrorHandler = (event: ErrorEvent) => {
-            errorCallbackFn(event);
-        }
+    return new Promise<WWAData>(function (resolve, reject) {
 
         const loaderWorker = new Worker('./wwaload.js');
-        loaderWorker.addEventListener('message', loaderMessageHandler);
-        loaderWorker.addEventListener('error',loaderErrorHandler);
+        
         loaderWorker.postMessage({
             fileName: mapdataFileName
         });
+
+        loaderWorker.onmessage = (event: MessageEvent) => {
+            if (event.data.error !== null) {
+                reject({
+                    title: 'MapData Error',
+                    message: event.data.error.message
+                });
+                loaderWorker.terminate();
+
+            } else if (event.data.progress !== null) {
+                messageCallbackFn(event);
+
+            } else {
+                resolve(event.data.WWAData);
+                loaderWorker.terminate();
+            }
+        };
+
+    });
+}
+
+/**
+ * イメージ画像を読み込む Promise です。
+ * @param imageFileName 
+ */
+const loadImagePromise = (
+    imageFileName: string
+) => {
+    return new Promise<CanvasImageSource>((resolve, reject) => {
+
+        const imageLoadHandler = () => {
+            image.removeEventListener("load", imageLoadHandler);
+            image.removeEventListener("error", imageErrorHandler);
+            resolve(image);
+        };
+
+        const imageErrorHandler = (event: ErrorEvent) => {
+            reject({
+                title: 'Image Error',
+                message: event.message
+            });
+        };
+    
+        const image = new Image();
+        image.addEventListener("load", imageLoadHandler);
+        image.addEventListener("error", imageErrorHandler);
+        image.src = imageFileName;
     })
 }
 
@@ -71,15 +102,19 @@ function loadWWADataPromise(
 export const loadMapdata = actionCreatorAsync<LoadWWADataState, void, LoaderError>(
     'Load',
     async (params, dispatch) => {
+        // マップデータの読み込み
         const wwaData = await loadWWADataPromise(
             params.mapdataFileName,
-            event => { dispatch(setLoadingProgress(event.data.progress as LoaderProgress)); },
-            event => { throw new Error(event.message); }
+            event => { dispatch(setLoadingProgress(event.data.progress as LoaderProgress)); }
         );
-
+        // FIXME: wwaData が undefined になって返ってしまう
         dispatch(setMapdata({ wwaData: wwaData }));
+
+        // イメージ画像の読み込み
+        const imageData = await loadImagePromise(wwaData.mapCGName);
+        dispatch(setImage({ imageSource: imageData }));
     }
-)
+);
 
 /**
  * ローディング状態を記録します。
@@ -102,16 +137,10 @@ export const LoadReducer = reducerWithInitialState(INITIAL_STATE)
         ...state,
         progress: LoadStage.INIT
     }))
-    .case(loadMapdata.async.failed, (state, errorData) => ({
+    .case(loadMapdata.async.failed, (state, params) => ({
         ...state,
-        error: {
-            title: 'Loader Error',
-            message: errorData.error.message
-        }
+        error: params.error
     }))
-    /**
-     * @todo WWAデータをどこに退避させるか考える
-     */
     .case(loadMapdata.async.done, (state) => ({
         ...state,
         progress: null

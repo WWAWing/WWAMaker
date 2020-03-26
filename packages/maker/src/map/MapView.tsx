@@ -1,70 +1,55 @@
 import React from 'react';
-import WWAConsts from '../classes/WWAConsts';
 import { connect, MapStateToProps } from 'react-redux';
-import { AppState } from '../states';
-import { LoadState } from '../load/Loader';
+import { StoreType } from '../State';
 import styles from './MapView.module.scss';
 import MapLayer from '../components/common/MapLayer';
+import WWAData from '../classes/WWAData';
 
 interface Props {
-    state: LoadState;
-    map: number[][];
-    mapObject: number[][];
-    mapAttribute: number[][];
-    objectAttribute: number[][];
-    mapSize: number;
-    image: CanvasImageSource;
+    wwaData: WWAData|null;
+    image: CanvasImageSource|null;
 }
 
 class MapView extends React.Component<Props, {}> {
     public static defaultProps: Props = {
-        state: LoadState.EMPTY,
-        map: [],
-        mapObject: [],
-        mapAttribute: [],
-        objectAttribute: [],
-        mapSize: WWAConsts.MAP_SIZE_DEFAULT,
-        image: new Image()
+        wwaData: null,
+        image: null
     }
 
     public render() {
         return (
             <div className={styles.mapView}>
-                <div className={styles.mapLayer}>
-                    <MapLayer
-                        state={this.props.state}
-                        hasTransparent={false}
-                        map={this.props.map}
-                        attribute={this.props.mapAttribute}
-                        mapSize={this.props.mapSize}
-                        image={this.props.image}
-                    ></MapLayer>
-                </div>
-                <div className={styles.mapLayer}>
-                    <MapLayer
-                        state={this.props.state}
-                        hasTransparent={true}
-                        map={this.props.mapObject}
-                        attribute={this.props.objectAttribute}
-                        mapSize={this.props.mapSize}
-                        image={this.props.image}
-                    ></MapLayer>
-                </div>
+                {(this.props.wwaData !== null && this.props.image !== null) &&
+                    <>
+                        <div className={styles.mapLayer}>
+                            <MapLayer
+                                hasTransparent={false}
+                                map={this.props.wwaData.map}
+                                attribute={this.props.wwaData.mapAttribute}
+                                mapSize={this.props.wwaData.mapWidth}
+                                image={this.props.image}
+                            ></MapLayer>
+                        </div>
+                        <div className={styles.mapLayer}>
+                            <MapLayer
+                                hasTransparent={true}
+                                map={this.props.wwaData.mapObject}
+                                attribute={this.props.wwaData.objectAttribute}
+                                mapSize={this.props.wwaData.mapWidth}
+                                image={this.props.image}
+                            ></MapLayer>
+                        </div>
+                    </>
+                }
             </div>
         );
     }
 }
 
-const mapStateToProps: MapStateToProps<Props, Props, AppState> = state => {
-    const wwaData = state.mapData.wwaData;
+const mapStateToProps: MapStateToProps<Props, Props, StoreType> = state => {
     return {
-        state: state.mapData.loadState,
-        map: wwaData.map,
-        mapObject: wwaData.mapObject,
-        mapAttribute: wwaData.mapAttribute,
-        objectAttribute: wwaData.objectAttribute,
-        mapSize: wwaData.mapWidth,
-        image: state.mapData.image
+        wwaData: state.wwaData,
+        image: state.image
     };
 }
 

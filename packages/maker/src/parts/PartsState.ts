@@ -9,7 +9,7 @@ import { reducerWithInitialState } from "typescript-fsa-reducers";
  *     物体パーツも背景パーツも同じこのステートを用います。
  */
 export interface PartsState {
-    number: Number
+    number: number
 }
 
 const actionCreator = actionCreatorFactory();
@@ -17,7 +17,7 @@ const actionCreator = actionCreatorFactory();
 /**
  * 指定したパーツを選択します。
  */
-const selectParts = actionCreator<{ number: Number }>("SELECT_PARTS");
+const selectParts = actionCreator<{ number: number }>("SELECT_PARTS");
 
 export const INITIAL_STATE: PartsState = {
     number: 0

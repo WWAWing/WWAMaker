@@ -8,7 +8,6 @@ import PartsListFooter from '../components/common/PartsListFooter';
 
 interface Props {
     objectAttribute: number[][];
-    objectPartsCount: number;
     selectPartsNumber: number;
     image: CanvasImageSource;
     selectObjParts: (partsNumber: number) => void;
@@ -29,7 +28,6 @@ class ObjectPartsList extends React.Component<Props> {
                 <div className={styles.toolPanelItemContent}>
                     <PartsList
                         attribute={this.props.objectAttribute}
-                        partsMax={this.props.objectPartsCount}
                         selectParts={this.props.selectPartsNumber}
                         image={this.props.image}
                         onClick={(partsNumber: number) => { this.clickPartsChip(partsNumber) }}

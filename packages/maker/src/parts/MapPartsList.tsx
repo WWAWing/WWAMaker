@@ -8,7 +8,6 @@ import PartsListFooter from '../components/common/PartsListFooter';
 
 interface Props {
     mapAttribute: number[][];
-    mapPartsCount: number;
     selectPartsNumber: number;
     image: CanvasImageSource;
     selectMapParts: (partsNumber: number) => void;
@@ -26,7 +25,6 @@ class MapPartsList extends React.Component<Props> {
                 <div className={styles.toolPanelItemContent}>
                     <PartsList
                         attribute={this.props.mapAttribute}
-                        partsMax={this.props.mapPartsCount}
                         selectParts={this.props.selectPartsNumber}
                         image={this.props.image}
                         onClick={(partsNumber: number) => { this.clickPartsChip(partsNumber) }}

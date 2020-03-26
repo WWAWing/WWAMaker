@@ -1,6 +1,7 @@
 import { LoadState, LoadReducer, INITIAL_STATE as LOAD_INITIAL_STATE } from "./load/LoadStates";
 import { PartsState, PartsReducer, INITIAL_STATE as PARTS_INITIAL_STATE } from "./parts/PartsState";
 import WWAData, { defaultWWAData } from "./classes/WWAData";
+import { WWADataReducer } from "./wwadata/WWADataState";
 import { createStore, applyMiddleware } from "redux";
 import thunkMiddleware from 'redux-thunk';
 import { reducerWithInitialState } from "typescript-fsa-reducers";
@@ -10,12 +11,13 @@ import { EditMode } from "./map/MapStates";
 /**
  * Store の Type です。
  */
-interface StoreType {
+export interface StoreType {
     load: LoadState,
     wwaData: WWAData|null,
     editMode: EditMode
     objParts: PartsState,
-    mapParts: PartsState
+    mapParts: PartsState,
+    image: CanvasImageSource|null
 }
 
 /**
@@ -27,11 +29,13 @@ const INITIAL_STATE: StoreType = {
     wwaData: defaultWWAData,
     editMode: EditMode.PUT_MAP,
     objParts: PARTS_INITIAL_STATE,
-    mapParts: PARTS_INITIAL_STATE
+    mapParts: PARTS_INITIAL_STATE,
+    image: null
 }
 
 const actionCreator = actionCreatorFactory();
-export const setMapdata = actionCreator<{ wwaData: WWAData }>('COMPLETE_OPEN_MAPDATA');
+export const setMapdata = actionCreator<{ wwaData: WWAData }>('OPEN_MAPDATA');
+export const setImage = actionCreator<{ imageSource: CanvasImageSource }>('OPEN_IMAGE');
 const closeMapdata = actionCreator('CLOSE_MAPDATA');
 
 /**
@@ -47,11 +51,13 @@ const reducer = reducerWithInitialState(INITIAL_STATE)
     .case(closeMapdata, (state) => {
         const newState = Object.assign({}, state);
         newState.wwaData = null;
+        newState.image = null;
         return newState;
     })
     .default((state, action) => ({
         ...state,
         load: LoadReducer(state.load, action),
+        wwaData: WWADataReducer(state.wwaData === null ? undefined : state.wwaData, action),
         objParts: PartsReducer(state.objParts, action),
         mapParts: PartsReducer(state.mapParts, action)
     }))
