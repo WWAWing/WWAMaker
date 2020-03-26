@@ -6,7 +6,8 @@ import { createStore, applyMiddleware } from "redux";
 import thunkMiddleware from 'redux-thunk';
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 import actionCreatorFactory from "typescript-fsa";
-import { EditMode } from "./map/MapStates";
+import { MapState, INITIAL_STATE as MAP_INITIAL_STATE, MapReducer } from "./map/MapStates";
+import { composeWithDevTools } from "redux-devtools-extension";
 
 /**
  * Store の Type です。
@@ -14,7 +15,7 @@ import { EditMode } from "./map/MapStates";
 export interface StoreType {
     load: LoadState,
     wwaData: WWAData|null,
-    editMode: EditMode
+    map: MapState,
     objParts: PartsState,
     mapParts: PartsState,
     image: CanvasImageSource|null
@@ -27,15 +28,24 @@ export interface StoreType {
 const INITIAL_STATE: StoreType = {
     load: LOAD_INITIAL_STATE,
     wwaData: defaultWWAData,
-    editMode: EditMode.PUT_MAP,
+    map: MAP_INITIAL_STATE,
     objParts: PARTS_INITIAL_STATE,
     mapParts: PARTS_INITIAL_STATE,
     image: null
 }
 
 const actionCreator = actionCreatorFactory();
+/**
+ * マップデータの情報を設定します。
+ */
 export const setMapdata = actionCreator<{ wwaData: WWAData }>('OPEN_MAPDATA');
+/**
+ * 画像リソースを設定します。
+ */
 export const setImage = actionCreator<{ imageSource: CanvasImageSource }>('OPEN_IMAGE');
+/**
+ * 開いているマップデータと画像リソースを閉じます。
+ */
 const closeMapdata = actionCreator('CLOSE_MAPDATA');
 
 /**
@@ -62,11 +72,14 @@ const reducer = reducerWithInitialState(INITIAL_STATE)
         ...state,
         load: LoadReducer(state.load, action),
         wwaData: WWADataReducer(state.wwaData === null ? undefined : state.wwaData, action),
+        map: MapReducer(state.map, action),
         objParts: ObjectPartsReducer(state.objParts, action),
         mapParts: MapPartsReducer(state.mapParts, action)
     }))
 
 export const Store = createStore(
     reducer,
-    applyMiddleware(thunkMiddleware)
+    composeWithDevTools(
+        applyMiddleware(thunkMiddleware)
+    )
 );

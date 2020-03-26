@@ -3,12 +3,14 @@ import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators } from 'redux';
 import { loadMapdata } from '../load/LoadStates';
 import { thunkToAction } from 'typescript-fsa-redux-thunk';
+import { setEditMode, EditMode } from '../map/MapStates';
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
     // TODO: bindActionCreators の動きについて調べる
     return bindActionCreators(
         {
-            openMapdata: thunkToAction(loadMapdata.action)
+            openMapdata: thunkToAction(loadMapdata.action),
+            setEditMode: setEditMode
         },
         dispatch
     )
@@ -16,19 +18,32 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 
 type Props = ReturnType<typeof mapDispatchToProps>;
 type State = {
-    mapdataFileName: string
+    mapdataFileName: string,
+    editMode: EditMode
 }
 
 class MainToolbar extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            mapdataFileName: ''
+            mapdataFileName: 'wwamap.dat',
+            editMode: EditMode.PUT_MAP
         };
     }
 
-    private handleClick() {
+    private clickOpenButton() {
         this.props.openMapdata({ mapdataFileName: this.state.mapdataFileName });
+    }
+
+    /**
+     * 編集モードを変更します
+     * @param editMode 変更したい編集モード
+     */
+    private selectEditMode(editMode: EditMode) {
+        this.props.setEditMode({ editMode: editMode });
+        this.setState({
+            editMode: editMode
+        });
     }
 
     /**
@@ -46,9 +61,21 @@ class MainToolbar extends React.Component<Props, State> {
         return (
             <div>
                 <input type='text' value={this.state.mapdataFileName} onChange={this.changeMapdataFileName.bind(this)} />
-                <span onClick={this.handleClick.bind(this)}>open</span>
+                <span onClick={this.clickOpenButton.bind(this)}>open</span>
+                {this.editModeButton(EditMode.PUT_MAP, "背景パーツ設置")}
+                {this.editModeButton(EditMode.PUT_OBJECT, "物体パーツ設置")}
+                {this.editModeButton(EditMode.EDIT_MAP, "背景パーツ編集")}
+                {this.editModeButton(EditMode.EDIT_OBJECT, "物体パーツ編集")}
+                {this.editModeButton(EditMode.DELETE_OBJECT, "物体パーツ削除")}
             </div>
         );
+    }
+
+    private editModeButton(editMode: EditMode, labelName: string) {
+        return <label>
+                <input type='radio' checked={this.state.editMode === editMode} onChange={() => this.selectEditMode(editMode)}></input>
+                {labelName}
+            </label>
     }
 }
 

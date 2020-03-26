@@ -102,7 +102,7 @@ const loadImagePromise = (
  * マップデータ読み込みを行うアクションです。
  */
 export const loadMapdata = actionCreatorAsync<LoadWWADataState, void, LoaderError>(
-    'Load',
+    'LOAD_MAPDATA',
     async (params, dispatch) => {
         // マップデータの読み込み
         const wwaData = await loadWWADataPromise(
