@@ -15,15 +15,37 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 }
 
 type Props = ReturnType<typeof mapDispatchToProps>;
+type State = {
+    mapdataFileName: string
+}
 
-class MainToolbar extends React.Component<Props> {
+class MainToolbar extends React.Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            mapdataFileName: ''
+        };
+    }
+
     private handleClick() {
-        this.props.openMapdata({ mapdataFileName: 'wwamap.dat' });
+        this.props.openMapdata({ mapdataFileName: this.state.mapdataFileName });
+    }
+
+    /**
+     * マップデーファイル名を変更します
+     * @param event 
+     * @todo 開く機能が実装でき次第削除する
+     */
+    private changeMapdataFileName(event: React.ChangeEvent<HTMLInputElement>) {
+        this.setState({
+            mapdataFileName: event.target.value
+        })
     }
 
     public render() {
         return (
             <div>
+                <input type='text' value={this.state.mapdataFileName} onChange={this.changeMapdataFileName.bind(this)} />
                 <span onClick={this.handleClick.bind(this)}>open</span>
             </div>
         );
