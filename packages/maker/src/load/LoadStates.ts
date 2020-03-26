@@ -1,6 +1,6 @@
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 import actionCreatorFactory from "typescript-fsa";
-import { LoadStage, LoaderError, LoaderProgress } from "./Loader";
+import { LoadStage, LoaderError, LoaderProgress, LoaderResponse } from "./Loader";
 import { asyncFactory } from "typescript-fsa-redux-thunk";
 import WWAData from "../classes/WWAData";
 import { setMapdata, setImage } from "../State";
@@ -35,10 +35,10 @@ const actionCreatorAsync = asyncFactory<LoadWWADataState>(actionCreator);
  * @param messageCallbackFn message イベント発生時に呼び出すメソッド
  * @param errorCallbackFn エラー発生時で呼び出すメソッド
  */
-function loadWWADataPromise(
+const loadWWADataPromise = (
     mapdataFileName: string,
-    messageCallbackFn: (event: MessageEvent) => void
-) {
+    messageCallbackFn: (loaderResponse: LoaderResponse) => void
+) => {
     return new Promise<WWAData>(function (resolve, reject) {
 
         const loaderWorker = new Worker('./wwaload.js');
@@ -48,18 +48,20 @@ function loadWWADataPromise(
         });
 
         loaderWorker.onmessage = (event: MessageEvent) => {
-            if (event.data.error !== null) {
+            const eventData: LoaderResponse = event.data;
+
+            if (eventData.error !== null) {
                 reject({
                     title: 'MapData Error',
                     message: event.data.error.message
                 });
                 loaderWorker.terminate();
 
-            } else if (event.data.progress !== null) {
-                messageCallbackFn(event);
+            } else if (eventData.progress !== null) {
+                messageCallbackFn(eventData);
 
-            } else {
-                resolve(event.data.WWAData);
+            } else if (eventData.wwaData !== null) {
+                resolve(eventData.wwaData);
                 loaderWorker.terminate();
             }
         };
@@ -105,9 +107,8 @@ export const loadMapdata = actionCreatorAsync<LoadWWADataState, void, LoaderErro
         // マップデータの読み込み
         const wwaData = await loadWWADataPromise(
             params.mapdataFileName,
-            event => { dispatch(setLoadingProgress(event.data.progress as LoaderProgress)); }
+            eventData => { dispatch(setLoadingProgress(eventData.progress as LoaderProgress)); }
         );
-        // FIXME: wwaData が undefined になって返ってしまう
         dispatch(setMapdata({ wwaData: wwaData }));
 
         // イメージ画像の読み込み
