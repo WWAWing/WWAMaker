@@ -1,5 +1,5 @@
 import { LoadState, LoadReducer, INITIAL_STATE as LOAD_INITIAL_STATE } from "./load/LoadStates";
-import { PartsState, PartsReducer, INITIAL_STATE as PARTS_INITIAL_STATE } from "./parts/PartsState";
+import { PartsState, INITIAL_STATE as PARTS_INITIAL_STATE, ObjectPartsReducer, MapPartsReducer } from "./parts/PartsState";
 import WWAData, { defaultWWAData } from "./classes/WWAData";
 import { WWADataReducer } from "./wwadata/WWADataState";
 import { createStore, applyMiddleware } from "redux";
@@ -48,6 +48,10 @@ const reducer = reducerWithInitialState(INITIAL_STATE)
         newState.wwaData = params.wwaData;
         return newState;
     })
+    .case(setImage, (state, params) => ({
+        ...state,
+        image: params.imageSource
+    }))
     .case(closeMapdata, (state) => {
         const newState = Object.assign({}, state);
         newState.wwaData = null;
@@ -58,8 +62,8 @@ const reducer = reducerWithInitialState(INITIAL_STATE)
         ...state,
         load: LoadReducer(state.load, action),
         wwaData: WWADataReducer(state.wwaData === null ? undefined : state.wwaData, action),
-        objParts: PartsReducer(state.objParts, action),
-        mapParts: PartsReducer(state.mapParts, action)
+        objParts: ObjectPartsReducer(state.objParts, action),
+        mapParts: MapPartsReducer(state.mapParts, action)
     }))
 
 export const Store = createStore(

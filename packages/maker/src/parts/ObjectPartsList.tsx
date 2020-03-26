@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './PartsSelect.module.scss';
 import PartsList from '../components/common/PartsList';
 import { connect } from 'react-redux';
-import { selectObjParts } from './PartsStates';
+import { selectObjParts } from './PartsState';
 import { Dispatch } from 'redux';
 import PartsListFooter from '../components/common/PartsListFooter';
 
@@ -46,7 +46,7 @@ class ObjectPartsList extends React.Component<Props> {
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return {
         selectObjParts: (partsNumber: number) => {
-            dispatch(selectObjParts(partsNumber))
+            dispatch(selectObjParts({ number: partsNumber }))
         }
     };
 }

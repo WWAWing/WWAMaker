@@ -29,6 +29,7 @@ export default class MapLayer extends React.Component<Props, {}> {
     public componentDidMount() {
         if (this.canvasRef.current !== null) {
             this.canvasContext = this.canvasRef.current.getContext('2d');
+            this.drawMap();
         }
     }
 
