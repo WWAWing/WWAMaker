@@ -2,13 +2,12 @@ import React from 'react';
 import styles from './PartsSelect.module.scss';
 import PartsList from '../components/common/PartsList';
 import { connect } from 'react-redux';
-import { selectMapParts } from './PartsStates';
+import { selectMapParts } from './PartsState';
 import { Dispatch } from 'redux';
 import PartsListFooter from '../components/common/PartsListFooter';
 
 interface Props {
     mapAttribute: number[][];
-    mapPartsCount: number;
     selectPartsNumber: number;
     image: CanvasImageSource;
     selectMapParts: (partsNumber: number) => void;
@@ -26,7 +25,6 @@ class MapPartsList extends React.Component<Props> {
                 <div className={styles.toolPanelItemContent}>
                     <PartsList
                         attribute={this.props.mapAttribute}
-                        partsMax={this.props.mapPartsCount}
                         selectParts={this.props.selectPartsNumber}
                         image={this.props.image}
                         onClick={(partsNumber: number) => { this.clickPartsChip(partsNumber) }}
@@ -45,7 +43,7 @@ class MapPartsList extends React.Component<Props> {
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return {
         selectMapParts: (partsNumber: number) => {
-            dispatch(selectMapParts(partsNumber))
+            dispatch(selectMapParts({ number: partsNumber }))
         }
     };
 }

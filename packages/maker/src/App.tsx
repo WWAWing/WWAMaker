@@ -3,7 +3,7 @@ import styles from './App.module.scss';
 import MainToolbar from './components/MainToolbar';
 import PartsSelect from './parts/PartsSelect';
 import InfoPanel from './components/InfoPanel';
-import MapView from './components/MapView';
+import MapView from './map/MapView';
 import SplitPane from 'react-split-pane';
 import './components/common/SplitPane.scss';
 

@@ -22,21 +22,27 @@ export default class PartsChip extends React.Component<Props, {}> {
     public componentDidMount() {
         if (this.canvasRef.current !== null) {
             this.canvasContext = this.canvasRef.current.getContext('2d');
+            this.draw();
         }
     }
 
     public componentDidUpdate() {
-        if (this.canvasContext !== null) {
-            this.canvasContext.clearRect(0, 0, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE);
-            this.canvasContext.drawImage(this.props.image, this.props.cropX, this.props.cropY, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE, 0, 0, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE);
-            if (this.props.isSelected) {
-                /**
-                 * @todo 定数にしたい
-                 */
-                this.canvasContext.strokeStyle = 'rgb(255, 0, 0)';
-                this.canvasContext.lineWidth = 2;
-                this.canvasContext.strokeRect(1, 1, WWAConsts.CHIP_SIZE - 2, WWAConsts.CHIP_SIZE - 2);
-            }
+        this.draw();
+    }
+
+    private draw() {
+        if (this.canvasContext === null) {
+            return;
+        }
+        this.canvasContext.clearRect(0, 0, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE);
+        this.canvasContext.drawImage(this.props.image, this.props.cropX, this.props.cropY, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE, 0, 0, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE);
+        if (this.props.isSelected) {
+            /**
+             * @todo 定数にしたい
+             */
+            this.canvasContext.strokeStyle = 'rgb(255, 0, 0)';
+            this.canvasContext.lineWidth = 2;
+            this.canvasContext.strokeRect(1, 1, WWAConsts.CHIP_SIZE - 2, WWAConsts.CHIP_SIZE - 2);
         }
     }
 

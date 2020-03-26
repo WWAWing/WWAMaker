@@ -1,26 +1,34 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import { loadWWAData } from '../states/MapData';
+import { Dispatch, bindActionCreators } from 'redux';
+import { loadMapdata } from '../load/LoadStates';
+import { thunkToAction } from 'typescript-fsa-redux-thunk';
 
-interface Props {
-    dispatch: Dispatch;
+const mapDispatchToProps = (dispatch: Dispatch) => {
+    // TODO: bindActionCreators の動きについて調べる
+    return bindActionCreators(
+        {
+            openMapdata: thunkToAction(loadMapdata.action)
+        },
+        dispatch
+    )
 }
 
-interface States {
-    mapdataFileName: string;
+type Props = ReturnType<typeof mapDispatchToProps>;
+type State = {
+    mapdataFileName: string
 }
 
-class MainToolbar extends React.Component<Props, States> {
+class MainToolbar extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
             mapdataFileName: ''
-        }
+        };
     }
 
     private handleClick() {
-        this.props.dispatch(loadWWAData(this.state.mapdataFileName));
+        this.props.openMapdata({ mapdataFileName: this.state.mapdataFileName });
     }
 
     /**
@@ -44,4 +52,4 @@ class MainToolbar extends React.Component<Props, States> {
     }
 }
 
-export default connect()(MainToolbar);
+export default connect(null, mapDispatchToProps)(MainToolbar);

@@ -2,13 +2,12 @@ import React from 'react';
 import styles from './PartsSelect.module.scss';
 import PartsList from '../components/common/PartsList';
 import { connect } from 'react-redux';
-import { selectObjParts } from './PartsStates';
+import { selectObjParts } from './PartsState';
 import { Dispatch } from 'redux';
 import PartsListFooter from '../components/common/PartsListFooter';
 
 interface Props {
     objectAttribute: number[][];
-    objectPartsCount: number;
     selectPartsNumber: number;
     image: CanvasImageSource;
     selectObjParts: (partsNumber: number) => void;
@@ -29,7 +28,6 @@ class ObjectPartsList extends React.Component<Props> {
                 <div className={styles.toolPanelItemContent}>
                     <PartsList
                         attribute={this.props.objectAttribute}
-                        partsMax={this.props.objectPartsCount}
                         selectParts={this.props.selectPartsNumber}
                         image={this.props.image}
                         onClick={(partsNumber: number) => { this.clickPartsChip(partsNumber) }}
@@ -48,7 +46,7 @@ class ObjectPartsList extends React.Component<Props> {
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return {
         selectObjParts: (partsNumber: number) => {
-            dispatch(selectObjParts(partsNumber))
+            dispatch(selectObjParts({ number: partsNumber }))
         }
     };
 }

@@ -1,9 +1,7 @@
 import React, { RefObject } from 'react';
 import WWAConsts from '../../classes/WWAConsts';
-import { LoadState } from '../../classes/Loader';
 
 interface Props {
-    state: LoadState;
     hasTransparent: boolean;
     map: number[][];
     attribute: number[][];
@@ -15,7 +13,6 @@ export default class MapLayer extends React.Component<Props, {}> {
     private canvasRef: RefObject<HTMLCanvasElement>;
     private canvasContext: CanvasRenderingContext2D | null;
     public static defaultProps: Props = {
-        state: LoadState.EMPTY,
         hasTransparent: false,
         map: [],
         attribute: [],
@@ -32,6 +29,7 @@ export default class MapLayer extends React.Component<Props, {}> {
     public componentDidMount() {
         if (this.canvasRef.current !== null) {
             this.canvasContext = this.canvasRef.current.getContext('2d');
+            this.drawMap();
         }
     }
 
@@ -43,10 +41,6 @@ export default class MapLayer extends React.Component<Props, {}> {
     }
 
     private drawMap() {
-        if (this.props.state !== LoadState.DONE) {
-            return;
-        }
-
         this.props.map.forEach((line, y) => {
             line.forEach((partsNumber, x) => {
                 if (this.canvasContext === null) {
