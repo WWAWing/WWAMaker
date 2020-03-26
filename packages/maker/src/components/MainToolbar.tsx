@@ -4,6 +4,13 @@ import { Dispatch, bindActionCreators } from 'redux';
 import { loadMapdata } from '../load/LoadStates';
 import { thunkToAction } from 'typescript-fsa-redux-thunk';
 import { setEditMode, EditMode } from '../map/MapStates';
+import { StoreType } from '../State';
+
+const mapStateToProps = (state: StoreType) => {
+    return {
+        currentPos: state.map.currentPos
+    };
+};
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
     // TODO: bindActionCreators の動きについて調べる
@@ -14,9 +21,12 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
         },
         dispatch
     )
-}
+};
 
-type Props = ReturnType<typeof mapDispatchToProps>;
+type StateProps = ReturnType<typeof mapStateToProps>;
+type DispatchProps = ReturnType<typeof mapDispatchToProps>;
+type Props = StateProps & DispatchProps;
+
 type State = {
     mapdataFileName: string,
     editMode: EditMode
@@ -60,13 +70,19 @@ class MainToolbar extends React.Component<Props, State> {
     public render() {
         return (
             <div>
-                <input type='text' value={this.state.mapdataFileName} onChange={this.changeMapdataFileName.bind(this)} />
-                <span onClick={this.clickOpenButton.bind(this)}>open</span>
-                {this.editModeButton(EditMode.PUT_MAP, "背景パーツ設置")}
-                {this.editModeButton(EditMode.PUT_OBJECT, "物体パーツ設置")}
-                {this.editModeButton(EditMode.EDIT_MAP, "背景パーツ編集")}
-                {this.editModeButton(EditMode.EDIT_OBJECT, "物体パーツ編集")}
-                {this.editModeButton(EditMode.DELETE_OBJECT, "物体パーツ削除")}
+                <div>
+                    <input type='text' value={this.state.mapdataFileName} onChange={this.changeMapdataFileName.bind(this)} />
+                    <span onClick={this.clickOpenButton.bind(this)}>open</span>
+                    {this.editModeButton(EditMode.PUT_MAP, "背景パーツ設置")}
+                    {this.editModeButton(EditMode.PUT_OBJECT, "物体パーツ設置")}
+                    {this.editModeButton(EditMode.EDIT_MAP, "背景パーツ編集")}
+                    {this.editModeButton(EditMode.EDIT_OBJECT, "物体パーツ編集")}
+                    {this.editModeButton(EditMode.DELETE_OBJECT, "物体パーツ削除")}
+                </div>
+                <div>
+                    <span>X: {this.props.currentPos.x}</span>
+                    <span>Y: {this.props.currentPos.y}</span>
+                </div>
             </div>
         );
     }
@@ -79,4 +95,4 @@ class MainToolbar extends React.Component<Props, State> {
     }
 }
 
-export default connect(null, mapDispatchToProps)(MainToolbar);
+export default connect(mapStateToProps, mapDispatchToProps)(MainToolbar);
