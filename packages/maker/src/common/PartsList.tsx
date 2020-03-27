@@ -1,8 +1,8 @@
 import React from 'react';
 import styles from './PartsList.module.scss';
 import PartsChip from './PartsChip';
-import { createEmptyPartsAttribute } from '../../classes/WWAData';
-import WWAConsts from '../../classes/WWAConsts';
+import { createEmptyPartsAttribute } from '../classes/WWAData';
+import WWAConsts from '../classes/WWAConsts';
 
 interface Props {
     attribute: number[][];

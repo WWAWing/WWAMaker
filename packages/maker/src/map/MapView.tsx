@@ -2,7 +2,7 @@ import React from 'react';
 import { connect, MapStateToProps } from 'react-redux';
 import { StoreType } from '../State';
 import styles from './MapView.module.scss';
-import MapCanvas from '../components/common/MapCanvas';
+import MapCanvas from '../common/MapCanvas';
 import WWAData, { PartsType } from '../classes/WWAData';
 import { Dispatch, bindActionCreators } from 'redux';
 import { setCurrentPos, EditMode } from './MapStates';

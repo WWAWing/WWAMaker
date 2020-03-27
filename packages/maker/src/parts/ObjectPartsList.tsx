@@ -1,10 +1,10 @@
 import React from 'react';
 import styles from './PartsSelect.module.scss';
-import PartsList from '../components/common/PartsList';
+import PartsList from '../common/PartsList';
 import { connect } from 'react-redux';
 import { selectObjParts } from './PartsState';
 import { Dispatch } from 'redux';
-import PartsListFooter from '../components/common/PartsListFooter';
+import PartsListFooter from '../common/PartsListFooter';
 
 interface Props {
     objectAttribute: number[][];

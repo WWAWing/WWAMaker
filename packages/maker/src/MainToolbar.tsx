@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators } from 'redux';
-import { loadMapdata } from '../load/LoadStates';
+import { loadMapdata } from './load/LoadStates';
 import { thunkToAction } from 'typescript-fsa-redux-thunk';
-import { setEditMode, EditMode } from '../map/MapStates';
-import { StoreType } from '../State';
+import { setEditMode, EditMode } from './map/MapStates';
+import { StoreType } from './State';
 
 const mapStateToProps = (state: StoreType) => {
     return {

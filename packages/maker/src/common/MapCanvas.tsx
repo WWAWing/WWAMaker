@@ -1,6 +1,6 @@
 import React, { RefObject } from 'react';
-import WWAConsts from '../../classes/WWAConsts';
-import getRect from '../../common/getRect';
+import WWAConsts from '../classes/WWAConsts';
+import getRect from './getRect';
 
 /**
  * 一番下に敷かれる背景色です。

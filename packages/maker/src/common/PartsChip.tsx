@@ -1,5 +1,5 @@
 import React, { RefObject } from 'react';
-import WWAConsts from '../../classes/WWAConsts';
+import WWAConsts from '../classes/WWAConsts';
 
 interface Props {
     cropX: number,

@@ -1,11 +1,11 @@
 import React from 'react';
 import styles from './App.module.scss';
-import MainToolbar from './components/MainToolbar';
+import MainToolbar from './MainToolbar';
 import PartsSelect from './parts/PartsSelect';
-import InfoPanel from './components/InfoPanel';
+import InfoPanel from './info/InfoPanel';
 import MapView from './map/MapView';
 import SplitPane from 'react-split-pane';
-import './components/common/SplitPane.scss';
+import './common/SplitPane.scss';
 
 /**
  * WWA Maker 全体のコンポーネントです。
