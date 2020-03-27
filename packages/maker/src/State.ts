@@ -1,6 +1,7 @@
 import { LoadState, LoadReducer, INITIAL_STATE as LOAD_INITIAL_STATE } from "./load/LoadStates";
 import { PartsState, INITIAL_STATE as PARTS_INITIAL_STATE, ObjectPartsReducer, MapPartsReducer } from "./parts/PartsState";
-import WWAData, { defaultWWAData } from "./classes/WWAData";
+import { defaultWWAData } from "./classes/WWAData";
+import { WWAData } from "@wwawing/common-interface";
 import { WWADataReducer } from "./wwadata/WWADataState";
 import { createStore, applyMiddleware } from "redux";
 import thunkMiddleware from 'redux-thunk';

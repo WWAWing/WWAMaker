@@ -2,7 +2,7 @@ import { reducerWithInitialState } from "typescript-fsa-reducers";
 import actionCreatorFactory from "typescript-fsa";
 import { LoaderError, LoaderProgress, LoaderResponse } from "./Loader";
 import { asyncFactory } from "typescript-fsa-redux-thunk";
-import WWAData from "../classes/WWAData";
+import { WWAData } from "@wwawing/common-interface";
 import { setMapdata, setImage } from "../State";
 
 /**
