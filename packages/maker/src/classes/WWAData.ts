@@ -1,10 +1,42 @@
 import WWAConsts from "./WWAConsts";
 import { WWAData } from "@wwawing/common-interface";
 
-export interface Coord {
-    x: number;
-    y: number;
+// ここから先は WWA Wing の wwa_data.ts から取得したもの
+// 詳細は https://github.com/WWAWing/WWAWing/wiki/WWAData を参照のこと
+
+export enum ItemMode {
+    NORMAL = 0,
+    CAN_USE = 1,
+    NOT_DISAPPEAR = 2
 }
+
+export enum PartsType {
+    MAP = 1,
+    OBJECT = 0
+}
+
+export enum MoveType {
+    STATIC = 0,
+    CHASE_PLAYER = 1,
+    RUN_OUT = 2,
+    HANG_AROUND = 3
+}
+
+export enum SystemMessage1 {
+    ASK_LINK = 5,
+    NO_MONEY = 6,
+    NO_ITEM = 7,
+    USE_ITEM = 8
+}
+
+export enum SystemMessage2 {
+    CLICKABLE_ITEM = 0,
+    FULL_ITEM = 1,
+    LOAD_SE = 2
+}
+
+// ここまで WWA Wing の wwa_data.ts と一緒
+// ここからは WWA Maker 独自
 
 export const defaultWWAData: WWAData = {
     version: WWAConsts.CURRENT_VERSION,
@@ -106,11 +138,6 @@ function createEmptyMap(size: number): number[][] {
  */
 export function createEmptyPartsAttribute(): number[] {
     return new Array<number>(WWAConsts.ATR_MAX).fill(0);
-}
-
-export enum PartsType {
-    MAP = 1,
-    OBJECT = 0
 }
 
 export enum ObjectPartsType {
