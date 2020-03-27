@@ -21,16 +21,16 @@ export interface MapState {
      *     マス単位で表示されていて、主にツールバーの表示に使用されています。
      */
     currentPos: {
-        x: number,
-        y: number
+        chipX: number,
+        chipY: number
     }
 }
 
 export const INITIAL_STATE: MapState = {
     editMode: EditMode.PUT_MAP,
     currentPos: {
-        x: 0,
-        y: 0
+        chipX: 0,
+        chipY: 0
     }
 };
 
@@ -52,7 +52,7 @@ export const MapReducer = reducerWithInitialState(INITIAL_STATE)
     .case(setCurrentPos, (state, payload) => ({
         ...state,
         currentPos: {
-            x: payload.chipX,
-            y: payload.chipY
+            chipX: payload.chipX,
+            chipY: payload.chipY
         }
     }));

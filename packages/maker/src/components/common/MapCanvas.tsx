@@ -1,5 +1,6 @@
 import React, { RefObject } from 'react';
 import WWAConsts from '../../classes/WWAConsts';
+import getRect from '../../common/getRect';
 
 /**
  * 一番下に敷かれる背景色です。
@@ -12,16 +13,27 @@ interface Props {
     mapSize: number;
     image: CanvasImageSource;
     currentPos: {
-        x: number,
-        y: number
-    }
+        chipX: number,
+        chipY: number
+    },
+    startEditMapPos: {
+        chipX: number,
+        chipY: number
+    } | null,
+    onMouseDown: (x: number, y: number) => void;
     onMouseMove: (x: number, y: number) => void;
+    onMouseDrag: (x: number, y:number) => void;
+    onMouseUp: (x: number, y: number) => void;
+}
+
+interface State {
+    hasClick: boolean
 }
 
 /**
  * マップを表示する Canvas です。
  */
-export default class MapCanvas extends React.Component<Props, {}> {
+export default class MapCanvas extends React.Component<Props, State> {
     private canvasRef: RefObject<HTMLCanvasElement>;
     private canvasContext: CanvasRenderingContext2D | null;
     public static defaultProps: Props = {
@@ -30,14 +42,21 @@ export default class MapCanvas extends React.Component<Props, {}> {
         mapSize: WWAConsts.MAP_SIZE_DEFAULT,
         image: new Image(),
         currentPos: {
-            x: 0,
-            y: 0
+            chipX: 0,
+            chipY: 0
         },
-        onMouseMove: () => {}
+        startEditMapPos: null,
+        onMouseDown: () => {},
+        onMouseMove: () => {},
+        onMouseDrag: () => {},
+        onMouseUp: () => {}
     }
 
     constructor(props: Props) {
         super(props);
+        this.state = {
+            hasClick: false
+        };
         this.canvasRef = React.createRef();
         this.canvasContext = null;
     }
@@ -60,17 +79,62 @@ export default class MapCanvas extends React.Component<Props, {}> {
         return this.props.mapSize * WWAConsts.CHIP_SIZE;
     }
 
-    /**
-     * 現在のマウスの位置を出力します。
-     * @param event 
-     */
-    private getCurrentPos(event: React.MouseEvent): [number, number] {
-        const canvasRect = this.canvasRef.current?.getBoundingClientRect();
-        if (!canvasRect) {
-            return [0, 0];
+    private handleMouseDown(event: React.MouseEvent) {
+        this.setState({
+            hasClick: true
+        });
+
+        const mousePos = this.getMousePos(event.clientX, event.clientY);
+        if (!mousePos) {
+            return;
         }
 
-        return [event.clientX - canvasRect.left, event.clientY - canvasRect.top];
+        this.props.onMouseDown(mousePos.mouseX, mousePos.mouseY);
+    }
+
+    /**
+     * マウスの現在位置とクリック状態を出力し、プロパティに記載された処理を実行させます。
+     */
+    private handleMouseMove(event: React.MouseEvent) {
+        const mousePos = this.getMousePos(event.clientX, event.clientY);
+        if (!mousePos) {
+            return;
+        }
+        
+        if (this.state.hasClick) {
+            this.props.onMouseDrag(mousePos.mouseX, mousePos.mouseY);
+        } else {
+            this.props.onMouseMove(mousePos.mouseX, mousePos.mouseY);
+        }
+    }
+
+    private handleMouseUp(event: React.MouseEvent) {
+        this.setState({
+            hasClick: false
+        });
+
+        const mousePos = this.getMousePos(event.clientX, event.clientY);
+        if (!mousePos) {
+            return;
+        }
+
+        return this.props.onMouseUp(mousePos.mouseX, mousePos.mouseY);
+    }
+
+    /**
+     * マウスの座標から要素内の現在位置を取得します。
+     * @returns 要素内の現在位置 (px単位) Canvas の要素が取得できなければ null
+     */
+    private getMousePos(clientX: number, clientY: number): { mouseX: number, mouseY: number } | null {
+        const canvasRect = this.canvasRef.current?.getBoundingClientRect();
+        if (!canvasRect) {
+            return null;
+        }
+
+        return {
+            mouseX: clientX - canvasRect.left,
+            mouseY: clientY - canvasRect.top
+        }
     }
 
     private drawMap() {
@@ -103,13 +167,24 @@ export default class MapCanvas extends React.Component<Props, {}> {
         });
 
         this.renderCurrentPos();
-
     }
     
+    /**
+     * 矩形部分を描画します。
+     */
     private renderCurrentPos() {
-        const mouseX = this.props.currentPos.x * WWAConsts.CHIP_SIZE;
-        const mouseY = this.props.currentPos.y * WWAConsts.CHIP_SIZE;
-        this.canvasContext?.strokeRect(mouseX, mouseY, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE);
+        const [chipX, chipY, chipWidth, chipHeight] = getRect(
+            this.props.currentPos.chipX,
+            this.props.currentPos.chipY,
+            this.props.startEditMapPos?.chipX || this.props.currentPos.chipX,
+            this.props.startEditMapPos?.chipY || this.props.currentPos.chipY
+        );
+        this.canvasContext?.strokeRect(
+            chipX * WWAConsts.CHIP_SIZE,
+            chipY * WWAConsts.CHIP_SIZE,
+            (chipWidth * WWAConsts.CHIP_SIZE) + WWAConsts.CHIP_SIZE,
+            (chipHeight * WWAConsts.CHIP_SIZE) + WWAConsts.CHIP_SIZE
+        );
     }
 
     public render() {
@@ -117,7 +192,9 @@ export default class MapCanvas extends React.Component<Props, {}> {
         return (
             <canvas
                 ref={this.canvasRef}
-                onMouseMove={(event) => this.props.onMouseMove(...this.getCurrentPos(event))}
+                onMouseDown={this.handleMouseDown.bind(this)}
+                onMouseMove={this.handleMouseMove.bind(this)}
+                onMouseUp={this.handleMouseUp.bind(this)}
                 width={elementSize}
                 height={elementSize}
             ></canvas>

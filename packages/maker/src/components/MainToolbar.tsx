@@ -80,8 +80,8 @@ class MainToolbar extends React.Component<Props, State> {
                     {this.editModeButton(EditMode.DELETE_OBJECT, "物体パーツ削除")}
                 </div>
                 <div>
-                    <span>X: {this.props.currentPos.x}</span>
-                    <span>Y: {this.props.currentPos.y}</span>
+                    <span>X: {this.props.currentPos.chipX}</span>
+                    <span>Y: {this.props.currentPos.chipY}</span>
                 </div>
             </div>
         );
