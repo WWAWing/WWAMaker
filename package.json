@@ -1,0 +1,16 @@
+{
+  "name": "wwamaker",
+  "version": "0.0.1",
+  "description": "WWA Making Tool with Electron",
+  "main": "index.js",
+  "repository": "git@github.com:WWAWing/WWAMaker.git",
+  "author": "WWA Wing Team",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "yarn workspace wwamaker-maker start"
+  }
+}

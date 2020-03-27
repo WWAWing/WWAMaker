@@ -1,0 +1,13 @@
+.mapView {
+    height: 100%;
+    line-height: 0;
+    overflow: auto;
+    position: relative;
+    width: 100%;
+}
+
+.mapCanvas {
+    left: 0;
+    position: absolute;
+    top: 0;
+}

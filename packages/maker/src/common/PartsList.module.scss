@@ -1,0 +1,7 @@
+.partsList {
+    background-color: rgb(158, 158, 158);
+    /**
+     * @todo 単純に済ませるために line-height: 0 としているが、問題があったら flex や grid に変更しておく。
+     */
+    line-height: 0;
+}

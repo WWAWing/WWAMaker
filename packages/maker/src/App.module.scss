@@ -1,0 +1,33 @@
+@import './common/SplitPane.scss';
+
+.app {
+    display: grid;
+    grid-template:
+        [toolbar]   "toolbar  toolbar"   60px  [toolbar]
+        [editarea]  "editarea infopanel" 1fr   [infopanel]
+                   / 1fr       320px;
+    height: 100vh;
+    width: 100vw;
+}
+
+.mainToolbar {
+    grid-area: toolbar;
+}
+
+.infoPanel {
+    background-color: #d0d0d0;
+    grid-area: infopanel;
+}
+
+.editArea {
+    background-color: rgb(158, 158, 158);
+    grid-area: editarea;
+    /**
+     * react-split-pane は SplitPane コンポーネントに position: absolute; のプロパティが存在します。
+     *     この場合、ページ全体にズレが発生するため、 position: relative; で予防しています。
+     * @todo SplitPane の親要素用の CSS を common ディレクトリに置いても良いかもしれない。
+     */
+    position: relative;
+    overflow: auto;
+    text-align: left;
+}
