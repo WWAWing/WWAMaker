@@ -1,5 +1,6 @@
 import actionCreatorFactory from "typescript-fsa";
 import { reducerWithInitialState } from "typescript-fsa-reducers";
+import { PartsType } from "../classes/WWAData";
 
 /**
  * InfoPanel のモードです。
@@ -11,7 +12,13 @@ export type InfoPanelMode =
 
 export interface InfoPanelState {
     isOpened: boolean,
-    viewMode: InfoPanelMode
+    viewMode: InfoPanelMode,
+    partsEdit?: InfoPanelPartsEditState
+}
+
+export interface InfoPanelPartsEditState {
+    type: PartsType,
+    number: number
 }
 
 export const INITIAL_STATE: InfoPanelState = {
@@ -29,6 +36,10 @@ const toggleInfoPanel = actionCreator<{ toggle?: boolean; }>("TOGGLE_INFOPANEL")
  * InfoPanel で表示する内容を変更します。
  */
 const switchInfoPanel = actionCreator<{ mode: InfoPanelMode }>("SWITCH_INFOPANEL");
+/**
+ * パーツ編集を表示します。
+ */
+export const showPartsEdit = actionCreator<InfoPanelPartsEditState>("SHOW_PARTS_EDIT");
 
 export const InfoPanelReducer = reducerWithInitialState(INITIAL_STATE)
     .case(toggleInfoPanel, (state, payload) => ({
@@ -38,4 +49,9 @@ export const InfoPanelReducer = reducerWithInitialState(INITIAL_STATE)
     .case(switchInfoPanel, (state, payload) => ({
         ...state,
         viewMode: payload.mode
+    }))
+    .case(showPartsEdit, (state, payload) => ({
+        ...state,
+        viewMode: "PARTS_EDIT",
+        partsEdit: payload
     }))

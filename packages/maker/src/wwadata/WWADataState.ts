@@ -20,6 +20,15 @@ export const putParts = actionCreator<{
  * マップデータの基本設定を設定します。
  */
 export const setMapFoundation = actionCreator<MapFoundationField>("SET_MAP_FOUNDATION");
+/**
+ * パーツを編集します。
+ */
+export const editParts = actionCreator<{
+    type: PartsType,
+    number: number,
+    attributes: number[],
+    message: string
+}>("EDIT_PARTS");
 
 /**
  * 配列 target から指定した場所に番号を敷き詰めます。

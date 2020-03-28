@@ -3,12 +3,13 @@ import { InfoPanelMode } from './InfoPanelState';
 import { MapStateToProps, connect } from 'react-redux';
 import { StoreType } from '../State';
 import MapFoundation from './MapFoundation';
+import PartsEdit from './PartsEdit';
 
 interface StateProps {
     viewMode: InfoPanelMode
 }
 
-const mapDispatchToProps: MapStateToProps<StateProps, StateProps, StoreType> = (state) => {
+const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = (state) => {
     return {
         viewMode: state.info.viewMode
     };
@@ -30,6 +31,8 @@ class InfoPanel extends React.Component<Props> {
         switch (this.props.viewMode) {
             case "MAP_FOUNDATION":
                 return <MapFoundation></MapFoundation>;
+            case "PARTS_EDIT":
+                return <PartsEdit></PartsEdit>;
         }
         return (<></>);
     }
@@ -48,4 +51,4 @@ class InfoPanel extends React.Component<Props> {
     }
 }
 
-export default connect(mapDispatchToProps)(InfoPanel);
+export default connect(mapStateToProps)(InfoPanel);
