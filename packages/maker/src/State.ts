@@ -1,5 +1,7 @@
 import { LoadState, LoadReducer, INITIAL_STATE as LOAD_INITIAL_STATE } from "./load/LoadStates";
 import { PartsState, INITIAL_STATE as PARTS_INITIAL_STATE, ObjectPartsReducer, MapPartsReducer } from "./parts/PartsState";
+import { MapState, INITIAL_STATE as MAP_INITIAL_STATE, MapReducer } from "./map/MapStates";
+import { InfoPanelState, INITIAL_STATE as INFOPANEL_INITIAL_STATE, InfoPanelReducer } from "./info/InfoPanelState";
 import { defaultWWAData } from "./classes/WWAData";
 import { WWAData } from "@wwawing/common-interface";
 import { WWADataReducer } from "./wwadata/WWADataState";
@@ -7,7 +9,6 @@ import { createStore, applyMiddleware } from "redux";
 import thunkMiddleware from 'redux-thunk';
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 import actionCreatorFactory from "typescript-fsa";
-import { MapState, INITIAL_STATE as MAP_INITIAL_STATE, MapReducer } from "./map/MapStates";
 import { composeWithDevTools } from "redux-devtools-extension";
 
 /**
@@ -19,7 +20,8 @@ export interface StoreType {
     map: MapState,
     objParts: PartsState,
     mapParts: PartsState,
-    image: CanvasImageSource|null
+    image: CanvasImageSource|null,
+    info: InfoPanelState
 }
 
 /**
@@ -32,7 +34,8 @@ const INITIAL_STATE: StoreType = {
     map: MAP_INITIAL_STATE,
     objParts: PARTS_INITIAL_STATE,
     mapParts: PARTS_INITIAL_STATE,
-    image: null
+    image: null,
+    info: INFOPANEL_INITIAL_STATE
 }
 
 const actionCreator = actionCreatorFactory();
@@ -75,7 +78,8 @@ const reducer = reducerWithInitialState(INITIAL_STATE)
         wwaData: WWADataReducer(state.wwaData === null ? undefined : state.wwaData, action),
         map: MapReducer(state.map, action),
         objParts: ObjectPartsReducer(state.objParts, action),
-        mapParts: MapPartsReducer(state.mapParts, action)
+        mapParts: MapPartsReducer(state.mapParts, action),
+        info: InfoPanelReducer(state.info, action)
     }))
 
 export const Store = createStore(

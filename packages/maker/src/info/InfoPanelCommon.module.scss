@@ -1,0 +1,15 @@
+.row {
+    display: flex;
+}
+
+.rowTitle {
+    flex: 0 0 auto;
+}
+
+.rowContent {
+    flex: 1 1 auto;
+}
+
+.grid {
+    display: grid;
+}
