@@ -2,7 +2,6 @@ import { LoadState, LoadReducer, INITIAL_STATE as LOAD_INITIAL_STATE } from "./l
 import { PartsState, INITIAL_STATE as PARTS_INITIAL_STATE, ObjectPartsReducer, MapPartsReducer } from "./parts/PartsState";
 import { MapState, INITIAL_STATE as MAP_INITIAL_STATE, MapReducer } from "./map/MapStates";
 import { InfoPanelState, INITIAL_STATE as INFOPANEL_INITIAL_STATE, InfoPanelReducer } from "./info/InfoPanelState";
-import { defaultWWAData } from "./classes/WWAData";
 import { WWAData } from "@wwawing/common-interface";
 import { WWADataReducer } from "./wwadata/WWADataState";
 import { createStore, applyMiddleware } from "redux";
@@ -30,7 +29,7 @@ export interface StoreType {
  */
 const INITIAL_STATE: StoreType = {
     load: LOAD_INITIAL_STATE,
-    wwaData: defaultWWAData,
+    wwaData: null,
     map: MAP_INITIAL_STATE,
     objParts: PARTS_INITIAL_STATE,
     mapParts: PARTS_INITIAL_STATE,
@@ -54,7 +53,6 @@ const closeMapdata = actionCreator('CLOSE_MAPDATA');
 
 /**
  * root の Reducer です。
- * @see mapdataReducer
  */
 const reducer = reducerWithInitialState(INITIAL_STATE)
     .case(setMapdata, (state, params) => {

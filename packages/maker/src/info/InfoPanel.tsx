@@ -2,10 +2,10 @@ import React from 'react';
 import { InfoPanelMode } from './InfoPanelState';
 import { MapStateToProps, connect } from 'react-redux';
 import { StoreType } from '../State';
-import { MapFoundation } from './MapFoundation';
+import MapFoundation from './MapFoundation';
 
 interface StateProps {
-    viewMode: InfoPanelMode   
+    viewMode: InfoPanelMode
 }
 
 const mapDispatchToProps: MapStateToProps<StateProps, StateProps, StoreType> = (state) => {
@@ -29,7 +29,7 @@ class InfoPanel extends React.Component<Props> {
     private getInfoPanelView() {
         switch (this.props.viewMode) {
             case "MAP_FOUNDATION":
-                return MapFoundation();
+                return <MapFoundation></MapFoundation>;
         }
         return (<></>);
     }
