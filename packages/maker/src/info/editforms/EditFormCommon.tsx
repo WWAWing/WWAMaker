@@ -1,4 +1,6 @@
 import React from "react";
+import WWAConsts from "../../classes/WWAConsts";
+import { MoveType } from "../../classes/WWAData";
 
 interface EditFormsProps {
     forms: EditForm[]
@@ -32,6 +34,7 @@ export type EditForm =
         };
     } | {
         type: "MESSAGE",
+        label?: string,
         value: string
     } | {
         type: "URL",
@@ -110,6 +113,9 @@ export class EditForms extends React.Component<EditFormsProps> {
             case "MESSAGE":
                 return (
                     <>
+                        {editForm.label !== undefined &&
+                            <div>{editForm.label}</div>
+                        }
                         <textarea value={editForm.value} onChange={() => {}}></textarea>
                     </>
                 );
@@ -142,6 +148,10 @@ export class EditForms extends React.Component<EditFormsProps> {
     }
 }
 
+/**
+ * 「サウンド番号」の入力フォームの情報を作成します。
+ * @see EditForm
+ */
 export const createSoundEditForm: (soundNumberValue: number) => EditForm = soundNumberValue => {
     return {
         type: "NUMBER",
@@ -150,6 +160,10 @@ export const createSoundEditForm: (soundNumberValue: number) => EditForm = sound
     };
 };
 
+/**
+ * 「待ち時間」の入力フォームの情報を作成します。
+ * @see EditForm
+ */
 export const createWaitTimeEditForm: (waitTimeValue: number) => EditForm = waitTimeValue => {
     return {
         type: "NUMBER",
@@ -158,7 +172,117 @@ export const createWaitTimeEditForm: (waitTimeValue: number) => EditForm = waitT
     };
 };
 
-export const createMessageEditForm: (message: string) => EditForm = message => ({
+/**
+ * メッセージの入力フォームの情報を作成します。
+ * @see EditForm
+ */
+export const createMessageEditForm: (message: string, label?: string) => EditForm = (message, label) => ({
     type: "MESSAGE",
-    value: message
+    label: label,
+    value: message,
 });
+
+/**
+ * 「動作属性」の入力フォームの情報を作成します。
+ * @see EditForm
+ */
+export const createMoveTypeEditForm = (moveTypeValue: number): EditForm => ({
+    type: "SELECT",
+    label: "動作属性",
+    selectableItems: [
+        {
+            label: "静止",
+            value: MoveType.STATIC
+        }, {
+            label: "プレイヤー追尾",
+            value: MoveType.CHASE_PLAYER
+        }, {
+            label: "逃げる",
+            value: MoveType.RUN_OUT
+        }, {
+            label: "うろうろする",
+            value: MoveType.HANG_AROUND
+        }
+    ],
+    value: moveTypeValue
+});
+
+/**
+ * 「通行区分」の入力フォームの情報を作成します。
+ * @see EditForm
+ */
+export const createStreetTypeEditForm = (passableValue: number): EditForm => ({
+    type: "SELECT",
+    label: "通行区分",
+    selectableItems: [
+        {
+            label: "通行不可",
+            value: 0
+        }, {
+            label: "通行可",
+            value: WWAConsts.PASSABLE_OBJECT
+        }
+    ],
+    value: passableValue
+});
+
+/**
+ * モンスターやステータス変化などで使用されているステータス入力フォームの情報を作成します。
+ */
+export const createStatusEditForm = (
+    energyValue: number,
+    strengthValue: number,
+    defenceValue: number,
+    goldValue: number
+): EditForm => ({
+    type: "STATUS",
+    items: {
+        energy: {
+            label: "生命力",
+            value: energyValue
+        },
+        strength: {
+            label: "攻撃力",
+            value: strengthValue
+        },
+        defence: {
+            label: "防御力",
+            value: defenceValue
+        },
+        gold: {
+            label: "所持金",
+            value: goldValue
+        }
+    }
+});
+
+/**
+ * パーツの編集画面のコンポーネントに割り当てる型です。
+ */
+export type PartsEditComponent = (attribute: number[], message: string) => JSX.Element;
+
+/**
+ * URLゲートの編集画面のコンポーネントです。
+ *     物体パーツのURLゲートも背景パーツのURLゲートも編集画面は共通のため、物体背景ともにこのコンポーネントから参照されます。
+ */
+export const URLGateEdit: PartsEditComponent = (attribute, message) => {
+    const messageLines = message.split(/\r|\n|\r\n/);
+    return (
+        <div>
+            <p>URLゲート</p>
+            <EditForms
+                forms={[
+                    {
+                        type: "URL",
+                        label: "リンク先のURLアドレス",
+                        value: messageLines[0]
+                    }, {
+                        type: "STRING",
+                        label: "URL TARGET",
+                        value: messageLines[1]
+                    }
+                ]}
+            />
+        </div>
+    )
+}

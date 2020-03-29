@@ -1,57 +1,23 @@
 import WWAConsts from "../../classes/WWAConsts";
 import React from "react";
 import { PartsEditPropsWithMessage } from "./PartsEditProps";
-import { EditForms, EditForm, createSoundEditForm, createWaitTimeEditForm, createMessageEditForm } from "./EditFormCommon";
-import { MoveType, ItemMode } from "../../classes/WWAData";
+import {
+    EditForms,
+    createSoundEditForm,
+    createWaitTimeEditForm,
+    createMessageEditForm,
+    createMoveTypeEditForm,
+    createStreetTypeEditForm,
+    PartsEditComponent,
+    createStatusEditForm,
+    URLGateEdit
+} from "./EditFormCommon";
+import { ItemMode } from "../../classes/WWAData";
 
 interface Props {
     partsNumber: number;
     partsInfo: PartsEditPropsWithMessage;
 }
-
-/**
- * 「動作属性」の入力フォームの情報を作成します。
- * @see EditForm
- */
-const createMoveTypeEditForm = (moveTypeValue: number): EditForm => ({
-    type: "SELECT",
-    label: "動作属性",
-    selectableItems: [
-        {
-            label: "静止",
-            value: MoveType.STATIC
-        }, {
-            label: "プレイヤー追尾",
-            value: MoveType.CHASE_PLAYER
-        }, {
-            label: "逃げる",
-            value: MoveType.RUN_OUT
-        }, {
-            label: "うろうろする",
-            value: MoveType.HANG_AROUND
-        }
-    ],
-    value: moveTypeValue
-});
-
-/**
- * 「通行区分」の入力フォームの情報を作成します。
- * @see EditForm
- */
-const createStreetTypeEditForm = (passableValue: number): EditForm => ({
-    type: "SELECT",
-    label: "通行区分",
-    selectableItems: [
-        {
-            label: "通行不可",
-            value: 0
-        }, {
-            label: "通行可",
-            value: WWAConsts.PASSABLE_OBJECT
-        }
-    ],
-    value: passableValue
-});
 
 /**
  * 物体パーツの編集フォームのコンポーネントです。
@@ -61,117 +27,30 @@ export const ObjectEditForm: React.StatelessComponent<Props> = props => {
         /**
          * パーツ編集フォームを作る際に渡す属性のエイリアスです。
          */
-        const partsAttribute = props.partsInfo.attribute;
-        const partsMessage = props.partsInfo.message;
+        const attribute = props.partsInfo.attribute;
+        const message = props.partsInfo.message;
 
         switch (props.partsInfo.attribute[WWAConsts.ATR_TYPE]) {
             case WWAConsts.OBJECT_NORMAL:
-                return <div>
-                    <p>通常物体</p>
-                    <EditForms
-                        forms={[
-                            createMoveTypeEditForm(partsAttribute[WWAConsts.ATR_MOVE]),
-                            createStreetTypeEditForm(partsAttribute[WWAConsts.ATR_MODE])
-                        ]}
-                    ></EditForms>
-                </div>;
+                return ObjectNormalEdit(attribute, message);
             case WWAConsts.OBJECT_MESSAGE:
-                return <div>
-                    <p>メッセージ</p>
-                    <EditForms
-                        forms={[
-                            createSoundEditForm(partsAttribute[WWAConsts.ATR_SOUND]),
-                            createMoveTypeEditForm(partsAttribute[WWAConsts.ATR_MOVE]),
-                            createWaitTimeEditForm(partsAttribute[WWAConsts.ATR_NUMBER]),
-                            {
-                                type: "MESSAGE",
-                                value: props.partsInfo.message
-                            }
-                        ]}
-                    ></EditForms>
-                </div>;
+                return ObjectMessageEdit(attribute, message);
             case WWAConsts.OBJECT_MONSTER:
-                return <div>
-                    <p>モンスター</p>
-                    <EditForms
-                        forms={[
-                            {
-                                type: "STATUS",
-                                items: {
-                                    energy: {
-                                        label: "生命力",
-                                        value: partsAttribute[WWAConsts.ATR_ENERGY]
-                                    },
-                                    strength: {
-                                        label: "生命力",
-                                        value: partsAttribute[WWAConsts.ATR_STRENGTH]
-                                    },
-                                    defence: {
-                                        label: "防御力",
-                                        value: partsAttribute[WWAConsts.ATR_DEFENCE]
-                                    },
-                                    gold: {
-                                        label: "生命力",
-                                        value: partsAttribute[WWAConsts.ATR_GOLD]
-                                    }
-                                }
-                            }, {
-                                type: "NUMBER",
-                                label: "モンスター所持アイテムの物体番号",
-                                value: partsAttribute[WWAConsts.ATR_ITEM]
-                            },
-                            createSoundEditForm(partsAttribute[WWAConsts.ATR_SOUND]),
-                            createMoveTypeEditForm(partsAttribute[WWAConsts.ATR_MOVE]),
-                            createMessageEditForm(partsMessage)
-                        ]}
-                    ></EditForms>
-                </div>
+                return ObjectMonsterEdit(attribute, message);
             case WWAConsts.OBJECT_ITEM:
-                return <div>
-                    <p>アイテム</p>
-                    <EditForms
-                        forms={[
-                            {
-                                type: "STATUS",
-                                items: {
-                                    strength: {
-                                        label: "攻撃力",
-                                        value: partsAttribute[WWAConsts.ATR_STRENGTH]
-                                    },
-                                    defence: {
-                                        label: "防御力",
-                                        value: partsAttribute[WWAConsts.ATR_DEFENCE]
-                                    }
-                                }
-                            }, {
-                                type: "NUMBER",
-                                label: "アイテムボックスへの格納位置",
-                                value: partsAttribute[WWAConsts.ATR_NUMBER]
-                            },
-                            createSoundEditForm(partsAttribute[WWAConsts.ATR_SOUND]),
-                            {
-                                type: "SELECT",
-                                label: "使用属性",
-                                selectableItems: [
-                                    {
-                                        label: "通常",
-                                        value: ItemMode.NORMAL
-                                    }, {
-                                        label: "クリックで使用可",
-                                        value: ItemMode.CAN_USE
-                                    }, {
-                                        label: "使用しても無くならない",
-                                        value: ItemMode.NOT_DISAPPEAR
-                                    }
-                                ],
-                                value: partsAttribute[WWAConsts.ATR_MODE]
-                            },
-                            createMoveTypeEditForm(partsAttribute[WWAConsts.ATR_MOVE])
-                        ]}
-                    ></EditForms>
-                </div>
+                return ObjectItemEdit(attribute, message);
+            case WWAConsts.OBJECT_DOOR:
+                return ObjectDoorEdit(attribute, message);
+            case WWAConsts.OBJECT_STATUS:
+                return ObjectStatusEdit(attribute, message);
+            case WWAConsts.OBJECT_SELL:
+                return ObjectSellItemEdit(attribute, message);
+            case WWAConsts.OBJECT_BUY:
+                return ObjectBuyItemEdit(attribute, message);
+            case WWAConsts.OBJECT_URLGATE:
+                return URLGateEdit(attribute, message);
         }
-        return <></>;
+        return <><p>対応している物体パーツが見つかりませんでした。</p></>;
     }
 
     return ( // TODO: グラフィック画像を表示する
@@ -181,3 +60,213 @@ export const ObjectEditForm: React.StatelessComponent<Props> = props => {
         </div>
     )
 }
+
+// ここより先、物体パーツの各種別の編集画面コンポーネント
+
+const ObjectNormalEdit: PartsEditComponent = attribute => (
+    <div>
+        <p>通常物体</p>
+        <EditForms
+            forms={[
+                createMoveTypeEditForm(attribute[WWAConsts.ATR_MOVE]),
+                createStreetTypeEditForm(attribute[WWAConsts.ATR_MODE])
+            ]}
+        />
+    </div>
+);
+
+const ObjectMessageEdit: PartsEditComponent = (attribute, message) => (
+    <div>
+        <p>メッセージ</p>
+        <EditForms
+            forms={[
+                createSoundEditForm(attribute[WWAConsts.ATR_SOUND]),
+                createMoveTypeEditForm(attribute[WWAConsts.ATR_MOVE]),
+                createWaitTimeEditForm(attribute[WWAConsts.ATR_NUMBER]),
+                createMessageEditForm(message, "表示メッセージ")
+            ]}
+        />
+    </div>
+);
+
+const ObjectMonsterEdit: PartsEditComponent = (attribute, message) => (
+    <div>
+        <p>モンスター</p>
+        <EditForms
+            forms={[
+                createStatusEditForm(
+                    attribute[WWAConsts.ATR_ENERGY],
+                    attribute[WWAConsts.ATR_STRENGTH],
+                    attribute[WWAConsts.ATR_DEFENCE],
+                    attribute[WWAConsts.ATR_GOLD]
+                ),
+                {
+                    type: "NUMBER",
+                    label: "モンスター所持アイテムの物体番号",
+                    value: attribute[WWAConsts.ATR_ITEM]
+                },
+                createSoundEditForm(attribute[WWAConsts.ATR_SOUND]),
+                createMoveTypeEditForm(attribute[WWAConsts.ATR_MOVE]),
+                createMessageEditForm(message, "戦闘後表示メッセージ")
+            ]}
+        />
+    </div>
+);
+
+const ObjectItemEdit: PartsEditComponent = (attribute, message) => (
+    <div>
+        <p>アイテム</p>
+        <EditForms
+            forms={[
+                {
+                    type: "STATUS",
+                    items: {
+                        strength: {
+                            label: "攻撃力",
+                            value: attribute[WWAConsts.ATR_STRENGTH]
+                        },
+                        defence: {
+                            label: "防御力",
+                            value: attribute[WWAConsts.ATR_DEFENCE]
+                        }
+                    }
+                }, {
+                    type: "NUMBER",
+                    label: "アイテムボックスへの格納位置",
+                    value: attribute[WWAConsts.ATR_NUMBER]
+                },
+                createSoundEditForm(attribute[WWAConsts.ATR_SOUND]),
+                {
+                    type: "SELECT",
+                    label: "使用属性",
+                    selectableItems: [
+                        {
+                            label: "通常",
+                            value: ItemMode.NORMAL
+                        }, {
+                            label: "クリックで使用可",
+                            value: ItemMode.CAN_USE
+                        }, {
+                            label: "使用しても無くならない",
+                            value: ItemMode.NOT_DISAPPEAR
+                        }
+                    ],
+                    value: attribute[WWAConsts.ATR_MODE]
+                },
+                createMoveTypeEditForm(attribute[WWAConsts.ATR_MOVE]),
+                createMessageEditForm(message, "アイテム取得後表示メッセージ")
+            ]}
+        />
+    </div>
+);
+
+const ObjectDoorEdit: PartsEditComponent = (attribute, message) => (
+    <div>
+        <p>扉</p>
+        <EditForms
+            forms={[
+                {
+                    type: "SELECT",
+                    label: "扉の種類",
+                    selectableItems: [
+                        {
+                            label: "鍵なくなる",
+                            value: 0
+                        }, {
+                            label: "鍵なくならない",
+                            value: 1
+                        }
+                    ],
+                    value: attribute[WWAConsts.ATR_MODE]
+                }, {
+                    type: "NUMBER",
+                    label: "対応するアイテム(鍵)の物体番号",
+                    value: attribute[WWAConsts.ATR_ITEM]
+                },
+                createStreetTypeEditForm(attribute[WWAConsts.ATR_MODE]),
+                createSoundEditForm(attribute[WWAConsts.ATR_SOUND]),
+                createMoveTypeEditForm(attribute[WWAConsts.ATR_MOVE]),
+                createMessageEditForm(message, "扉解放後表示メッセージ")
+            ]}
+        />
+    </div>
+);
+
+const ObjectStatusEdit: PartsEditComponent = (attribute, message) => (
+    <div>
+        <p>ステータス変化</p>
+        <EditForms
+            forms={[
+                createStatusEditForm(
+                    attribute[WWAConsts.ATR_ENERGY],
+                    attribute[WWAConsts.ATR_STRENGTH],
+                    attribute[WWAConsts.ATR_DEFENCE],
+                    attribute[WWAConsts.ATR_GOLD]
+                ),
+                createSoundEditForm(attribute[WWAConsts.ATR_SOUND]),
+                createMoveTypeEditForm(attribute[WWAConsts.ATR_MOVE]),
+                createMessageEditForm(message, "ステータス変化後表示メッセージ")
+            ]}
+        />
+    </div>
+);
+
+const ObjectSellItemEdit: PartsEditComponent = (attribute, message) => (
+    <div>
+        <p>物を売る</p>
+        <EditForms
+            forms={[
+                {
+                    type: "NUMBER",
+                    label: "販売金額",
+                    value: attribute[WWAConsts.ATR_GOLD]
+                }, {
+                    type: "NUMBER",
+                    label: "売るアイテムの物体番号",
+                    value: attribute[WWAConsts.ATR_ITEM]
+                }, {
+                    type: "STATUS",
+                    items: {
+                        energy: {
+                            label: "生命力",
+                            value: attribute[WWAConsts.ATR_ENERGY]
+                        },
+                        strength: {
+                            label: "攻撃力",
+                            value: attribute[WWAConsts.ATR_STRENGTH]
+                        },
+                        defence: {
+                            label: "防御力",
+                            value: attribute[WWAConsts.ATR_DEFENCE]
+                        }
+                    }
+                },
+                createSoundEditForm(attribute[WWAConsts.ATR_SOUND]),
+                createMoveTypeEditForm(attribute[WWAConsts.ATR_MOVE]),
+                createMessageEditForm(message, "表示メッセージ")
+            ]}
+        />
+    </div>
+);
+
+const ObjectBuyItemEdit: PartsEditComponent = (attribute, message) => (
+    <div>
+        <p>物を買う</p>
+        <EditForms
+            forms={[
+                {
+                    type: "NUMBER",
+                    label: "買い取り金額",
+                    value: attribute[WWAConsts.ATR_GOLD]
+                }, {
+                    type: "NUMBER",
+                    label: "買うアイテムの物体番号",
+                    value: attribute[WWAConsts.ATR_ITEM]
+                },
+                createSoundEditForm(attribute[WWAConsts.ATR_SOUND]),
+                createMoveTypeEditForm(attribute[WWAConsts.ATR_MOVE]),
+                createMessageEditForm(message, "表示メッセージ")
+            ]}
+        />
+    </div>
+);
