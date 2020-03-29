@@ -33,6 +33,9 @@ export default class WWAConsts {
     static REL_ATR_APPERANCE_TYPE: number = 3;
     static REL_ATR_APPERANCE_UNIT_LENGTH: number = 4;
 
+    static ATR_RANDOM_BASE: number = 10;
+    static RANDOM_ITERATION_MAX: number = 10;
+
     static MAP_STREET: number = 0;
     static MAP_WALL: number = 1;
     static MAP_LOCALGATE: number = 2;

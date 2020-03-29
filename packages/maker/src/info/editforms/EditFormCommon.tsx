@@ -126,12 +126,16 @@ export class EditForms extends React.Component<EditFormsProps> {
                         <input type="text" value={editForm.value} onChange={() => {}}></input>
                     </>
                 );
+            case "STRING":
+                return (
+                    <>
+                        <div>
+                            {editForm.label}
+                            <input type="text" value={editForm.value} onChange={() => {}}></input>
+                        </div>
+                    </>
+                );
         }
-        return (
-            <div>
-                <p>その入力フォームはまだ対応していません。</p>
-            </div>
-        );
     }
     public render() {
         return (
@@ -285,4 +289,28 @@ export const URLGateEdit: PartsEditComponent = (attribute, message) => {
             />
         </div>
     )
-}
+};
+
+/**
+ * ジャンプゲートの編集画面のコンポーネントです。
+ */
+export const LocalGateEdit: PartsEditComponent = (attribute) => {
+    return (
+        <div>
+            <p>ジャンプゲート</p>
+            <EditForms
+                forms={[
+                    {
+                        type: "NUMBER",
+                        label: "ジャンプ先X座標",
+                        value: attribute[WWAConsts.ATR_JUMP_X]
+                    }, {
+                        type: "NUMBER",
+                        label: "ジャンプ先Y座標",
+                        value: attribute[WWAConsts.ATR_JUMP_Y]
+                    }
+                ]}
+            />
+        </div>
+    )
+};

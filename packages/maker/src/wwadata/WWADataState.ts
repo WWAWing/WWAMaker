@@ -90,3 +90,5 @@ export const WWADataReducer = reducerWithInitialState<WWAData | null>(null)
             mapWidth: payload.mapWidth
         };
     })
+    // TODO: 実装する
+    .case(editParts, (state, payload) => state)

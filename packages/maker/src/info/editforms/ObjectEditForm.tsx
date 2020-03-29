@@ -10,7 +10,8 @@ import {
     createStreetTypeEditForm,
     PartsEditComponent,
     createStatusEditForm,
-    URLGateEdit
+    URLGateEdit,
+    LocalGateEdit
 } from "./EditFormCommon";
 import { ItemMode } from "../../classes/WWAData";
 
@@ -49,6 +50,15 @@ export const ObjectEditForm: React.StatelessComponent<Props> = props => {
                 return ObjectBuyItemEdit(attribute, message);
             case WWAConsts.OBJECT_URLGATE:
                 return URLGateEdit(attribute, message);
+            case WWAConsts.OBJECT_SCORE:
+                return ObjectScoreEdit(attribute, message);
+            case WWAConsts.OBJECT_RANDOM:
+                return ObjectRandomEdit(attribute, message);
+            case WWAConsts.OBJECT_SELECT:
+                // TODO: 二者択一の場合は指定位置にパーツを出現の表示が別になるため、そうなるように考慮しておく
+                return ObjectSelectEdit(attribute, message);
+            case WWAConsts.OBJECT_LOCALGATE:
+                return LocalGateEdit(attribute, message);
         }
         return <><p>対応している物体パーツが見つかりませんでした。</p></>;
     }
@@ -263,6 +273,82 @@ const ObjectBuyItemEdit: PartsEditComponent = (attribute, message) => (
                     label: "買うアイテムの物体番号",
                     value: attribute[WWAConsts.ATR_ITEM]
                 },
+                createSoundEditForm(attribute[WWAConsts.ATR_SOUND]),
+                createMoveTypeEditForm(attribute[WWAConsts.ATR_MOVE]),
+                createMessageEditForm(message, "表示メッセージ")
+            ]}
+        />
+    </div>
+);
+
+const ObjectScoreEdit: PartsEditComponent = (attribute, message) => (
+    <div>
+        <p>スコア表示</p>
+        <EditForms
+            forms={[
+                {
+                    type: "STATUS",
+                    items: {
+                        energy: {
+                            label: "生命力×",
+                            value: attribute[WWAConsts.ATR_ENERGY]
+                        },
+                        strength: {
+                            label: "攻撃力×",
+                            value: attribute[WWAConsts.ATR_STRENGTH]
+                        },
+                        defence: {
+                            label: "防御力×",
+                            value: attribute[WWAConsts.ATR_DEFENCE]
+                        },
+                        gold: {
+                            label: "所持金×",
+                            value: attribute[WWAConsts.ATR_GOLD]
+                        }
+                    }
+                },
+                createSoundEditForm(attribute[WWAConsts.ATR_SOUND]),
+                createMessageEditForm(message, "表示メッセージ")
+            ]}
+        />
+    </div>
+);
+
+const ObjectRandomEdit: PartsEditComponent = (attribute, message) => {
+    /**
+     * 指定した順番から1つずつ増える配列を作成します。
+     *     ランダム選択のパーツでは ATR_RANDOM_BASE から RANDOM_ITERATION_MAX の分がターゲットパーツ番号として使用します
+     *     その番号の分の入力欄を作る際に、 attribute の参照に使用するインデックスが必要があります。
+     *     React では JSX 構文内で for を回すことは難しいため、予めインデックスの配列を作成してその配列で参照するようにします。
+     */
+    const createCountUpArray = (first: number, count: number) => {
+        let result = [first];
+        for (let index = 0; index < count; index++) {
+            result.push(first + index);
+        }
+        return result;
+    }
+
+    return (
+        <div>
+            <p>ランダム選択</p>
+            <div>選択するパーツの物体番号</div>
+            {createCountUpArray(WWAConsts.ATR_RANDOM_BASE, WWAConsts.RANDOM_ITERATION_MAX).map(index => (
+                <input
+                    key={index}
+                    type="number"
+                    value={attribute[index]}
+                    onChange={() => {}}
+                ></input>
+            ))}
+        </div>
+    );
+}
+
+const ObjectSelectEdit: PartsEditComponent = (attribute, message) => (
+    <div>
+        <EditForms
+            forms={[
                 createSoundEditForm(attribute[WWAConsts.ATR_SOUND]),
                 createMoveTypeEditForm(attribute[WWAConsts.ATR_MOVE]),
                 createMessageEditForm(message, "表示メッセージ")
