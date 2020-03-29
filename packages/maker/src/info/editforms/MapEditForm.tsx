@@ -1,7 +1,7 @@
 import WWAConsts from "../../classes/WWAConsts"
-import { ObjectNormalEditForm } from "./object/normal"
 import React from "react";
 import { PartsEditPropsWithMessage } from "./PartsEditProps";
+import { MapStreetEditForm } from "./map/street";
 
 interface Props {
     partsNumber: number;
@@ -11,19 +11,19 @@ interface Props {
 /**
  * 物体パーツの編集フォームのコンポーネントです。
  */
-export const ObjectEditForm: React.StatelessComponent<Props> = props => {
+export const MapEditForm: React.StatelessComponent<Props> = props => {
     const getEditForm = () => {
         switch (props.partsInfo.attribute[WWAConsts.ATR_TYPE]) {
-            case WWAConsts.OBJECT_NORMAL:
-                return <ObjectNormalEditForm attribute={props.partsInfo.attribute}></ObjectNormalEditForm>;
+            case WWAConsts.MAP_STREET:
+                return <MapStreetEditForm attribute={props.partsInfo.attribute} message={props.partsInfo.message}></MapStreetEditForm>;
         }
         return <></>;
     }
 
-    return ( // TODO: グラフィック画像を表示する
+    return (
         <div>
-            <div>物体パーツ: {props.partsNumber} 番</div>
+            <div>背景パーツ: {props.partsNumber} 番</div>
             {getEditForm()}
         </div>
-    )
+    );
 }

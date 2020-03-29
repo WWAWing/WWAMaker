@@ -7,6 +7,8 @@ import { editParts } from "../wwadata/WWADataState";
 import React from "react";
 import { PartsType } from "../classes/WWAData";
 import { ObjectEditForm } from "./editforms/ObjectEditForm";
+import WWAConsts from "../classes/WWAConsts";
+import { MapEditForm } from "./editforms/MapEditForm";
 
 interface StateProps {
     /**
@@ -49,14 +51,21 @@ class PartsEdit extends React.Component<Props> {
         }
 
         if (this.props.state.type === PartsType.MAP) {
-            // const attribute = this.props.wwaData.mapAttribute[this.props.state.number];
-            // TODO: 実装する
+            const attribute = this.props.wwaData.mapAttribute[this.props.state.number];
+            const message = this.props.wwaData.message[attribute[WWAConsts.ATR_STRING]] || '';
+            return (
+                <MapEditForm
+                    partsNumber={this.props.state.number}
+                    partsInfo={{ attribute: attribute, message: message }}
+                ></MapEditForm>
+            )
         } else if (this.props.state.type === PartsType.OBJECT) {
             const attribute = this.props.wwaData.objectAttribute[this.props.state.number];
+            const message = this.props.wwaData.message[attribute[WWAConsts.ATR_STRING]] || '';
             return (
                 <ObjectEditForm
                     partsNumber={this.props.state.number}
-                    attribute={attribute}
+                    partsInfo={{ attribute: attribute, message: message }}
                 ></ObjectEditForm>
             );
         }
