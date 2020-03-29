@@ -323,7 +323,7 @@ const ObjectRandomEdit: PartsEditComponent = (attribute, message) => {
      */
     const createCountUpArray = (first: number, count: number) => {
         let result = [first];
-        for (let index = 0; index < count; index++) {
+        for (let index = 1; index < count; index++) {
             result.push(first + index);
         }
         return result;
