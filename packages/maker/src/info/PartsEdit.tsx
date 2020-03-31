@@ -37,40 +37,132 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 type Props = StateProps & ReturnType<typeof mapDispatchToProps>;
 
 /**
+ * パーツ編集画面のステートです。
+ *     attribute はパーツの属性そのままです。
+ *     message はパーツのメッセージですが、通常物体の場合は持たず、URLゲートの場合は複数文字列を扱う形になります。
+ * @todo パーツ種別毎に型を指定出来るようにしたい
+ */
+interface PartsEditState {
+    attribute?: number[];
+    message?: string;
+}
+
+/**
  * パーツ編集の管理を行う Container コンポーネントです。
  *     編集フォームは、パーツ種別毎に用意した専用のコンポーネントを取り出して表示されます。
  */
-class PartsEdit extends React.Component<Props> {
+class PartsEdit extends React.Component<Props, PartsEditState> {
 
-    /**
-     * 編集フォームを取得します。
-     */
-    getEditForm() {
+    constructor(props: Props) {
+        super(props);
+        this.state = this.receive();
+    }
+
+    componentDidUpdate(prevProps: Props) {
+        if (this.props.state !== prevProps.state) {
+            this.setState(this.receive());
+        }
+    }
+
+    private receive(): PartsEditState {
         if (this.props.state === undefined || this.props.wwaData === undefined) {
-            return <></>;
+            return {};
         }
 
         if (this.props.state.type === PartsType.MAP) {
             const attribute = this.props.wwaData.mapAttribute[this.props.state.number];
             const message = this.props.wwaData.message[attribute[WWAConsts.ATR_STRING]] || '';
-            return (
-                <MapEditForm
-                    partsNumber={this.props.state.number}
-                    partsInfo={{ attribute: attribute, message: message }}
-                ></MapEditForm>
-            )
+            return {
+                attribute: attribute,
+                message: message
+            };
         } else if (this.props.state.type === PartsType.OBJECT) {
             const attribute = this.props.wwaData.objectAttribute[this.props.state.number];
             const message = this.props.wwaData.message[attribute[WWAConsts.ATR_STRING]] || '';
+            return {
+                attribute: attribute,
+                message: message
+            };
+        }
+
+        return {};
+    }
+
+    private send() {
+        if (this.props.state === undefined ||
+            this.state.attribute === undefined ||
+            this.state.message === undefined
+        ) {
+            return;
+        }
+        
+        this.props.editParts({
+            type: this.props.state.type,
+            number: this.props.state.number,
+            attributes: this.state.attribute,
+            message: this.state.message
+        });
+    }
+
+    /**
+     * @see PartsEditAttributeChange
+     */
+    private handleAttributeChange(attributeIndex: number, value: number) {
+        let newAttribute = this.state.attribute?.slice();
+        if (newAttribute === undefined) {
+            return;
+        }
+        newAttribute[attributeIndex] = value;
+
+        this.setState({
+            attribute: newAttribute
+        });
+    }
+
+    /**
+     * @see PartsEditMessageChange
+     */
+    private handleMessageChange(message: string) {
+        if (this.state.message === undefined) {
+            return;
+        }
+
+        this.setState({
+            message: message
+        });
+    }
+
+    /**
+     * 編集フォームを取得します。
+     */
+    getEditForm() {
+        if (
+            this.props.state === undefined ||
+            this.state.attribute === undefined ||
+            this.state.message === undefined
+        ) {
+            return <p>WWAデータがありません。マップデータを開いてください。</p>;
+        }
+
+        if (this.props.state.type === PartsType.MAP) {
+            return (
+                <MapEditForm
+                    partsNumber={this.props.state.number}
+                    partsInfo={{ attribute: this.state.attribute, message: this.state.message }}
+                    onAttributeChange={this.handleAttributeChange.bind(this)}
+                    onMessageChange={this.handleMessageChange.bind(this)}
+                ></MapEditForm>
+            )
+        } else if (this.props.state.type === PartsType.OBJECT) {
             return (
                 <ObjectEditForm
                     partsNumber={this.props.state.number}
-                    partsInfo={{ attribute: attribute, message: message }}
+                    partsInfo={{ attribute: this.state.attribute, message: this.state.message }}
                 ></ObjectEditForm>
             );
         }
 
-        return <></>;
+        return <p>対応したパーツ編集画面が見つかりませんでした。</p>;
     }
 
     render() {

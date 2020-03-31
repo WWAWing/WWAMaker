@@ -2,263 +2,179 @@ import React from "react";
 import WWAConsts from "../../classes/WWAConsts";
 import { MoveType } from "../../classes/WWAData";
 
-interface EditFormsProps {
-    forms: EditForm[]
-}
-
-/**
- * パーツ編集の編集項目1つ1つを示す型です。
- *     パーツ編集画面というのは数字入力欄が大変多く、冗長になることが予想されますので、
- *     共通化出来る入力欄をここで処理します。
- */
-export type EditForm =
-    {
-        type: "NUMBER",
-        label: string;
-        value: number
-    } | {
-        type: "SELECT",
-        label: string;
-        selectableItems: {
-            label: string,
-            value: number
-        }[],
-        value: number
-    } | {
-        type: "STATUS",
-        items: {
-            energy?: StatusEditFormItem,
-            strength: StatusEditFormItem,
-            defence: StatusEditFormItem,
-            gold?: StatusEditFormItem
-        };
-    } | {
-        type: "MESSAGE",
-        label?: string,
-        value: string
-    } | {
-        type: "URL",
-        label: string,
-        value: string
-    } | {
-        type: "STRING",
-        label: string,
-        value: string
-    };
-
 /**
  * パーツ編集で必要になるステータス入力値のうち、ステータス1つ分で必要なプロパティを示す型です。
  */
-type StatusEditFormItem = {
-    label: string,
+type NumberEditFormItem = {
+    label?: string,
     value: number
 }
 
-/**
- * プロパティのデータから、対応した編集フォームを提供します。
- * @todo onChange を実装する
- */
-export class EditForms extends React.Component<EditFormsProps> {
-
-    /**
-     * 編集フォーム1つ分を表示します。
-     */
-    private renderEditForm(editForm: EditForm) {
-        switch (editForm.type) {
-            case "NUMBER":
-                return (
-                    <>
-                        {editForm.label}
-                        <input type="number" value={editForm.value} onChange={() => {}}></input>
-                    </>
-                );
-            case "SELECT":
-                return (
-                    <>
-                        {editForm.label}
-                        <select defaultValue={editForm.value}>
-                            {editForm.selectableItems.map((option, optionIndex) =>
-                                <option key={optionIndex} value={option.value}>
-                                    {option.label}
-                                </option>
-                            )}
-                        </select>
-                    </>
-                );
-            case "STATUS":
-                return (
-                    <>
-                        {editForm.items.energy !== undefined &&
-                            <div>
-                                {editForm.items.energy.label}
-                                <input type="number" value={editForm.items.energy.value} onChange={() => {}}></input>
-                            </div>
-                        }
-                        <div>
-                            {editForm.items.strength.label}
-                            <input type="number" value={editForm.items.strength.value} onChange={() => {}}></input>
-                        </div>
-                        <div>
-                            {editForm.items.defence.label}
-                            <input type="number" value={editForm.items.defence.value} onChange={() => {}}></input>
-                        </div>
-                        {editForm.items.gold !== undefined &&
-                            <div>
-                                {editForm.items.gold.label}
-                                <input type="number" value={editForm.items.gold.value} onChange={() => {}}></input>
-                            </div>
-                        }
-                    </>
-                );
-            case "MESSAGE":
-                return (
-                    <>
-                        {editForm.label !== undefined &&
-                            <div>{editForm.label}</div>
-                        }
-                        <textarea value={editForm.value} onChange={() => {}}></textarea>
-                    </>
-                );
-            case "URL":
-                return (
-                    <>
-                        <div>{editForm.label}</div>
-                        <input type="text" value={editForm.value} onChange={() => {}}></input>
-                    </>
-                );
-            case "STRING":
-                return (
-                    <>
-                        <div>
-                            {editForm.label}
-                            <input type="text" value={editForm.value} onChange={() => {}}></input>
-                        </div>
-                    </>
-                );
-        }
-    }
-    public render() {
-        return (
-            <>
-                {this.props.forms.map((editForm, editFormIndex) => {
-                    return (
-                        <div key={editFormIndex}>
-                            {this.renderEditForm(editForm)}
-                        </div>
-                    );
-                })}
-            </> // 「OK」「キャンセル」ボタンは外側の ObjectEditForm/MapEditForm コンポーネントで配置されます。
-        )
-    }
-}
+export const NumberInput: React.StatelessComponent<{
+    value: number,
+    label: string,
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+}> = props => (
+    <div>
+        {props.label}
+        <input type="number" value={props.value} onChange={props.onChange} />
+    </div>
+);
 
 /**
- * 「サウンド番号」の入力フォームの情報を作成します。
- * @see EditForm
+ * 数字を入力するコンポーネントを作成します。
  */
-export const createSoundEditForm: (soundNumberValue: number) => EditForm = soundNumberValue => {
-    return {
-        type: "NUMBER",
-        label: "サウンド番号",
-        value: soundNumberValue
-    };
+const createNumberInput = (label: string) => {
+    return (props: {
+        value: number,
+        onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+    }) => (
+        <NumberInput
+            label={label}
+            value={props.value}
+            onChange={props.onChange}
+        />
+    );
 };
 
+export const SoundNumberInput = createNumberInput("サウンド番号");
+export const WaitTimeInput = createNumberInput("待ち時間");
+
+export const SelectInput: React.StatelessComponent<{
+    selectableItems: NumberEditFormItem[],
+    value: number,
+    label: string,
+    onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void
+}> = props => (
+    <div>
+        {props.label}
+        <select defaultValue={props.value} onChange={props.onChange}>
+            {props.selectableItems.map((option, optionIndex) =>
+                <option key={optionIndex} value={option.value}>
+                    {option.label}
+                </option>
+            )}
+        </select>
+    </div>
+);
+
 /**
- * 「待ち時間」の入力フォームの情報を作成します。
- * @see EditForm
+ * セレクトボックスのコンポーネントを作成します。
  */
-export const createWaitTimeEditForm: (waitTimeValue: number) => EditForm = waitTimeValue => {
-    return {
-        type: "NUMBER",
-        label: "待ち時間",
-        value: waitTimeValue
-    };
+const createSelectInput = (label: string, selectableItems: { label: string, value: number }[]) => {
+    return (props: {
+        value: number,
+        onChange: (event: React.ChangeEvent<HTMLSelectElement> ) => void
+    }) => (
+        <SelectInput
+            label={label}
+            selectableItems={selectableItems}
+            value={props.value}
+            onChange={props.onChange}
+        />
+    );
 };
 
-/**
- * メッセージの入力フォームの情報を作成します。
- * @see EditForm
- */
-export const createMessageEditForm: (message: string, label?: string) => EditForm = (message, label) => ({
-    type: "MESSAGE",
-    label: label,
-    value: message,
-});
+export const MoveTypeInput = createSelectInput("動作属性", [
+    {
+        label: "静止",
+        value: MoveType.STATIC,
+    }, {
+        label: "プレイヤー追尾",
+        value: MoveType.CHASE_PLAYER
+    }, {
+        label: "逃げる",
+        value: MoveType.RUN_OUT
+    }, {
+        label: "うろうろする",
+        value: MoveType.HANG_AROUND
+    }
+]);
+export const PassableInput = createSelectInput("通行区分", [
+    {
+        label: "通行不可",
+        value: 0
+    }, {
+        label: "通行可",
+        value: WWAConsts.PASSABLE_OBJECT
+    }
+]);
+
+export const MessageInput: React.StatelessComponent<{
+    value: string,
+    label: string,
+    onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void
+}> = props => (
+    <div>
+        <div>{props.label}</div>
+        <textarea value={props.value} onChange={props.onChange} />
+    </div>
+);
 
 /**
- * 「動作属性」の入力フォームの情報を作成します。
- * @see EditForm
+ * モンスターやアイテムで使用するステータス入力欄です。
+ * @param props 下記の情報を含めた連想配列
+ * 
+ *     items: energy, strength, defence, gold の情報
+ *     label の指定がない場合はそれぞれ 生命力、攻撃力、防御力、所持金 になります。
+ * 
+ *     onChange: 入力欄が変更した場合に発生するメソッド
+ *     どのテキストボックから入力されたかは、 event.target.name から確認できます。
  */
-export const createMoveTypeEditForm = (moveTypeValue: number): EditForm => ({
-    type: "SELECT",
-    label: "動作属性",
-    selectableItems: [
-        {
-            label: "静止",
-            value: MoveType.STATIC
-        }, {
-            label: "プレイヤー追尾",
-            value: MoveType.CHASE_PLAYER
-        }, {
-            label: "逃げる",
-            value: MoveType.RUN_OUT
-        }, {
-            label: "うろうろする",
-            value: MoveType.HANG_AROUND
-        }
-    ],
-    value: moveTypeValue
-});
-
-/**
- * 「通行区分」の入力フォームの情報を作成します。
- * @see EditForm
- */
-export const createStreetTypeEditForm = (passableValue: number): EditForm => ({
-    type: "SELECT",
-    label: "通行区分",
-    selectableItems: [
-        {
-            label: "通行不可",
-            value: 0
-        }, {
-            label: "通行可",
-            value: WWAConsts.PASSABLE_OBJECT
-        }
-    ],
-    value: passableValue
-});
-
-/**
- * モンスターやステータス変化などで使用されているステータス入力フォームの情報を作成します。
- */
-export const createStatusEditForm = (
-    energyValue: number,
-    strengthValue: number,
-    defenceValue: number,
-    goldValue: number
-): EditForm => ({
-    type: "STATUS",
+export const StatusInput: React.StatelessComponent<{
     items: {
-        energy: {
-            label: "生命力",
-            value: energyValue
-        },
-        strength: {
-            label: "攻撃力",
-            value: strengthValue
-        },
-        defence: {
-            label: "防御力",
-            value: defenceValue
-        },
-        gold: {
-            label: "所持金",
-            value: goldValue
+        energy?: NumberEditFormItem,
+        strength: NumberEditFormItem,
+        defence: NumberEditFormItem,
+        gold?: NumberEditFormItem,
+    },
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+}> = props => (
+    <>
+        {props.items.energy !== undefined &&
+            <div>
+                {props.items.energy.label !== undefined ? props.items.energy.label : "生命力"}
+                <input type="number" name="energy" value={props.items.energy.value} onChange={props.onChange}></input>
+            </div>
         }
-    }
-});
+        <div>
+            {props.items.strength.label !== undefined ? props.items.strength.label : "攻撃力"}
+            <input type="number" name="strength" value={props.items.strength.value} onChange={props.onChange}></input>
+        </div>
+        <div>
+            {props.items.defence.label !== undefined ? props.items.defence.label : "防御力"}
+            <input type="number" name="defence" value={props.items.defence.value} onChange={props.onChange}></input>
+        </div>
+        {props.items.gold !== undefined &&
+            <div>
+                {props.items.gold.label !== undefined ? props.items.gold.label : "所持金"}
+                <input type="number" name="gold" value={props.items.gold.value} onChange={props.onChange}></input>
+            </div>
+        }
+    </>
+);
+
+export const URLInput: React.StatelessComponent<{
+    label: string,
+    value: string,
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+}> = props => (
+    <div>
+        <div>{props.label}</div>
+        <input type="text" value={props.value} onChange={props.onChange}></input>
+    </div>
+);
+
+export const StringInput: React.StatelessComponent<{
+    label: string,
+    value: string,
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+}> = props => (
+    <div>
+        {props.label}
+        <input type="text" value={props.value} onChange={props.onChange}></input>
+    </div>
+);
 
 /**
  * パーツの編集画面のコンポーネントに割り当てる型です。
@@ -274,21 +190,18 @@ export const URLGateEdit: PartsEditComponent = (attribute, message) => {
     return (
         <div>
             <p>URLゲート</p>
-            <EditForms
-                forms={[
-                    {
-                        type: "URL",
-                        label: "リンク先のURLアドレス",
-                        value: messageLines[0]
-                    }, {
-                        type: "STRING",
-                        label: "URL TARGET",
-                        value: messageLines[1]
-                    }
-                ]}
+            <URLInput
+                label="リンク先のURLアドレス"
+                value={messageLines[0]}
+                onChange={() => {}}
+            />
+            <StringInput
+                label="URL TARGET"
+                value={messageLines[1]}
+                onChange={() => {}}
             />
         </div>
-    )
+    );
 };
 
 /**
@@ -298,19 +211,26 @@ export const LocalGateEdit: PartsEditComponent = (attribute) => {
     return (
         <div>
             <p>ジャンプゲート</p>
-            <EditForms
-                forms={[
-                    {
-                        type: "NUMBER",
-                        label: "ジャンプ先X座標",
-                        value: attribute[WWAConsts.ATR_JUMP_X]
-                    }, {
-                        type: "NUMBER",
-                        label: "ジャンプ先Y座標",
-                        value: attribute[WWAConsts.ATR_JUMP_Y]
-                    }
-                ]}
+            <NumberInput
+                label="ジャンプ先X座標"
+                value={attribute[WWAConsts.ATR_JUMP_X]}
+                onChange={() => {}}
+            />
+            <NumberInput
+                label="ジャンプ先Y座標"
+                value={attribute[WWAConsts.ATR_JUMP_Y]}
+                onChange={() => {}}
             />
         </div>
-    )
+    );
 };
+
+/**
+ * パーツ編集の数字部分を編集した際に発生するイベントメソッドの型です。
+ */
+export type PartsEditAttributeChange = (attributeIndex: number, value: number) => void;
+
+/**
+ * パーツ編集のメッセージ部分を編集した際に発生するイベントメソッドの型です。
+ */
+export type PartsEditMessageChange = (message: string) => void;

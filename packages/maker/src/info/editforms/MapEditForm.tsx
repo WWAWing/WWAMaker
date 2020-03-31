@@ -1,11 +1,23 @@
 import WWAConsts from "../../classes/WWAConsts"
 import React from "react";
 import { PartsEditPropsWithMessage } from "./PartsEditProps";
-import { PartsEditComponent, EditForms, createWaitTimeEditForm, createSoundEditForm, createMessageEditForm, LocalGateEdit, URLGateEdit } from "./EditFormCommon";
+import {
+    PartsEditComponent,
+    LocalGateEdit,
+    URLGateEdit,
+    PartsEditAttributeChange,
+    PartsEditMessageChange,
+    NumberInput,
+    WaitTimeInput,
+    SoundNumberInput,
+    MessageInput
+} from "./EditFormCommon";
 
 interface Props {
     partsNumber: number;
     partsInfo: PartsEditPropsWithMessage;
+    onAttributeChange: PartsEditAttributeChange;
+    onMessageChange: PartsEditMessageChange;
 }
 
 /**
@@ -44,17 +56,23 @@ export const MapEditForm: React.StatelessComponent<Props> = props => {
 const MapStreetEdit: PartsEditComponent = (attribute, message) => (
     <div>
         <p>道</p>
-        <EditForms
-            forms={[
-                createWaitTimeEditForm(attribute[WWAConsts.ATR_NUMBER]),
-                {
-                    type: "NUMBER",
-                    label: "反応するアイテム番号",
-                    value: attribute[WWAConsts.ATR_ITEM]
-                },
-                createSoundEditForm(attribute[WWAConsts.ATR_SOUND]),
-                createMessageEditForm(message, "表示メッセージ")
-            ]}
+        <WaitTimeInput
+            value={attribute[WWAConsts.ATR_NUMBER]}
+            onChange={() => {}}
+        />
+        <NumberInput
+            label="反応するアイテム番号"
+            value={attribute[WWAConsts.ATR_ITEM]}
+            onChange={() => {}}
+        />
+        <SoundNumberInput
+            value={attribute[WWAConsts.ATR_SOUND]}
+            onChange={() => {}}
+        />
+        <MessageInput
+            label="表示メッセージ"
+            value={message}
+            onChange={() => {}}
         />
     </div>
 );
@@ -62,10 +80,10 @@ const MapStreetEdit: PartsEditComponent = (attribute, message) => (
 const MapWallEdit: PartsEditComponent = (attribute, message) => (
     <div>
         <p>壁</p>
-        <EditForms
-            forms={[
-                createMessageEditForm(message, "表示メッセージ")
-            ]}
+        <MessageInput
+            label="表示メッセージ"
+            value={message}
+            onChange={() => {}}
         />
     </div>
 );
