@@ -1,10 +1,7 @@
 import WWAConsts from "../../classes/WWAConsts";
 import React from "react";
-import { PartsEditPropsWithMessage } from "./PartsEditProps";
 import {
     PartsEditComponent,
-    URLGateEdit,
-    LocalGateEdit,
     MoveTypeInput,
     PassableInput,
     SoundNumberInput,
@@ -12,96 +9,58 @@ import {
     MessageInput,
     StatusInput,
     NumberInput,
-    SelectInput
-} from "./EditFormCommon";
+    SelectInput,
+    PartsEditAttributeChange
+} from "./EditFormUtils";
 import { ItemMode } from "../../classes/WWAData";
 
-interface Props {
-    partsNumber: number;
-    partsInfo: PartsEditPropsWithMessage;
-}
-
 /**
- * 物体パーツの編集フォームのコンポーネントです。
+ * StatusInput で与えられた各入力欄の名前に対し、属性のインデックスを見つけ出します。
  */
-export const ObjectEditForm: React.StatelessComponent<Props> = props => {
-    const getEditForm = () => {
-        /**
-         * パーツ編集フォームを作る際に渡す属性のエイリアスです。
-         */
-        const attribute = props.partsInfo.attribute;
-        const message = props.partsInfo.message;
-
-        switch (props.partsInfo.attribute[WWAConsts.ATR_TYPE]) {
-            case WWAConsts.OBJECT_NORMAL:
-                return ObjectNormalEdit(attribute, message);
-            case WWAConsts.OBJECT_MESSAGE:
-                return ObjectMessageEdit(attribute, message);
-            case WWAConsts.OBJECT_MONSTER:
-                return ObjectMonsterEdit(attribute, message);
-            case WWAConsts.OBJECT_ITEM:
-                return ObjectItemEdit(attribute, message);
-            case WWAConsts.OBJECT_DOOR:
-                return ObjectDoorEdit(attribute, message);
-            case WWAConsts.OBJECT_STATUS:
-                return ObjectStatusEdit(attribute, message);
-            case WWAConsts.OBJECT_SELL:
-                return ObjectSellItemEdit(attribute, message);
-            case WWAConsts.OBJECT_BUY:
-                return ObjectBuyItemEdit(attribute, message);
-            case WWAConsts.OBJECT_URLGATE:
-                return URLGateEdit(attribute, message);
-            case WWAConsts.OBJECT_SCORE:
-                return ObjectScoreEdit(attribute, message);
-            case WWAConsts.OBJECT_RANDOM:
-                return ObjectRandomEdit(attribute, message);
-            case WWAConsts.OBJECT_SELECT:
-                // TODO: 二者択一の場合は指定位置にパーツを出現の表示が別になるため、そうなるように考慮しておく
-                return ObjectSelectEdit(attribute, message);
-            case WWAConsts.OBJECT_LOCALGATE:
-                return LocalGateEdit(attribute, message);
-        }
-        return <><p>対応している物体パーツが見つかりませんでした。</p></>;
+const handleStatusInputChange = (event: React.ChangeEvent<HTMLInputElement>, onChange: PartsEditAttributeChange) => {
+    switch (event.target.name) {
+        case "energy":
+            onChange(event.target.value, WWAConsts.ATR_ENERGY);
+            break;
+        case "strength":
+            onChange(event.target.value, WWAConsts.ATR_STRENGTH);
+            break;
+        case "defence":
+            onChange(event.target.value, WWAConsts.ATR_DEFENCE);
+            break;
+        case "gold":
+            onChange(event.target.value, WWAConsts.ATR_GOLD);
     }
+};
 
-    return ( // TODO: グラフィック画像を表示する
-        <div>
-            <div>物体パーツ: {props.partsNumber} 番</div>
-            {getEditForm()}
-        </div>
-    )
-}
-
-// ここより先、物体パーツの各種別の編集画面コンポーネント
-
-const ObjectNormalEdit: PartsEditComponent = attribute => (
+export const ObjectNormalEdit: PartsEditComponent = (attribute, message, onAttributeChange) => (
     <div>
         <p>通常物体</p>
         <MoveTypeInput
             value={attribute[WWAConsts.ATR_MOVE]}
-            onChange={() => {}}
+            onChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_MOVE)}
         />
         <PassableInput
             value={attribute[WWAConsts.ATR_MODE]}
-            onChange={() => {}}
+            onChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_MODE)}
         />
     </div>
 );
 
-const ObjectMessageEdit: PartsEditComponent = (attribute, message) => (
+export const ObjectMessageEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
     <div>
         <p>メッセージ</p>
         <SoundNumberInput
-            value={attribute[WWAConsts.ATR_NUMBER]}
-            onChange={() => {}}
+            value={attribute[WWAConsts.ATR_SOUND]}
+            onChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_SOUND)}
         />
         <MoveTypeInput
             value={attribute[WWAConsts.ATR_MOVE]}
-            onChange={() => {}}
+            onChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_MOVE)}
         />
         <WaitTimeInput
             value={attribute[WWAConsts.ATR_NUMBER]}
-            onChange={() => {}}
+            onChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_NUMBER)}
         />
         <MessageInput
             value={message}
@@ -111,7 +70,7 @@ const ObjectMessageEdit: PartsEditComponent = (attribute, message) => (
     </div>
 );
 
-const ObjectMonsterEdit: PartsEditComponent = (attribute, message) => (
+export const ObjectMonsterEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
     <div>
         <p>モンスター</p>
         <StatusInput
@@ -129,7 +88,7 @@ const ObjectMonsterEdit: PartsEditComponent = (attribute, message) => (
                     value: attribute[WWAConsts.ATR_GOLD]
                 }
             }}
-            onChange={() => {}}
+            onChange={event => handleStatusInputChange(event, onAttributeChange)}
         />
         <NumberInput
             label="モンスター所持アイテムの物体番号"
@@ -141,14 +100,14 @@ const ObjectMonsterEdit: PartsEditComponent = (attribute, message) => (
             soundValue={attribute[WWAConsts.ATR_SOUND]}
             moveValue={attribute[WWAConsts.ATR_MOVE]}
             messageValue={message}
-            onSoundChange={() => {}}
-            onMoveChange={() => {}}
-            onMessageChange={() => {}}
+            onSoundChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_SOUND)}
+            onMoveChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_MOVE)}
+            onMessageChange={event => onMessageChange(event.target.value)}
         />
     </div>
 );
 
-const ObjectItemEdit: PartsEditComponent = (attribute, message) => (
+export const ObjectItemEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
     <div>
         <p>アイテム</p>
         <StatusInput
@@ -160,12 +119,12 @@ const ObjectItemEdit: PartsEditComponent = (attribute, message) => (
                     value: attribute[WWAConsts.ATR_DEFENCE]
                 }
             }}
-            onChange={() => {}}
+            onChange={event => handleStatusInputChange(event, onAttributeChange)}
         />
         <NumberInput
             label="アイテムボックスへの格納位置"
             value={attribute[WWAConsts.ATR_NUMBER]}
-            onChange={() => {}}
+            onChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_NUMBER)}
         />
         <SelectInput
             label="使用属性"
@@ -182,21 +141,21 @@ const ObjectItemEdit: PartsEditComponent = (attribute, message) => (
                 }
             ]}
             value={attribute[WWAConsts.ATR_MODE]}
-            onChange={() => {}}
+            onChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_MODE)}
         />
         <ObjectCommonInput
             messageLabel="アイテム取得後表示メッセージ"
             soundValue={attribute[WWAConsts.ATR_SOUND]}
             moveValue={attribute[WWAConsts.ATR_MOVE]}
             messageValue={message}
-            onSoundChange={() => {}}
-            onMoveChange={() => {}}
-            onMessageChange={() => {}}
+            onSoundChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_SOUND)}
+            onMoveChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_MOVE)}
+            onMessageChange={event => onMessageChange(event.target.value)}
         />
     </div>
 );
 
-const ObjectDoorEdit: PartsEditComponent = (attribute, message) => (
+export const ObjectDoorEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
     <div>
         <p>扉</p>
         <SelectInput
@@ -211,30 +170,30 @@ const ObjectDoorEdit: PartsEditComponent = (attribute, message) => (
                 }
             ]}
             value={attribute[WWAConsts.ATR_MODE]}
-            onChange={() => {}}
+            onChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_MODE)}
         />
         <NumberInput
             label="対応するアイテム(鍵)の物体番号"
             value={attribute[WWAConsts.ATR_ITEM]}
-            onChange={() => {}}
+            onChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_ITEM)}
         />
         <PassableInput
             value={attribute[WWAConsts.ATR_MODE]}
-            onChange={() => {}}
+            onChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_MODE)}
         />
         <ObjectCommonInput
             messageLabel="扉解放後表示メッセージ"
             soundValue={attribute[WWAConsts.ATR_SOUND]}
             moveValue={attribute[WWAConsts.ATR_MOVE]}
             messageValue={message}
-            onSoundChange={() => {}}
-            onMoveChange={() => {}}
-            onMessageChange={() => {}}
+            onSoundChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_SOUND)}
+            onMoveChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_MOVE)}
+            onMessageChange={event => onMessageChange(event.target.value)}
         />
     </div>
 );
 
-const ObjectStatusEdit: PartsEditComponent = (attribute, message) => (
+export const ObjectStatusEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
     <div>
         <p>ステータス変化</p>
         <StatusInput
@@ -252,32 +211,32 @@ const ObjectStatusEdit: PartsEditComponent = (attribute, message) => (
                     value: attribute[WWAConsts.ATR_GOLD]
                 }
             }}
-            onChange={() => {}}
+            onChange={event => handleStatusInputChange(event, onAttributeChange)}
         />
         <ObjectCommonInput
             messageLabel="ステータス変化後表示メッセージ"
             soundValue={attribute[WWAConsts.ATR_SOUND]}
             moveValue={attribute[WWAConsts.ATR_MOVE]}
             messageValue={message}
-            onSoundChange={() => {}}
-            onMoveChange={() => {}}
-            onMessageChange={() => {}}
+            onSoundChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_SOUND)}
+            onMoveChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_MOVE)}
+            onMessageChange={event => onMessageChange(event.target.value)}
         />
     </div>
 );
 
-const ObjectSellItemEdit: PartsEditComponent = (attribute, message) => (
+export const ObjectSellItemEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
     <div>
         <p>物を売る</p>
         <NumberInput
             label="販売金額"
             value={attribute[WWAConsts.ATR_GOLD]}
-            onChange={() => {}}
+            onChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_GOLD)}
         />
         <NumberInput
             label="売るアイテムの物体番号"
             value={attribute[WWAConsts.ATR_ITEM]}
-            onChange={() => {}}
+            onChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_ITEM)}
         />
         <StatusInput
             items={{
@@ -294,46 +253,46 @@ const ObjectSellItemEdit: PartsEditComponent = (attribute, message) => (
                     value: attribute[WWAConsts.ATR_DEFENCE]
                 }
             }}
-            onChange={() => {}}
+            onChange={event => handleStatusInputChange(event, onAttributeChange)}
         />
         <ObjectCommonInput
             messageLabel="表示メッセージ"
             soundValue={attribute[WWAConsts.ATR_SOUND]}
             moveValue={attribute[WWAConsts.ATR_MOVE]}
             messageValue={message}
-            onSoundChange={() => {}}
-            onMoveChange={() => {}}
-            onMessageChange={() => {}}
+            onSoundChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_SOUND)}
+            onMoveChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_MOVE)}
+            onMessageChange={event => onMessageChange(event.target.value)}
         />
     </div>
 );
 
-const ObjectBuyItemEdit: PartsEditComponent = (attribute, message) => (
+export const ObjectBuyItemEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
     <div>
         <p>物を買う</p>
         <NumberInput
             label="買い取り金額"
             value={attribute[WWAConsts.ATR_GOLD]}
-            onChange={() => {}}
+            onChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_GOLD)}
         />
         <NumberInput
             label="買うアイテムの物体番号"
             value={attribute[WWAConsts.ATR_ITEM]}
-            onChange={() => {}}
+            onChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_ITEM)}
         />
         <ObjectCommonInput
             messageLabel="表示メッセージ"
             soundValue={attribute[WWAConsts.ATR_SOUND]}
             moveValue={attribute[WWAConsts.ATR_MOVE]}
             messageValue={message}
-            onSoundChange={() => {}}
-            onMoveChange={() => {}}
-            onMessageChange={() => {}}
+            onSoundChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_SOUND)}
+            onMoveChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_MOVE)}
+            onMessageChange={event => onMessageChange(event.target.value)}
         />
     </div>
 );
 
-const ObjectScoreEdit: PartsEditComponent = (attribute, message) => (
+export const ObjectScoreEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
     <div>
         <p>スコア表示</p>
         <StatusInput
@@ -355,21 +314,21 @@ const ObjectScoreEdit: PartsEditComponent = (attribute, message) => (
                     value: attribute[WWAConsts.ATR_GOLD]
                 }
             }}
-            onChange={() => {}}
+            onChange={event => handleStatusInputChange(event, onAttributeChange)}
         />
         <SoundNumberInput
             value={attribute[WWAConsts.ATR_SOUND]}
-            onChange={() => {}}
+            onChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_SOUND)}
         />
         <MessageInput
             label="表示メッセージ"
             value={message}
-            onChange={() => {}}
+            onChange={event => onMessageChange(event.target.value)}
         />
     </div>
 );
 
-const ObjectRandomEdit: PartsEditComponent = (attribute, message) => {
+export const ObjectRandomEdit: PartsEditComponent = (attribute, message, onAttributeChange) => {
     /**
      * 指定した順番から1つずつ増える配列を作成します。
      *     ランダム選択のパーツでは ATR_RANDOM_BASE から RANDOM_ITERATION_MAX の分がターゲットパーツ番号として使用します
@@ -377,8 +336,8 @@ const ObjectRandomEdit: PartsEditComponent = (attribute, message) => {
      *     React では JSX 構文内で for を回すことは難しいため、予めインデックスの配列を作成してその配列で参照するようにします。
      */
     const createCountUpArray = (first: number, count: number) => {
-        let result = [first];
-        for (let index = 1; index < count; index++) {
+        let result = [];
+        for (let index = 0; index < count; index++) {
             result.push(first + index);
         }
         return result;
@@ -393,27 +352,30 @@ const ObjectRandomEdit: PartsEditComponent = (attribute, message) => {
                     key={index}
                     type="number"
                     value={attribute[index]}
-                    onChange={() => {}}
+                    onChange={event => onAttributeChange(event.target.value, index)}
                 ></input>
             ))}
         </div>
     );
 }
 
-const ObjectSelectEdit: PartsEditComponent = (attribute, message) => (
+export const ObjectSelectEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
     <div>
         <ObjectCommonInput
             messageLabel="表示メッセージ"
             soundValue={attribute[WWAConsts.ATR_SOUND]}
             moveValue={attribute[WWAConsts.ATR_MOVE]}
             messageValue={message}
-            onSoundChange={() => {}}
-            onMoveChange={() => {}}
-            onMessageChange={() => {}}
+            onSoundChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_SOUND)}
+            onMoveChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_MOVE)}
+            onMessageChange={event => onMessageChange(event.target.value)}
         />
     </div>
 );
 
+/**
+ * 一部の物体パーツの編集画面に付いている「サウンド番号」「動作属性」「メッセージ」の3つの入力欄をセットにしたコンポーネントです。
+ */
 const ObjectCommonInput: React.StatelessComponent<{
     messageLabel: string,
     soundValue: number,

@@ -10,6 +10,29 @@ type NumberEditFormItem = {
     value: number
 }
 
+/**
+ * パーツの編集画面のコンポーネントに割り当てる型です。
+ * @todo ジェネリクスで文字列の格納方法を決める
+ */
+export type PartsEditComponent = (
+    attribute: number[],
+    message: string,
+    onAttributeChange: PartsEditAttributeChange,
+    onMessageChange: PartsEditMessageChange
+) => JSX.Element;
+/**
+ * パーツの編集画面で属性値に対応したフォームが変更された場合に実行されるメソッドの型です。
+ *     value: 変更したい属性値 (数字への変換は親コンポーネント側で行う必要があります)
+ *     attributeIndex: 親コンポーネントの State で変更したい属性の番号
+ */
+export type PartsEditAttributeChange = (value: string, attributeIndex: number) => void;
+/**
+ * パーツの編集画面でメッセージに対応したフォームが変更された場合に実行されるメソッドの型です。
+ *     value: 変更したいメッセージ内容
+ */
+export type PartsEditMessageChange = (value: string) => void;
+
+
 export const NumberInput: React.StatelessComponent<{
     value: number,
     label: string,
@@ -175,62 +198,3 @@ export const StringInput: React.StatelessComponent<{
         <input type="text" value={props.value} onChange={props.onChange}></input>
     </div>
 );
-
-/**
- * パーツの編集画面のコンポーネントに割り当てる型です。
- */
-export type PartsEditComponent = (attribute: number[], message: string) => JSX.Element;
-
-/**
- * URLゲートの編集画面のコンポーネントです。
- *     物体パーツのURLゲートも背景パーツのURLゲートも編集画面は共通のため、物体背景ともにこのコンポーネントから参照されます。
- */
-export const URLGateEdit: PartsEditComponent = (attribute, message) => {
-    const messageLines = message.split(/\r|\n|\r\n/);
-    return (
-        <div>
-            <p>URLゲート</p>
-            <URLInput
-                label="リンク先のURLアドレス"
-                value={messageLines[0]}
-                onChange={() => {}}
-            />
-            <StringInput
-                label="URL TARGET"
-                value={messageLines[1]}
-                onChange={() => {}}
-            />
-        </div>
-    );
-};
-
-/**
- * ジャンプゲートの編集画面のコンポーネントです。
- */
-export const LocalGateEdit: PartsEditComponent = (attribute) => {
-    return (
-        <div>
-            <p>ジャンプゲート</p>
-            <NumberInput
-                label="ジャンプ先X座標"
-                value={attribute[WWAConsts.ATR_JUMP_X]}
-                onChange={() => {}}
-            />
-            <NumberInput
-                label="ジャンプ先Y座標"
-                value={attribute[WWAConsts.ATR_JUMP_Y]}
-                onChange={() => {}}
-            />
-        </div>
-    );
-};
-
-/**
- * パーツ編集の数字部分を編集した際に発生するイベントメソッドの型です。
- */
-export type PartsEditAttributeChange = (attributeIndex: number, value: number) => void;
-
-/**
- * パーツ編集のメッセージ部分を編集した際に発生するイベントメソッドの型です。
- */
-export type PartsEditMessageChange = (message: string) => void;
