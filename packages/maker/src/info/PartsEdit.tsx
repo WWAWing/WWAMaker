@@ -7,9 +7,8 @@ import { editParts } from "../wwadata/WWADataState";
 import React from "react";
 import { PartsType } from "../classes/WWAData";
 import WWAConsts from "../classes/WWAConsts";
-import * as ObjectEditForm from "./editforms/ObjectEditForm";
-import * as MapEditForm from "./editforms/MapEditForm";
-import { LocalGateEdit, URLGateEdit } from "./editforms/CommonEditForm";
+import { ObjectEditTable } from "./editforms/ObjectEditForm";
+import { MapEditTable } from "./editforms/MapEditForm";
 
 interface StateProps {
     /**
@@ -41,7 +40,6 @@ type Props = StateProps & ReturnType<typeof mapDispatchToProps>;
  * パーツ編集画面のステートです。
  *     attribute はパーツの属性そのままです。
  *     message はパーツのメッセージです。
- * @todo パーツ種別毎に型を指定出来るようにしたい
  */
 interface PartsEditState {
     attribute?: number[];
@@ -160,51 +158,37 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
         if (this.props.state.type === PartsType.MAP) {
             const attribute = this.state.attribute;
             const message = this.state.message;
-
-            switch (attribute[WWAConsts.ATR_TYPE]) {
-                case WWAConsts.MAP_STREET:
-                    return MapEditForm.MapStreetEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
-                case WWAConsts.MAP_WALL:
-                    return MapEditForm.MapWallEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
-                case WWAConsts.MAP_LOCALGATE:
-                    return LocalGateEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
-                case WWAConsts.MAP_URLGATE:
-                    return URLGateEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
+            const typeNumber = attribute[WWAConsts.ATR_TYPE];
+            if (!(typeNumber in MapEditTable)) {
+                throw new Error(`パーツ種別 ${typeNumber} 番に対応する背景パーツが見つかりませんでした。`);
             }
+            const MapEditComponent = MapEditTable[typeNumber];
+            return (
+                <MapEditComponent
+                    attribute={attribute}
+                    message={message}
+                    onAttributeChange={this.handleAttributeChange}
+                    onMessageChange={this.handleMessageChange}
+                />
+            );
 
         } else if (this.props.state.type === PartsType.OBJECT) {
             const attribute = this.state.attribute;
             const message = this.state.message;
-
-            switch (attribute[WWAConsts.ATR_TYPE]) {
-                case WWAConsts.OBJECT_NORMAL:
-                    return ObjectEditForm.ObjectNormalEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
-                case WWAConsts.OBJECT_MESSAGE:
-                    return ObjectEditForm.ObjectMessageEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
-                case WWAConsts.OBJECT_MONSTER:
-                    return ObjectEditForm.ObjectMonsterEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
-                case WWAConsts.OBJECT_ITEM:
-                    return ObjectEditForm.ObjectItemEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
-                case WWAConsts.OBJECT_DOOR:
-                    return ObjectEditForm.ObjectDoorEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
-                case WWAConsts.OBJECT_STATUS:
-                    return ObjectEditForm.ObjectStatusEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
-                case WWAConsts.OBJECT_SELL:
-                    return ObjectEditForm.ObjectSellItemEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
-                case WWAConsts.OBJECT_BUY:
-                    return ObjectEditForm.ObjectBuyItemEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
-                case WWAConsts.OBJECT_URLGATE:
-                    return URLGateEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
-                case WWAConsts.OBJECT_SCORE:
-                    return ObjectEditForm.ObjectScoreEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
-                case WWAConsts.OBJECT_RANDOM:
-                    return ObjectEditForm.ObjectRandomEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
-                case WWAConsts.OBJECT_SELECT:
-                    // TODO: 二者択一の場合は指定位置にパーツを出現の表示が別になるため、そうなるように考慮しておく
-                    return ObjectEditForm.ObjectSelectEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
-                case WWAConsts.OBJECT_LOCALGATE:
-                    return LocalGateEdit(attribute, message, this.handleAttributeChange, this.handleMessageChange);
+            const typeNumber = attribute[WWAConsts.ATR_TYPE];
+            if (!(typeNumber in ObjectEditTable)) {
+                throw new Error(`パーツ種別 ${typeNumber} 番に対応する物体パーツが見つかりませんでした。`);
             }
+            const ObjectEditComponent = ObjectEditTable[typeNumber];
+            return (
+                <ObjectEditComponent
+                    attribute={attribute}
+                    message={message}
+                    onAttributeChange={this.handleAttributeChange}
+                    onMessageChange={this.handleMessageChange}
+                />
+            );
+
         }
 
         return <p>対応したパーツ編集画面が見つかりませんでした。</p>;

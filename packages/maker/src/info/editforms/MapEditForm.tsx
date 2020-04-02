@@ -5,10 +5,12 @@ import {
     NumberInput,
     WaitTimeInput,
     SoundNumberInput,
-    MessageInput
+    MessageInput,
+    PartsEditComponentTable
 } from "./EditFormUtils";
+import { LocalGateEdit, URLGateEdit } from "./CommonEditForm";
 
-export const MapStreetEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
+export const MapStreetEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
     <div>
         <p>道</p>
         <WaitTimeInput
@@ -32,7 +34,7 @@ export const MapStreetEdit: PartsEditComponent = (attribute, message, onAttribut
     </div>
 );
 
-export const MapWallEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
+export const MapWallEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
     <div>
         <p>壁</p>
         <MessageInput
@@ -42,3 +44,10 @@ export const MapWallEdit: PartsEditComponent = (attribute, message, onAttributeC
         />
     </div>
 );
+
+export const MapEditTable: PartsEditComponentTable = {
+    [WWAConsts.MAP_STREET]: MapStreetEdit,
+    [WWAConsts.MAP_WALL]: MapWallEdit,
+    [WWAConsts.MAP_LOCALGATE]: LocalGateEdit,
+    [WWAConsts.MAP_URLGATE]: URLGateEdit
+};

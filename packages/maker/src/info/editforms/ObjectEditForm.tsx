@@ -10,9 +10,11 @@ import {
     StatusInput,
     NumberInput,
     SelectInput,
-    PartsEditAttributeChange
+    PartsEditAttributeChange,
+    PartsEditComponentTable
 } from "./EditFormUtils";
 import { ItemMode } from "../../classes/WWAData";
+import { URLGateEdit, LocalGateEdit } from "./CommonEditForm";
 
 /**
  * StatusInput で与えられた各入力欄の名前に対し、属性のインデックスを見つけ出します。
@@ -33,7 +35,7 @@ const handleStatusInputChange = (event: React.ChangeEvent<HTMLInputElement>, onC
     }
 };
 
-export const ObjectNormalEdit: PartsEditComponent = (attribute, message, onAttributeChange) => (
+const ObjectNormalEdit: PartsEditComponent = ({attribute, message, onAttributeChange}) => (
     <div>
         <p>通常物体</p>
         <MoveTypeInput
@@ -47,7 +49,7 @@ export const ObjectNormalEdit: PartsEditComponent = (attribute, message, onAttri
     </div>
 );
 
-export const ObjectMessageEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
+const ObjectMessageEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
     <div>
         <p>メッセージ</p>
         <SoundNumberInput
@@ -70,7 +72,7 @@ export const ObjectMessageEdit: PartsEditComponent = (attribute, message, onAttr
     </div>
 );
 
-export const ObjectMonsterEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
+const ObjectMonsterEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
     <div>
         <p>モンスター</p>
         <StatusInput
@@ -107,7 +109,7 @@ export const ObjectMonsterEdit: PartsEditComponent = (attribute, message, onAttr
     </div>
 );
 
-export const ObjectItemEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
+const ObjectItemEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
     <div>
         <p>アイテム</p>
         <StatusInput
@@ -155,7 +157,7 @@ export const ObjectItemEdit: PartsEditComponent = (attribute, message, onAttribu
     </div>
 );
 
-export const ObjectDoorEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
+const ObjectDoorEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
     <div>
         <p>扉</p>
         <SelectInput
@@ -193,7 +195,7 @@ export const ObjectDoorEdit: PartsEditComponent = (attribute, message, onAttribu
     </div>
 );
 
-export const ObjectStatusEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
+const ObjectStatusEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
     <div>
         <p>ステータス変化</p>
         <StatusInput
@@ -225,7 +227,7 @@ export const ObjectStatusEdit: PartsEditComponent = (attribute, message, onAttri
     </div>
 );
 
-export const ObjectSellItemEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
+const ObjectSellItemEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
     <div>
         <p>物を売る</p>
         <NumberInput
@@ -267,7 +269,7 @@ export const ObjectSellItemEdit: PartsEditComponent = (attribute, message, onAtt
     </div>
 );
 
-export const ObjectBuyItemEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
+const ObjectBuyItemEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
     <div>
         <p>物を買う</p>
         <NumberInput
@@ -292,7 +294,7 @@ export const ObjectBuyItemEdit: PartsEditComponent = (attribute, message, onAttr
     </div>
 );
 
-export const ObjectScoreEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
+const ObjectScoreEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
     <div>
         <p>スコア表示</p>
         <StatusInput
@@ -328,7 +330,7 @@ export const ObjectScoreEdit: PartsEditComponent = (attribute, message, onAttrib
     </div>
 );
 
-export const ObjectRandomEdit: PartsEditComponent = (attribute, message, onAttributeChange) => {
+const ObjectRandomEdit: PartsEditComponent = ({attribute, message, onAttributeChange}) => {
     /**
      * 指定した順番から1つずつ増える配列を作成します。
      *     ランダム選択のパーツでは ATR_RANDOM_BASE から RANDOM_ITERATION_MAX の分がターゲットパーツ番号として使用します
@@ -359,7 +361,7 @@ export const ObjectRandomEdit: PartsEditComponent = (attribute, message, onAttri
     );
 }
 
-export const ObjectSelectEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => (
+const ObjectSelectEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
     <div>
         <ObjectCommonInput
             messageLabel="表示メッセージ"
@@ -401,3 +403,19 @@ const ObjectCommonInput: React.StatelessComponent<{
         />
     </>
 )
+
+export const ObjectEditTable: PartsEditComponentTable = {
+    [WWAConsts.OBJECT_NORMAL]: ObjectNormalEdit,
+    [WWAConsts.OBJECT_MESSAGE]: ObjectMessageEdit,
+    [WWAConsts.OBJECT_MONSTER]: ObjectMonsterEdit,
+    [WWAConsts.OBJECT_ITEM]: ObjectItemEdit,
+    [WWAConsts.OBJECT_DOOR]: ObjectDoorEdit,
+    [WWAConsts.OBJECT_STATUS]: ObjectStatusEdit,
+    [WWAConsts.OBJECT_SELL]: ObjectSellItemEdit,
+    [WWAConsts.OBJECT_BUY]: ObjectBuyItemEdit,
+    [WWAConsts.OBJECT_URLGATE]: URLGateEdit,
+    [WWAConsts.OBJECT_SCORE]: ObjectScoreEdit,
+    [WWAConsts.OBJECT_RANDOM]: ObjectRandomEdit,
+    [WWAConsts.OBJECT_SELECT]: ObjectSelectEdit,
+    [WWAConsts.OBJECT_LOCALGATE]: LocalGateEdit
+};

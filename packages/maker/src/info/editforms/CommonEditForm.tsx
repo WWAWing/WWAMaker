@@ -1,29 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import { PartsEditComponent, URLInput, StringInput, NumberInput, PartsEditMessageChange } from "./EditFormUtils";
 import WWAConsts from "../../classes/WWAConsts";
 
 /**
  * URLゲートの編集画面のコンポーネントです。
  *     物体パーツのURLゲートも背景パーツのURLゲートも編集画面は共通のため、物体背景ともにこのコンポーネントから参照されます。
- * @todo 実装する
  */
-export const URLGateEdit: PartsEditComponent = (attribute, message, onAttributeChange, onMessageChange) => {
-    const messageLines = message.split(/\r|\n|\r\n/);
-    const handleMessageChange = (event: React.ChangeEvent<HTMLInputElement>, onMessageChange: PartsEditMessageChange) => {
+export const URLGateEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => {
+    const messageLine = message.split(/\r|\n|\r\n/);
+    const [urlValue, setURL] = useState<string>(messageLine[0]);
+    const [targetValue, setTarget] = useState<string>(messageLine[1]);
 
-    }
+    const handleURLChange = (event: React.ChangeEvent<HTMLInputElement>, onMessageChange: PartsEditMessageChange) => {
+        setURL(event.target.value);
+        onMessageChange([urlValue, targetValue].join("\n"));
+    };
+    const handleTargetChange = (event: React.ChangeEvent<HTMLInputElement>, onMessageChange: PartsEditMessageChange) => {
+        setTarget(event.target.value);
+        onMessageChange([urlValue, targetValue].join("\n"));
+    };
+
     return (
         <div>
             <p>URLゲート</p>
             <URLInput
                 label="リンク先のURLアドレス"
-                value={messageLines[0]}
-                onChange={event => handleMessageChange(event, onMessageChange)}
+                value={urlValue}
+                onChange={event => handleURLChange(event, onMessageChange)}
             />
             <StringInput
                 label="URL TARGET"
-                value={messageLines[1]}
-                onChange={event => handleMessageChange(event, onMessageChange)}
+                value={targetValue}
+                onChange={event => handleTargetChange(event, onMessageChange)}
             />
         </div>
     );
@@ -32,7 +40,7 @@ export const URLGateEdit: PartsEditComponent = (attribute, message, onAttributeC
 /**
  * ジャンプゲートの編集画面のコンポーネントです。
  */
-export const LocalGateEdit: PartsEditComponent = (attribute, message, onAttributeChange) => {
+export const LocalGateEdit: PartsEditComponent = ({attribute, message, onAttributeChange}) => {
     return (
         <div>
             <p>ジャンプゲート</p>
