@@ -35,7 +35,7 @@ const toggleInfoPanel = actionCreator<{ toggle?: boolean; }>("TOGGLE_INFOPANEL")
 /**
  * InfoPanel で表示する内容を変更します。
  */
-const switchInfoPanel = actionCreator<{ mode: InfoPanelMode }>("SWITCH_INFOPANEL");
+export const switchInfoPanel = actionCreator<{ mode: InfoPanelMode }>("SWITCH_INFOPANEL");
 /**
  * パーツ編集を表示します。
  */

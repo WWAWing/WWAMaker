@@ -1,5 +1,5 @@
 import { MapStateToProps, connect } from "react-redux";
-import { InfoPanelPartsEditState } from "./InfoPanelState";
+import { InfoPanelPartsEditState, switchInfoPanel } from "./InfoPanelState";
 import { StoreType } from "../State";
 import { WWAData } from "@wwawing/common-interface";
 import { Dispatch, bindActionCreators } from "redux";
@@ -9,6 +9,7 @@ import { PartsType } from "../classes/WWAData";
 import WWAConsts from "../classes/WWAConsts";
 import { ObjectEditTable } from "./editforms/ObjectEditForm";
 import { MapEditTable } from "./editforms/MapEditForm";
+import { PartsEditComponentTable } from "./editforms/EditFormUtils";
 
 interface StateProps {
     /**
@@ -30,7 +31,8 @@ const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = stat
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return bindActionCreators({
-        editParts: editParts
+        editParts: editParts,
+        switchInfoPanel: switchInfoPanel
     }, dispatch);
 };
 
@@ -143,10 +145,54 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
         });
     }
 
+    private handleEditButtonClick() {
+        this.send();
+        this.props.switchInfoPanel({ mode: "MAP_FOUNDATION" });
+    }
+
+    private handleCancelButtonClick() {
+        this.props.switchInfoPanel({ mode: "MAP_FOUNDATION" });
+    }
+
     /**
-     * 編集フォームを取得します。
+     * パーツ種別対応表の変数を取得します。
      */
-    getEditForm() {
+    private getPartsEditTable(): PartsEditComponentTable | null {
+        if (this.props.state === undefined) {
+            return null;
+        }
+        if (this.props.state.type === PartsType.MAP) {
+            return MapEditTable;
+        } else if (this.props.state.type === PartsType.OBJECT) {
+            return ObjectEditTable;
+        }
+
+        return null;
+    }
+
+    /**
+     * パーツ種別を変更するセレクトボックスを出力します。
+     */
+    private renderPartsSelectBox() {
+        const partsEditTable = this.getPartsEditTable();
+        if (!partsEditTable || this.state.attribute === undefined) {
+            return;
+        }
+        
+        const partsEditType = this.state.attribute[WWAConsts.ATR_TYPE];
+        return (
+            <select onChange={event => this.handleAttributeChange(event.target.value, WWAConsts.ATR_TYPE)} value={partsEditType}>
+                {Object.keys(partsEditTable).map((partsEditIndex) =>
+                    <option key={partsEditIndex} value={partsEditIndex}>{partsEditTable[parseInt(partsEditIndex)].name}</option>
+                )}
+            </select>
+        );
+    }
+
+    /**
+     * 編集フォームを出力します。
+     */
+    private renderEditForm() {
         if (
             this.props.state === undefined ||
             this.state.attribute === undefined ||
@@ -155,49 +201,39 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
             return <p>WWAデータがありません。マップデータを開いてください。</p>;
         }
 
-        if (this.props.state.type === PartsType.MAP) {
-            const attribute = this.state.attribute;
-            const message = this.state.message;
-            const typeNumber = attribute[WWAConsts.ATR_TYPE];
-            if (!(typeNumber in MapEditTable)) {
-                throw new Error(`パーツ種別 ${typeNumber} 番に対応する背景パーツが見つかりませんでした。`);
-            }
-            const MapEditComponent = MapEditTable[typeNumber];
-            return (
-                <MapEditComponent
-                    attribute={attribute}
-                    message={message}
-                    onAttributeChange={this.handleAttributeChange}
-                    onMessageChange={this.handleMessageChange}
-                />
-            );
-
-        } else if (this.props.state.type === PartsType.OBJECT) {
-            const attribute = this.state.attribute;
-            const message = this.state.message;
-            const typeNumber = attribute[WWAConsts.ATR_TYPE];
-            if (!(typeNumber in ObjectEditTable)) {
-                throw new Error(`パーツ種別 ${typeNumber} 番に対応する物体パーツが見つかりませんでした。`);
-            }
-            const ObjectEditComponent = ObjectEditTable[typeNumber];
-            return (
-                <ObjectEditComponent
-                    attribute={attribute}
-                    message={message}
-                    onAttributeChange={this.handleAttributeChange}
-                    onMessageChange={this.handleMessageChange}
-                />
-            );
-
+        const partsEditTable = this.getPartsEditTable();
+        if (!partsEditTable) {
+            return null;
         }
+        
+        const attribute = this.state.attribute;
+        const message = this.state.message;
+        const typeNumber = attribute[WWAConsts.ATR_TYPE];
+        if (!(typeNumber in partsEditTable)) {
+            throw new Error(`パーツ種別 ${typeNumber} 番に対応するパーツ種別が見つかりませんでした。`);
+        }
+        
+        const PartsEditComponent = partsEditTable[typeNumber].component;
+        return (
+            <PartsEditComponent
+                attribute={attribute}
+                message={message}
+                onAttributeChange={this.handleAttributeChange}
+                onMessageChange={this.handleMessageChange}
+            />
+        );
 
-        return <p>対応したパーツ編集画面が見つかりませんでした。</p>;
     }
 
     render() {
         return (
             <div>
-                {this.getEditForm()}
+                {this.renderPartsSelectBox()}
+                {this.renderEditForm()}
+                <div>
+                    <button onClick={() => this.handleEditButtonClick()}>OK</button>
+                    <button onClick={() => this.handleCancelButtonClick()}>取り消し</button>
+                </div>
             </div>
         )
     }

@@ -404,18 +404,60 @@ const ObjectCommonInput: React.StatelessComponent<{
     </>
 )
 
+/**
+ * 物体パーツのパーツ種別一覧です。
+ */
 export const ObjectEditTable: PartsEditComponentTable = {
-    [WWAConsts.OBJECT_NORMAL]: ObjectNormalEdit,
-    [WWAConsts.OBJECT_MESSAGE]: ObjectMessageEdit,
-    [WWAConsts.OBJECT_MONSTER]: ObjectMonsterEdit,
-    [WWAConsts.OBJECT_ITEM]: ObjectItemEdit,
-    [WWAConsts.OBJECT_DOOR]: ObjectDoorEdit,
-    [WWAConsts.OBJECT_STATUS]: ObjectStatusEdit,
-    [WWAConsts.OBJECT_SELL]: ObjectSellItemEdit,
-    [WWAConsts.OBJECT_BUY]: ObjectBuyItemEdit,
-    [WWAConsts.OBJECT_URLGATE]: URLGateEdit,
-    [WWAConsts.OBJECT_SCORE]: ObjectScoreEdit,
-    [WWAConsts.OBJECT_RANDOM]: ObjectRandomEdit,
-    [WWAConsts.OBJECT_SELECT]: ObjectSelectEdit,
-    [WWAConsts.OBJECT_LOCALGATE]: LocalGateEdit
+    [WWAConsts.OBJECT_NORMAL]: {
+        name: "通常物体",
+        component: ObjectNormalEdit
+    },
+    [WWAConsts.OBJECT_MESSAGE]: {
+        name: "メッセージ",
+        component: ObjectMessageEdit
+    },
+    [WWAConsts.OBJECT_MONSTER]: {
+        name: "モンスター",
+        component: ObjectMonsterEdit
+    },
+    [WWAConsts.OBJECT_ITEM]: {
+        name: "アイテム",
+        component: ObjectItemEdit
+    },
+    [WWAConsts.OBJECT_DOOR]: {
+        name: "扉",
+        component: ObjectDoorEdit
+    },
+    [WWAConsts.OBJECT_STATUS]: {
+        name: "ステータス変化",
+        component: ObjectStatusEdit
+    },
+    [WWAConsts.OBJECT_SELL]: {
+        name: "アイテムを売る",
+        component: ObjectSellItemEdit
+    },
+    [WWAConsts.OBJECT_BUY]: {
+        name: "アイテムを買う",
+        component: ObjectBuyItemEdit
+    },
+    [WWAConsts.OBJECT_URLGATE]: {
+        name: "URLゲート",
+        component: URLGateEdit
+    },
+    [WWAConsts.OBJECT_SCORE]: {
+        name: "スコア表示",
+        component: ObjectScoreEdit
+    },
+    [WWAConsts.OBJECT_RANDOM]: {
+        name: "ランダム選択",
+        component: ObjectRandomEdit
+    },
+    [WWAConsts.OBJECT_SELECT]: {
+        name: "二者択一",
+        component: ObjectSelectEdit
+    },
+    [WWAConsts.OBJECT_LOCALGATE]: {
+        name: "ジャンプゲート",
+        component: LocalGateEdit
+    }
 };

@@ -30,7 +30,17 @@ export type PartsEditAttributeChange = (value: string, attributeIndex: number) =
  *     value: 変更したいメッセージ内容
  */
 export type PartsEditMessageChange = (value: string) => void;
-export type PartsEditComponentTable = { [key: number]: PartsEditComponent };
+
+/**
+ * 物体パーツや背景パーツの種別に対応した編集画面の情報の型です。
+ *     name: 名前 (パーツ種別のセレクトボックスに表示されます)
+ *     component: コンポーネントそのもの
+ */
+type PartsEditTableItem = {
+    name: string,
+    component: PartsEditComponent,
+};
+export type PartsEditComponentTable = { [key: number]: PartsEditTableItem };
 
 
 export const NumberInput: React.StatelessComponent<{

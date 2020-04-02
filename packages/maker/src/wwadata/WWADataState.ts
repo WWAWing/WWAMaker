@@ -3,6 +3,7 @@ import { PartsType } from "../classes/WWAData";
 import actionCreatorFactory from "typescript-fsa";
 import { WWAData } from "@wwawing/common-interface";
 import { MapFoundationField } from "../info/MapFoundation";
+import WWAConsts from "../classes/WWAConsts";
 
 const actionCreator = actionCreatorFactory();
 /**
@@ -53,7 +54,41 @@ const fillParts = (
         }
         return line.fill(value, x, x + width);
     });
-}
+};
+
+/**
+ * WWAのデータと追加したいパーツの情報から WWAData.message に指定出来るインデックスを取得します。
+ * @param partsType パーツの種類
+ * @param partsNumber パーツ番号
+ * @param isMessageEmpty 入力したメッセージが空か？ (既存のメッセージ関係なく)
+ * @param wwaData 調べたい WWA のデータ
+ * @returns 前のメッセージ番号と新しいメッセージ番号を加えた配列
+ * @throws 物体パーツでもなく背景パーツでもない場合
+ */
+const getMessageIndexes = (
+    partsType: PartsType,
+    partsNumber: number,
+    isMessageEmpty: boolean,
+    wwaData: WWAData
+): [number, number] => {
+    const messageIndex =
+        partsType === PartsType.MAP ? wwaData.mapAttribute[partsNumber][WWAConsts.ATR_STRING] :
+        partsType === PartsType.OBJECT ? wwaData.objectAttribute[partsNumber][WWAConsts.ATR_STRING] :
+        null;
+    if (messageIndex === null) {
+        throw new Error(`異なるパーツ種類 ${partsType} を検出しました。`);
+    }
+
+    if (isMessageEmpty) {
+        return [messageIndex, 0];
+    }
+
+    if (messageIndex === 0) {
+        return [0, wwaData.message.length + 1];
+    }
+
+    return [messageIndex, messageIndex];
+};
 
 export const WWADataReducer = reducerWithInitialState<WWAData | null>(null)
     .case(putParts, (state, payload) => {
@@ -90,5 +125,30 @@ export const WWADataReducer = reducerWithInitialState<WWAData | null>(null)
             mapWidth: payload.mapWidth
         };
     })
-    // TODO: 実装する
-    .case(editParts, (state, payload) => state)
+    .case(editParts, (state, payload) => {
+        if (state === null) {
+            return null;
+        }
+
+        const newState = Object.assign({}, state);
+
+        const [oldMessageIndex, newMessageIndex] = getMessageIndexes(payload.type, payload.number, payload.message.length <= 0, state);
+        if (oldMessageIndex !== 0 && newMessageIndex === 0) { // メッセージ削除
+            newState.message[oldMessageIndex] = "";
+        } else if (newMessageIndex !== 0) { // メッセージ追加とメッセージ編集
+            newState.message[newMessageIndex] = payload.message;
+        }
+
+        /**
+         * @todo 後述の getMessageIndexes とパーツ種別検出処理を共通化したい
+         */
+        if (payload.type === PartsType.MAP) {
+            newState.mapAttribute[payload.number] = payload.attributes;
+            newState.mapAttribute[payload.number][WWAConsts.ATR_STRING] = newMessageIndex;
+        } else if (payload.type === PartsType.OBJECT) {
+            newState.objectAttribute[payload.number] = payload.attributes;
+            newState.objectAttribute[payload.number][WWAConsts.ATR_STRING] = newMessageIndex;
+        }
+
+        return newState;
+    })

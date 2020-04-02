@@ -10,7 +10,7 @@ import {
 } from "./EditFormUtils";
 import { LocalGateEdit, URLGateEdit } from "./CommonEditForm";
 
-export const MapStreetEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
+const MapStreetEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
     <div>
         <p>道</p>
         <WaitTimeInput
@@ -34,7 +34,7 @@ export const MapStreetEdit: PartsEditComponent = ({attribute, message, onAttribu
     </div>
 );
 
-export const MapWallEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
+const MapWallEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
     <div>
         <p>壁</p>
         <MessageInput
@@ -46,8 +46,20 @@ export const MapWallEdit: PartsEditComponent = ({attribute, message, onAttribute
 );
 
 export const MapEditTable: PartsEditComponentTable = {
-    [WWAConsts.MAP_STREET]: MapStreetEdit,
-    [WWAConsts.MAP_WALL]: MapWallEdit,
-    [WWAConsts.MAP_LOCALGATE]: LocalGateEdit,
-    [WWAConsts.MAP_URLGATE]: URLGateEdit
+    [WWAConsts.MAP_STREET]: {
+        name: "道",
+        component: MapStreetEdit
+    },
+    [WWAConsts.MAP_WALL]: {
+        name: "壁",
+        component: MapWallEdit
+    },
+    [WWAConsts.MAP_LOCALGATE]: {
+        name: "ジャンプゲート",
+        component: LocalGateEdit
+    },
+    [WWAConsts.MAP_URLGATE]: {
+        name: "URLゲート",
+        component: URLGateEdit
+    }
 };
