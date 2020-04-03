@@ -182,8 +182,8 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
         const partsEditType = this.state.attribute[WWAConsts.ATR_TYPE];
         return (
             <select onChange={event => this.handleAttributeChange(event.target.value, WWAConsts.ATR_TYPE)} value={partsEditType}>
-                {Object.keys(partsEditTable).map((partsEditIndex) =>
-                    <option key={partsEditIndex} value={partsEditIndex}>{partsEditTable[parseInt(partsEditIndex)].name}</option>
+                {partsEditTable.map((partsEditItem, partsEditIndex) =>
+                    <option key={partsEditIndex} value={partsEditItem.id}>{partsEditItem.name}</option>
                 )}
             </select>
         );
@@ -209,11 +209,12 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
         const attribute = this.state.attribute;
         const message = this.state.message;
         const typeNumber = attribute[WWAConsts.ATR_TYPE];
-        if (!(typeNumber in partsEditTable)) {
+        
+        const PartsEditComponent = partsEditTable.find(item => item.id === typeNumber)?.component;
+        if (PartsEditComponent === undefined) {
             throw new Error(`パーツ種別 ${typeNumber} 番に対応するパーツ種別が見つかりませんでした。`);
         }
-        
-        const PartsEditComponent = partsEditTable[typeNumber].component;
+
         return (
             <PartsEditComponent
                 attribute={attribute}

@@ -262,13 +262,16 @@ const TextInput: React.FunctionComponent<{
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }> = props => {
     return (
-        <input
-            type="text"
-            name={props.name}
-            value={props.value}
-            onChange={props.onChange}
-        >
-        </input>
+        <div>
+            {props.label}
+            <input
+                type="text"
+                name={props.name}
+                value={props.value}
+                onChange={props.onChange}
+            >
+            </input>
+        </div>
     )
 };
 

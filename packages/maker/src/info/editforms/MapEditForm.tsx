@@ -44,21 +44,22 @@ const MapWallEdit: PartsEditComponent = ({attribute, message, onAttributeChange,
     </div>
 );
 
-export const MapEditTable: PartsEditComponentTable = {
-    [WWAConsts.MAP_STREET]: {
+export const MapEditTable: PartsEditComponentTable = [
+    {
+        id: WWAConsts.MAP_STREET,
         name: "道",
         component: MapStreetEdit
-    },
-    [WWAConsts.MAP_WALL]: {
+    }, {
+        id: WWAConsts.MAP_WALL,
         name: "壁",
         component: MapWallEdit
-    },
-    [WWAConsts.MAP_LOCALGATE]: {
+    }, {
+        id: WWAConsts.MAP_LOCALGATE,
         name: "ジャンプゲート",
         component: LocalGateEdit
-    },
-    [WWAConsts.MAP_URLGATE]: {
+    }, {
+        id: WWAConsts.MAP_URLGATE,
         name: "URLゲート",
         component: URLGateEdit
     }
-};
+];

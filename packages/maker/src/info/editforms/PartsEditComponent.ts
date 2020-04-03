@@ -27,7 +27,8 @@ export type PartsEditMessageChange = (value: string) => void;
  *     component: コンポーネントそのもの
  */
 type PartsEditTableItem = {
+    id: number,
     name: string,
     component: PartsEditComponent,
 };
-export type PartsEditComponentTable = { [key: number]: PartsEditTableItem };
+export type PartsEditComponentTable = PartsEditTableItem[];
