@@ -67,7 +67,7 @@ const ObjectMessageEdit: PartsEditComponent = ({attribute, message, onAttributeC
         <MessageInput
             value={message}
             label="表示メッセージ"
-            onChange={() => {}}
+            onChange={event => onMessageChange(event.target.value)}
         />
     </div>
 );
@@ -95,7 +95,7 @@ const ObjectMonsterEdit: PartsEditComponent = ({attribute, message, onAttributeC
         <NumberInput
             label="モンスター所持アイテムの物体番号"
             value={attribute[WWAConsts.ATR_ITEM]}
-            onChange={() => {}}
+            onChange={event => onAttributeChange(event.target.value, WWAConsts.ATR_ITEM)}
         />
         <ObjectCommonInput
             messageLabel="戦闘後表示メッセージ"
