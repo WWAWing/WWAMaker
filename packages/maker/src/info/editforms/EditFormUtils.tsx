@@ -2,6 +2,8 @@ import React from "react";
 import WWAConsts from "../../classes/WWAConsts";
 import { MoveType } from "../../classes/WWAData";
 
+// このファイルはパーツ編集画面で頻繁に使用されるテキストボックスやセレクトボックスなどをまとめたコンポーネント集です。
+
 /**
  * パーツ編集で必要になるステータス入力値のうち、ステータス1つ分で必要なプロパティを示す型です。
  */
@@ -10,40 +12,7 @@ type NumberEditFormItem = {
     value: number
 };
 
-/**
- * パーツの編集画面のコンポーネントに割り当てる型です。
- */
-export type PartsEditComponent = React.FunctionComponent<{
-    attribute: number[],
-    message: string,
-    onAttributeChange: PartsEditAttributeChange,
-    onMessageChange: PartsEditMessageChange
-}>;
-/**
- * パーツの編集画面で属性値に対応したフォームが変更された場合に実行されるメソッドの型です。
- *     value: 変更したい属性値 (数字への変換は親コンポーネント側で行う必要があります)
- *     attributeIndex: 親コンポーネントの State で変更したい属性の番号
- */
-export type PartsEditAttributeChange = (value: string, attributeIndex: number) => void;
-/**
- * パーツの編集画面でメッセージに対応したフォームが変更された場合に実行されるメソッドの型です。
- *     value: 変更したいメッセージ内容
- */
-export type PartsEditMessageChange = (value: string) => void;
-
-/**
- * 物体パーツや背景パーツの種別に対応した編集画面の情報の型です。
- *     name: 名前 (パーツ種別のセレクトボックスに表示されます)
- *     component: コンポーネントそのもの
- */
-type PartsEditTableItem = {
-    name: string,
-    component: PartsEditComponent,
-};
-export type PartsEditComponentTable = { [key: number]: PartsEditTableItem };
-
-
-export const NumberInput: React.StatelessComponent<{
+export const NumberInput: React.FunctionComponent<{
     value: number,
     label: string,
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
@@ -73,7 +42,7 @@ const createNumberInput = (label: string) => {
 export const SoundNumberInput = createNumberInput("サウンド番号");
 export const WaitTimeInput = createNumberInput("待ち時間");
 
-export const SelectInput: React.StatelessComponent<{
+export const SelectInput: React.FunctionComponent<{
     selectableItems: NumberEditFormItem[],
     value: number,
     label: string,
@@ -133,7 +102,7 @@ export const PassableInput = createSelectInput("通行区分", [
     }
 ]);
 
-export const MessageInput: React.StatelessComponent<{
+export const MessageInput: React.FunctionComponent<{
     value: string,
     label: string,
     onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void
@@ -154,7 +123,7 @@ export const MessageInput: React.StatelessComponent<{
  *     onChange: 入力欄が変更した場合に発生するメソッド
  *     どのテキストボックから入力されたかは、 event.target.name から確認できます。
  */
-export const StatusInput: React.StatelessComponent<{
+export const StatusInput: React.FunctionComponent<{
     items: {
         energy?: NumberEditFormItem,
         strength: NumberEditFormItem,
@@ -187,7 +156,7 @@ export const StatusInput: React.StatelessComponent<{
     </>
 );
 
-export const URLInput: React.StatelessComponent<{
+export const URLInput: React.FunctionComponent<{
     label: string,
     value: string,
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
@@ -198,7 +167,7 @@ export const URLInput: React.StatelessComponent<{
     </div>
 );
 
-export const StringInput: React.StatelessComponent<{
+export const StringInput: React.FunctionComponent<{
     label: string,
     value: string,
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void

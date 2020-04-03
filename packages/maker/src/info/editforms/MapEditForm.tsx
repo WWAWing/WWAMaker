@@ -1,13 +1,12 @@
 import WWAConsts from "../../classes/WWAConsts"
 import React from "react";
 import {
-    PartsEditComponent,
     NumberInput,
     WaitTimeInput,
     SoundNumberInput,
-    MessageInput,
-    PartsEditComponentTable
+    MessageInput
 } from "./EditFormUtils";
+import { PartsEditComponent, PartsEditComponentTable } from "./PartsEditComponent";
 import { LocalGateEdit, URLGateEdit } from "./CommonEditForm";
 
 const MapStreetEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (

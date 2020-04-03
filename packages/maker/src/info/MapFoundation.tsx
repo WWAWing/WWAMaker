@@ -1,5 +1,4 @@
 import React from "react";
-import { RowForm, Grid, Cell, SubmitForm} from "./InfoPanelCommon" ;
 import { MapStateToProps, connect } from "react-redux";
 import { StoreType } from "../State";
 import { WWAData } from "@wwawing/common-interface";
@@ -172,66 +171,63 @@ class MapFoundation extends React.Component<Props, State> {
                     value={this.state.field.mapCGName}
                     onChange={handleChange}
                 />
-                <Grid>
-                    <Cell>
-                        <TextInput
-                            name="playerX"
-                            label="プレイヤー初期X座標"
-                            value={this.state.field.playerX}
-                            onChange={handleChange}
-                        />
-                        <TextInput
-                            name="playerY"
-                            label="プレイヤー初期Y座標"
-                            value={this.state.field.playerY}
-                            onChange={handleChange}
-                        />
-                        <TextInput
-                            name="gameoverX"
-                            label="ゲームオーバーX座標"
-                            value={this.state.field.gameoverX}
-                            onChange={handleChange}
-                        />
-                        <TextInput
-                            name="gameoverY"
-                            label="ゲームオーバーY座標"
-                            value={this.state.field.gameoverY}
-                            onChange={handleChange}
-                        />
-                    </Cell>
-                    <Cell>
-                        <TextInput
-                            name="statusEnergyMax"
-                            label="生命力上限"
-                            value={this.state.field.statusEnergyMax}
-                            onChange={handleChange}
-                        />
-                        <TextInput
-                            name="statusEnergy"
-                            label="初期生命力"
-                            value={this.state.field.statusEnergy}
-                            onChange={handleChange}
-                        />
-                        <TextInput
-                            name="statusStrength"
-                            label="初期攻撃力"
-                            value={this.state.field.statusStrength}
-                            onChange={handleChange}
-                        />
-                        <TextInput
-                            name="statusDefence"
-                            label="初期防御力"
-                            value={this.state.field.statusDefence}
-                            onChange={handleChange}
-                        />
-                        <TextInput
-                            name="statusGold"
-                            label="初期所持金"
-                            value={this.state.field.statusGold}
-                            onChange={handleChange}
-                        />
-                    </Cell>
-                </Grid>
+
+                    <TextInput
+                        name="playerX"
+                        label="プレイヤー初期X座標"
+                        value={this.state.field.playerX}
+                        onChange={handleChange}
+                    />
+                    <TextInput
+                        name="playerY"
+                        label="プレイヤー初期Y座標"
+                        value={this.state.field.playerY}
+                        onChange={handleChange}
+                    />
+                    <TextInput
+                        name="gameoverX"
+                        label="ゲームオーバーX座標"
+                        value={this.state.field.gameoverX}
+                        onChange={handleChange}
+                    />
+                    <TextInput
+                        name="gameoverY"
+                        label="ゲームオーバーY座標"
+                        value={this.state.field.gameoverY}
+                        onChange={handleChange}
+                    />
+
+                    <TextInput
+                        name="statusEnergyMax"
+                        label="生命力上限"
+                        value={this.state.field.statusEnergyMax}
+                        onChange={handleChange}
+                    />
+                    <TextInput
+                        name="statusEnergy"
+                        label="初期生命力"
+                        value={this.state.field.statusEnergy}
+                        onChange={handleChange}
+                    />
+                    <TextInput
+                        name="statusStrength"
+                        label="初期攻撃力"
+                        value={this.state.field.statusStrength}
+                        onChange={handleChange}
+                    />
+                    <TextInput
+                        name="statusDefence"
+                        label="初期防御力"
+                        value={this.state.field.statusDefence}
+                        onChange={handleChange}
+                    />
+                    <TextInput
+                        name="statusGold"
+                        label="初期所持金"
+                        value={this.state.field.statusGold}
+                        onChange={handleChange}
+                    />
+
                 <TextInput
                     name="mapWidth"
                     label="現在のマップサイズ"
@@ -250,10 +246,10 @@ class MapFoundation extends React.Component<Props, State> {
                     value={this.state.field.mapPartsMax}
                     onChange={handleChange}
                 />
-                <SubmitForm
-                    onSubmitButtonClick={() => { this.send() }}
-                    onResetButtonClick={() => { this.reset() }}
-                ></SubmitForm>
+                <div>
+                    <button onClick={() => { this.send() }}>決定</button>
+                    <button onClick={() => { this.reset() }}>リセット</button>
+                </div>
             </div>
         );
     }
@@ -266,15 +262,13 @@ const TextInput: React.FunctionComponent<{
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }> = props => {
     return (
-        <RowForm label={props.label}>
-            <input
-                type="text"
-                name={props.name}
-                value={props.value}
-                onChange={props.onChange}
-            >
-            </input>
-        </RowForm>
+        <input
+            type="text"
+            name={props.name}
+            value={props.value}
+            onChange={props.onChange}
+        >
+        </input>
     )
 };
 

@@ -1,7 +1,6 @@
 import WWAConsts from "../../classes/WWAConsts";
 import React from "react";
 import {
-    PartsEditComponent,
     MoveTypeInput,
     PassableInput,
     SoundNumberInput,
@@ -10,9 +9,8 @@ import {
     StatusInput,
     NumberInput,
     SelectInput,
-    PartsEditAttributeChange,
-    PartsEditComponentTable
 } from "./EditFormUtils";
+import { PartsEditComponent, PartsEditComponentTable, PartsEditAttributeChange } from "./PartsEditComponent";
 import { ItemMode } from "../../classes/WWAData";
 import { URLGateEdit, LocalGateEdit } from "./CommonEditForm";
 
@@ -378,7 +376,7 @@ const ObjectSelectEdit: PartsEditComponent = ({attribute, message, onAttributeCh
 /**
  * 一部の物体パーツの編集画面に付いている「サウンド番号」「動作属性」「メッセージ」の3つの入力欄をセットにしたコンポーネントです。
  */
-const ObjectCommonInput: React.StatelessComponent<{
+const ObjectCommonInput: React.FunctionComponent<{
     messageLabel: string,
     soundValue: number,
     moveValue: number,

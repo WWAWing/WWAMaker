@@ -1,6 +1,9 @@
 import React, { useState } from "react";
-import { PartsEditComponent, URLInput, StringInput, NumberInput, PartsEditMessageChange } from "./EditFormUtils";
+import { URLInput, StringInput, NumberInput } from "./EditFormUtils";
+import { PartsEditComponent, PartsEditMessageChange } from "./PartsEditComponent";
 import WWAConsts from "../../classes/WWAConsts";
+
+// 物体パーツと背景パーツ共通で使用される編集画面のコンポーネントです。
 
 /**
  * URLゲートの編集画面のコンポーネントです。

@@ -9,7 +9,7 @@ import { PartsType } from "../classes/WWAData";
 import WWAConsts from "../classes/WWAConsts";
 import { ObjectEditTable } from "./editforms/ObjectEditForm";
 import { MapEditTable } from "./editforms/MapEditForm";
-import { PartsEditComponentTable } from "./editforms/EditFormUtils";
+import { PartsEditComponentTable } from "./editforms/PartsEditComponent";
 
 interface StateProps {
     /**
