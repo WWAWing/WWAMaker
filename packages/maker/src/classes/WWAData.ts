@@ -133,6 +133,8 @@ function createEmptyMap(size: number): number[][] {
     );
 }
 
+export type SystemMessageType = SystemMessage1 | SystemMessage2;
+
 /**
  * 空のパーツ属性配列を作成します。
  */

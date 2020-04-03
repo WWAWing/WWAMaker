@@ -22,6 +22,12 @@ export const putParts = actionCreator<{
  */
 export const setMapFoundation = actionCreator<MapFoundationField>("SET_MAP_FOUNDATION");
 /**
+ * システムメッセージを設定します。
+ */
+export const setSystemMessage = actionCreator<{
+    messages: string[]
+}>("SET_SYSTEM_MESSAGE");
+/**
  * パーツを編集します。
  */
 export const editParts = actionCreator<{
@@ -124,6 +130,12 @@ export const WWADataReducer = reducerWithInitialState<WWAData | null>(null)
             statusGold: payload.statusGold,
             mapWidth: payload.mapWidth
         };
+    })
+    .case(setSystemMessage, (state, payload) => {
+        const newState = Object.assign({}, state);
+        newState.systemMessage = payload.messages;
+
+        return newState;
     })
     .case(editParts, (state, payload) => {
         if (state === null) {
