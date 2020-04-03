@@ -1,5 +1,5 @@
 import { MakerError } from '../classes/MakerSystem';
-import WWAData from '../classes/WWAData';
+import { WWAData } from "@wwawing/common-interface";
 
 export interface LoaderResponse {
     error: LoaderError|null,

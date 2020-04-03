@@ -1585,6 +1585,11 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
+"@wwawing/common-interface@^3.2.11":
+  version "3.2.11"
+  resolved "https://registry.yarnpkg.com/@wwawing/common-interface/-/common-interface-3.2.11.tgz#8ae847650cf6e7aa131e90f09f4d6bcbc307c7ba"
+  integrity sha512-lUBOHjyOVVf1roNoMoo8mIhszYBUGIEC159WG6FRUgwDZX710ZTyIh/aBE6/9s0C5HG7eosIOmsV+1Nhl90mrw==
+
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@xtuc/ieee754/-/ieee754-1.2.0.tgz#eef014a3145ae477a1cbc00cd1e552336dceb790"

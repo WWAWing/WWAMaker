@@ -70,7 +70,7 @@ export default class PartsList extends React.Component<Props> {
  *     例えばパーツ数が 256 でパーツ増減数の単位が 50 とした場合は、 300 が出力されます。
  * @param partsCount 
  */
-function getPartsCountPerIncreaseUnit(partsCount: number): number {
+export function getPartsCountPerIncreaseUnit(partsCount: number): number {
     if (partsCount < WWAConsts.PARTS_SIZE_DEFAULT) {
         return WWAConsts.PARTS_SIZE_DEFAULT;
     }

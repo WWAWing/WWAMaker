@@ -5,17 +5,24 @@ import { connect } from 'react-redux';
 import { selectMapParts } from './PartsState';
 import { Dispatch } from 'redux';
 import PartsListFooter from '../common/PartsListFooter';
+import { showPartsEdit } from '../info/InfoPanelState';
+import { PartsType } from '../classes/WWAData';
 
 interface Props {
     mapAttribute: number[][];
     selectPartsNumber: number;
     image: CanvasImageSource;
     selectMapParts: (partsNumber: number) => void;
+    showPartsEdit: (partsNUmber: number) => void;
 }
 
 class MapPartsList extends React.Component<Props> {
     private clickPartsChip(partsNumber: number) {
         this.props.selectMapParts(partsNumber);
+    }
+
+    private clickEditButton(partsNumber: number) {
+        this.props.showPartsEdit(partsNumber);
     }
 
     public render() {
@@ -32,7 +39,7 @@ class MapPartsList extends React.Component<Props> {
                 </div>
                 <PartsListFooter
                     selectPartsNumber={this.props.selectPartsNumber}
-                    onEditParts={() => {}}
+                    onEditParts={() => { this.clickEditButton(this.props.selectPartsNumber) }}
                     onDeleteParts={() => {}}
                 ></PartsListFooter>
             </div>
@@ -43,7 +50,10 @@ class MapPartsList extends React.Component<Props> {
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return {
         selectMapParts: (partsNumber: number) => {
-            dispatch(selectMapParts({ number: partsNumber }))
+            dispatch(selectMapParts({ number: partsNumber }));
+        },
+        showPartsEdit: (partsNumber: number) => {
+            dispatch(showPartsEdit({ number: partsNumber, type: PartsType.MAP }));
         }
     };
 }

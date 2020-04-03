@@ -1,96 +1,42 @@
 import WWAConsts from "./WWAConsts";
+import { WWAData } from "@wwawing/common-interface";
 
-export interface Coord {
-    x: number;
-    y: number;
+// ここから先は WWA Wing の wwa_data.ts から取得したもの
+// 詳細は https://github.com/WWAWing/WWAWing/wiki/WWAData を参照のこと
+
+export enum ItemMode {
+    NORMAL = 0,
+    CAN_USE = 1,
+    NOT_DISAPPEAR = 2
 }
 
-/**
- * @todo 近い内に wwawing/common-interface と統合する
- */
-export default interface WWAData {
-    version: number;
-
-    gameoverX: number;
-    gameoverY: number;
-
-    playerX: number;
-    playerY: number;
-
-    mapPartsMax: number;
-    objPartsMax: number;
-
-    isOldMap: boolean;
-
-    statusEnergyMax: number;
-    statusEnergy: number;
-    statusStrength: number;
-    statusDefence: number;
-    statusGold: number;
-
-    itemBox: number[];
-
-    mapWidth: number;
-    messageNum: number;
-
-    map: number[][];
-    mapObject: number[][];
-
-    mapCompressed: number[][][];
-    mapObjectCompressed: number[][][];
-
-    mapAttribute: number[][];
-    objectAttribute: number[][];
-
-    worldPassword: string;
-    message: string[];
-    worldName: string;
-    worldPassNumber: number;
-    charCGName: string;
-    mapCGName: string;
-    systemMessage: string[];
-    moves: number;
-
-    yesnoImgPosX: number;
-    yesnoImgPosY: number;
-    playerImgPosX: number;
-    playerImgPosY: number;
-    clickableItemSignImgPosX: number; // 0の時, 標準枠 注) 面倒なことがわかったので未実装
-    clickableItemSignImgPosY: number; // undefined時, 標準枠 注) 面倒なことがわかったので未実装
-
-    disableSaveFlag: boolean;
-    compatibleForOldMapFlag: boolean;
-    objectNoCollapseDefaultFlag: boolean;
-
-    delPlayerFlag: boolean;
-
-    bgm: number;
-    effectCoords: Coord[];
-    effectWaits: number;
-
-    imgClickX: number;
-    imgClickY: number;
-
-    frameColorR: number;
-    frameColorG: number;
-    frameColorB: number;
-
-    frameOutColorR: number;
-    frameOutColorG: number;
-    frameOutColorB: number;
-
-    fontColorR: number;
-    fontColorG: number;
-    fontColorB: number;
-
-    statusColorR: number;
-    statusColorG: number;
-    statusColorB: number;
-    checkOriginalMapString: string;
-    checkString: string;
-
-    isItemEffectEnabled: boolean; 
+export enum PartsType {
+    MAP = 1,
+    OBJECT = 0
 }
+
+export enum MoveType {
+    STATIC = 0,
+    CHASE_PLAYER = 1,
+    RUN_OUT = 2,
+    HANG_AROUND = 3
+}
+
+export enum SystemMessage1 {
+    ASK_LINK = 5,
+    NO_MONEY = 6,
+    NO_ITEM = 7,
+    USE_ITEM = 8
+}
+
+export enum SystemMessage2 {
+    CLICKABLE_ITEM = 0,
+    FULL_ITEM = 1,
+    LOAD_SE = 2
+}
+
+// ここまで WWA Wing の wwa_data.ts と一緒
+// ここからは WWA Maker 独自
 
 export const defaultWWAData: WWAData = {
     version: WWAConsts.CURRENT_VERSION,
@@ -187,16 +133,13 @@ function createEmptyMap(size: number): number[][] {
     );
 }
 
+export type SystemMessageType = SystemMessage1 | SystemMessage2;
+
 /**
  * 空のパーツ属性配列を作成します。
  */
 export function createEmptyPartsAttribute(): number[] {
     return new Array<number>(WWAConsts.ATR_MAX).fill(0);
-}
-
-export enum PartsType {
-    MAP = 1,
-    OBJECT = 0
 }
 
 export enum ObjectPartsType {

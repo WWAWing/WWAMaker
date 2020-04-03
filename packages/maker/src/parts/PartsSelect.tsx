@@ -4,7 +4,7 @@ import { connect, MapStateToProps } from 'react-redux';
 import ObjectPartsList from './ObjectPartsList';
 import MapPartsList from './MapPartsList';
 import { StoreType } from '../State';
-import WWAData from '../classes/WWAData';
+import { WWAData } from "@wwawing/common-interface";
 import { PartsState, INITIAL_STATE } from './PartsState';
 
 interface Props {
