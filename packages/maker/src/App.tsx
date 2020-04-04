@@ -21,7 +21,7 @@ export default class App extends React.Component {
                 </div>
                 <Sidebar.Pushable as="div" className={styles.editArea}>
                     <Sidebar.Pusher>
-                        <SplitPane className={styles.editAreaSplitPane} split="horizontal" defaultSize={200} primary="second">
+                        <SplitPane split="horizontal" defaultSize={200} primary="second">
                             <MapView></MapView>
                             <PartsSelect></PartsSelect>
                         </SplitPane>
