@@ -3,20 +3,15 @@
 .app {
     display: grid;
     grid-template:
-        [toolbar]   "toolbar  toolbar"   60px  [toolbar]
-        [editarea]  "editarea infopanel" 1fr   [infopanel]
-                   / 1fr       320px;
+        [toolbar]   "toolbar " 60px  [toolbar]
+        [editarea]  "editarea" 1fr   [editarea]
+                   / 1fr;
     height: 100vh;
     width: 100vw;
 }
 
 .mainToolbar {
     grid-area: toolbar;
-}
-
-.infoPanel {
-    background-color: #d0d0d0;
-    grid-area: infopanel;
 }
 
 .editArea {

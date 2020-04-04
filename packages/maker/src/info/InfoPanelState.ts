@@ -6,8 +6,7 @@ import { PartsType } from "../classes/WWAData";
  * InfoPanel のモードです。
  */
 export type InfoPanelMode =
-    'MAP_FOUNDATION' | // 基本設定の編集
-    'SYSTEM_MESSAGE' | // システムメッセージの編集
+    'GENERAL' | // 基本設定の編集 と システムメッセージの編集
     'PARTS_EDIT'; // パーツ編集
 
 export interface InfoPanelState {
@@ -21,7 +20,7 @@ export interface InfoPanelPartsEditState {
 }
 
 export const INITIAL_STATE: InfoPanelState = {
-    viewMode: 'MAP_FOUNDATION'
+    viewMode: 'GENERAL'
 }
 
 const actionCreator = actionCreatorFactory();

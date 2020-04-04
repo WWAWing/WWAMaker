@@ -147,11 +147,11 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
 
     private handleEditButtonClick() {
         this.send();
-        this.props.switchInfoPanel({ mode: "MAP_FOUNDATION" });
+        this.props.switchInfoPanel({ mode: "GENERAL" });
     }
 
     private handleCancelButtonClick() {
-        this.props.switchInfoPanel({ mode: "MAP_FOUNDATION" });
+        this.props.switchInfoPanel({ mode: "GENERAL" });
     }
 
     /**

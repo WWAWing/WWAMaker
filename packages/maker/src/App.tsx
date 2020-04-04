@@ -6,6 +6,7 @@ import InfoPanel from './info/InfoPanel';
 import MapView from './map/MapView';
 import SplitPane from 'react-split-pane';
 import './common/SplitPane.scss';
+import { Sidebar } from 'semantic-ui-react';
 
 /**
  * WWA Maker 全体のコンポーネントです。
@@ -18,15 +19,17 @@ export default class App extends React.Component {
                 <div className={styles.mainToolbar}>
                     <MainToolbar></MainToolbar>
                 </div>
-                <div className={styles.editArea}>
-                    <SplitPane className={styles.editAreaSplitPane} split="horizontal" defaultSize={200} primary="second">
-                        <MapView></MapView>
-                        <PartsSelect></PartsSelect>
-                    </SplitPane>
-                </div>
-                <div className={styles.InfoPanel}>
-                    <InfoPanel></InfoPanel>
-                </div>
+                <Sidebar.Pushable as="div" className={styles.editArea}>
+                    <Sidebar.Pusher>
+                        <SplitPane className={styles.editAreaSplitPane} split="horizontal" defaultSize={200} primary="second">
+                            <MapView></MapView>
+                            <PartsSelect></PartsSelect>
+                        </SplitPane>
+                    </Sidebar.Pusher>
+                    <Sidebar animation="push" direction="right" width="wide" visible>
+                        <InfoPanel></InfoPanel>
+                    </Sidebar>
+                </Sidebar.Pushable>
             </div>
         );
     }

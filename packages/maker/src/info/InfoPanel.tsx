@@ -6,6 +6,11 @@ import MapFoundation from './MapFoundation';
 import SystemMessage from './SystemMessage';
 import PartsEdit from './PartsEdit';
 import { Dispatch, bindActionCreators } from 'redux';
+import { Header, Segment, Tab, Button, Icon } from 'semantic-ui-react';
+
+interface UserProps {
+    className: string
+}
 
 interface StateProps {
     viewMode: InfoPanelMode
@@ -23,7 +28,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     }), dispatch);
 }
 
-type Props = StateProps & ReturnType<typeof mapDispatchToProps>;
+type Props = UserProps & StateProps & ReturnType<typeof mapDispatchToProps>;
 
 /**
  * InfoPanel は画面右に配置されるパネルのことで、主にパーツの編集やマップデータの情報などではこの InfoPanel から表示されます。
@@ -31,37 +36,51 @@ type Props = StateProps & ReturnType<typeof mapDispatchToProps>;
  */
 class InfoPanel extends React.Component<Props> {
 
-    public static defaultProps: StateProps = {
-        viewMode: "MAP_FOUNDATION"
-    }
-
-    private getInfoPanelView() {
-        switch (this.props.viewMode) {
-            case "MAP_FOUNDATION":
-                return <MapFoundation></MapFoundation>;
-            case "SYSTEM_MESSAGE":
-                return <SystemMessage></SystemMessage>;
-            case "PARTS_EDIT":
-                return <PartsEdit></PartsEdit>;
-        }
+    public static defaultProps: UserProps & StateProps = {
+        className: "",
+        viewMode: "GENERAL"
     }
 
     public render() {
+        switch (this.props.viewMode) {
+            case "PARTS_EDIT":
+                return (
+                    <>
+                        <Header attached="top">
+                            <Button><Icon nane="close"></Icon></Button> パーツの編集
+                        </Header>
+                        <Segment attached>
+                            <PartsEdit></PartsEdit>
+                        </Segment>
+                    </>
+                );
+        }
+
+        const panes = [
+            {
+                menuItem: {
+                    key: "MAP_FOUNDATION",
+                    content: "基本設定の編集"
+                },
+                render: () => <MapFoundation></MapFoundation>,
+            }, {
+                menuItem: {
+                    key: "SYSTEM_MESSAGE",
+                    content: "システムメッセージの編集"
+                },
+                render: () => <SystemMessage></SystemMessage>,
+            }
+        ];
         return (
-            <div>
-                <header>
-                    <div>インフォパネル</div>
-                </header>
-                <div>
-                    <button onClick={ () => this.props.switchInfoPanel({ mode: "MAP_FOUNDATION" }) }>基本設定の編集</button>
-                    <button onClick={ () => this.props.switchInfoPanel({ mode: "SYSTEM_MESSAGE" }) }>システムメッセージの編集</button>
-                </div>
-                <div>
-                    {this.getInfoPanelView()}
-                </div>
-            </div>
+            <>
+                <Segment attached>
+                    <Tab menu={{ attached: "top" }} panes={panes} />
+                </Segment>
+            </>
         );
+
     }
+
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(InfoPanel);
