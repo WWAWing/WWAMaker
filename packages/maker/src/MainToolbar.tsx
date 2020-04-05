@@ -24,7 +24,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
             toggleInfoPanel: toggleInfoPanel
         },
         dispatch
-    )
+    );
 };
 
 type StateProps = ReturnType<typeof mapStateToProps>;

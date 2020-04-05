@@ -10,7 +10,9 @@ import WWAConsts from "../classes/WWAConsts";
 import { ObjectEditTable } from "./editforms/ObjectEditForm";
 import { MapEditTable } from "./editforms/MapEditForm";
 import { PartsEditComponentTable } from "./editforms/PartsEditComponent";
-import { Form } from "semantic-ui-react";
+import { Form, Portal } from "semantic-ui-react";
+import PartsChip from "../common/PartsChip";
+import { GraphicSelect } from "../common/GraphicSelect";
 
 interface StateProps {
     /**
@@ -20,13 +22,15 @@ interface StateProps {
     /**
      * WWAデータ本体です。上記の state の値から必要な情報をこの wwaData の中から探します。
      */
-    wwaData?: WWAData
+    wwaData?: WWAData,
+    image?: CanvasImageSource
 }
 
 const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = state => {
     return {
         state: state.info.partsEdit,
-        wwaData: state.wwaData || undefined
+        wwaData: state.wwaData || undefined,
+        image: state.image || undefined
     }
 };
 
@@ -43,10 +47,12 @@ type Props = StateProps & ReturnType<typeof mapDispatchToProps>;
  * パーツ編集画面のステートです。
  *     attribute はパーツの属性そのままです。
  *     message はパーツのメッセージです。
+ *     graphicSelect はパーツのグラフィックの選択状態を示すステートです。
  */
 interface PartsEditState {
     attribute?: number[];
     message?: string;
+    // graphicSelect: "NONE" | "1" | "2";
 }
 
 /**
@@ -190,6 +196,61 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
         );
     }
 
+    private renderPartsGraphics() {
+        if (
+            this.props.state === undefined ||
+            this.props.image === undefined ||
+            this.state.attribute === undefined 
+        ) {
+            return null;
+        }
+
+        const attribute = this.state.attribute;
+        return (
+            <>
+                <Portal
+                    trigger={
+                        <PartsChip
+                            cropX={attribute[WWAConsts.ATR_X]}
+                            cropY={attribute[WWAConsts.ATR_Y]}
+                            image={this.props.image}
+                            isSelected={false}
+                            onClick={() => {}}
+                        />
+                    }
+                >
+                    <GraphicSelect
+                        image={this.props.image}
+                        onChange={(chipX, chipY) => {
+                            // TODO: パーツ画像を変更する処理を書く
+                        }}
+                    />
+                </Portal>
+
+                {this.props.state.type === PartsType.OBJECT &&
+                    <Portal
+                        trigger={
+                            <PartsChip
+                                cropX={attribute[WWAConsts.ATR_X2]}
+                                cropY={attribute[WWAConsts.ATR_Y2]}
+                                image={this.props.image}
+                                isSelected={false}
+                                onClick={() => {}}
+                            />
+                        }
+                    >
+                        <GraphicSelect
+                            image={this.props.image}
+                            onChange={(chipX, chipY) => {
+                                // TODO: パーツ画像を変更する処理を書く
+                            }}
+                        />
+                    </Portal>
+                }
+            </>
+        );
+    }
+
     /**
      * 編集フォームを出力します。
      */
@@ -231,6 +292,7 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
         return (
             <Form>
                 {this.renderPartsSelectBox()}
+                {this.renderPartsGraphics()}
                 {this.renderEditForm()}
                 <div>
                     <button onClick={() => this.handleEditButtonClick()}>OK</button>
