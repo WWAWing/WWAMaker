@@ -10,6 +10,7 @@ export type InfoPanelMode =
     'PARTS_EDIT'; // パーツ編集
 
 export interface InfoPanelState {
+    isOpened: boolean,
     viewMode: InfoPanelMode,
     partsEdit?: InfoPanelPartsEditState
 }
@@ -20,10 +21,15 @@ export interface InfoPanelPartsEditState {
 }
 
 export const INITIAL_STATE: InfoPanelState = {
+    isOpened: false,
     viewMode: 'GENERAL'
 }
 
 const actionCreator = actionCreatorFactory();
+/**
+ * InfoPanel の表示を切り替えます。
+ */
+export const toggleInfoPanel = actionCreator<{ isOpened?: boolean }>("TOGGLE_INFOPANEL");
 /**
  * InfoPanel で表示する内容を変更します。
  */
@@ -34,12 +40,17 @@ export const switchInfoPanel = actionCreator<{ mode: InfoPanelMode }>("SWITCH_IN
 export const showPartsEdit = actionCreator<InfoPanelPartsEditState>("SHOW_PARTS_EDIT");
 
 export const InfoPanelReducer = reducerWithInitialState(INITIAL_STATE)
+    .case(toggleInfoPanel, (state, payload) => ({
+        ...state,
+        isOpened: payload?.isOpened !== undefined ? payload.isOpened : !state.isOpened
+    }))
     .case(switchInfoPanel, (state, payload) => ({
         ...state,
         viewMode: payload.mode
     }))
     .case(showPartsEdit, (state, payload) => ({
         ...state,
+        isOpened: true,
         viewMode: "PARTS_EDIT",
         partsEdit: payload
     }))

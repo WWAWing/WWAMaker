@@ -6,18 +6,20 @@ import MapFoundation from './MapFoundation';
 import SystemMessage from './SystemMessage';
 import PartsEdit from './PartsEdit';
 import { Dispatch, bindActionCreators } from 'redux';
-import { Header, Segment, Tab, Button, Icon } from 'semantic-ui-react';
+import { Sidebar, Header, Segment, Tab, Button, Icon } from 'semantic-ui-react';
 
 interface UserProps {
     className: string
 }
 
 interface StateProps {
+    isOpened: boolean,
     viewMode: InfoPanelMode
 }
 
 const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = (state) => {
     return {
+        isOpened: state.info.isOpened,
         viewMode: state.info.viewMode
     };
 }
@@ -38,16 +40,21 @@ class InfoPanel extends React.Component<Props> {
 
     public static defaultProps: UserProps & StateProps = {
         className: "",
+        isOpened: false,
         viewMode: "GENERAL"
     }
 
-    public render() {
+    public renderInside() {
+        if (!this.props.isOpened) {
+            return null;
+        }
+
         switch (this.props.viewMode) {
             case "PARTS_EDIT":
                 return (
                     <>
                         <Header attached="top">
-                            <Button><Icon nane="close"></Icon></Button> パーツの編集
+                            <Button><Icon name="close"/></Button> パーツの編集
                         </Header>
                         <Segment attached>
                             <PartsEdit></PartsEdit>
@@ -71,14 +78,20 @@ class InfoPanel extends React.Component<Props> {
                 render: () => <SystemMessage></SystemMessage>,
             }
         ];
-        return (
-            <>
-                <Segment attached>
-                    <Tab menu={{ attached: "top" }} panes={panes} />
-                </Segment>
-            </>
-        );
 
+        return (
+            <Segment attached>
+                <Tab menu={{ attached: "top" }} panes={panes} />
+            </Segment>
+        );
+    }
+
+    public render() {
+        return (
+            <Sidebar animation="push" direction="right" width="wide" visible={this.props.isOpened}>
+                {this.renderInside()}
+            </Sidebar>
+        );
     }
 
 }

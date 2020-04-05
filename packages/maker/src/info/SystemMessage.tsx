@@ -4,6 +4,7 @@ import { StoreType } from "../State";
 import { Dispatch, bindActionCreators } from "redux";
 import { SystemMessage1, SystemMessage2, SystemMessageType } from "../classes/WWAData";
 import { setSystemMessage } from "../wwadata/WWADataState";
+import { Form, Message, Button } from "semantic-ui-react";
 
 interface StateProps {
     systemMessage: string[] | null
@@ -142,33 +143,35 @@ class SystemMessage extends React.Component<Props, SystemMessageField> {
 
         return (
             <div>
-                <div>
+                <Form>
                     {AvailabeSystemMessages.map((messageLabelItem, messageLabelIndex) => {
                         return (
-                            <div key={messageLabelIndex}>
-                                <div>
+                            <Form.Field key={messageLabelIndex}>
+                                <label>
                                     {messageLabelItem.label.map((labelLine: string, labelIndex: number) => (
                                         <div key={labelIndex}>{labelLine}</div>
                                     ))}
-                                </div>
+                                </label>
                                 <input
                                     type="text"
                                     name={`${messageLabelItem.id}`}
                                     value={this.state.messages[messageLabelItem.id]}
                                     onChange={handleInputChange}
                                 />
-                            </div>
+                            </Form.Field>
                         );
                     })}
-                </div>
+                </Form>
+                <Message>
+                    <Message.Header>ゲーム中で使用される基本メッセージを変更することができます。</Message.Header>
+                    <Message.List>
+                        <Message.Item>標準のままで良いときは空白にしておいてください。</Message.Item>
+                        <Message.Item>何も表示したくないときは <code>BLANK</code> (半角)と入力してください。</Message.Item>
+                    </Message.List>
+                </Message>
                 <div>
-                    <p>ゲーム中で使用される基本メッセージを変更することができます。</p>
-                    <p>標準のままで良いときは空白にしておいてください。</p>
-                    <p>何も表示したくないときは「BLANK」(半角)と入力してください。</p>
-                </div>
-                <div>
-                    <button onClick={() => this.send()}>決定</button>
-                    <button onClick={this.handleResetButtonClick.bind(this)}>リセット</button>
+                    <Button primary onClick={() => this.send()}>決定</Button>
+                    <Button onClick={this.handleResetButtonClick.bind(this)}>リセット</Button>
                 </div>
             </div>
         );

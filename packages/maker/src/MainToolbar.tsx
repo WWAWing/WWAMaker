@@ -5,10 +5,13 @@ import { loadMapdata } from './load/LoadStates';
 import { thunkToAction } from 'typescript-fsa-redux-thunk';
 import { setEditMode, EditMode } from './map/MapStates';
 import { StoreType } from './State';
+import { Input, Button, Label, Icon, List } from 'semantic-ui-react';
+import { toggleInfoPanel } from './info/InfoPanelState';
 
 const mapStateToProps = (state: StoreType) => {
     return {
-        currentPos: state.map.currentPos
+        currentPos: state.map.currentPos,
+        isInfoPanelOpened: state.info.isOpened
     };
 };
 
@@ -17,7 +20,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     return bindActionCreators(
         {
             openMapdata: thunkToAction(loadMapdata.action),
-            setEditMode: setEditMode
+            setEditMode: setEditMode,
+            toggleInfoPanel: toggleInfoPanel
         },
         dispatch
     )
@@ -70,28 +74,55 @@ class MainToolbar extends React.Component<Props, State> {
     public render() {
         return (
             <div>
-                <div>
-                    <input type='text' value={this.state.mapdataFileName} onChange={this.changeMapdataFileName.bind(this)} />
-                    <span onClick={this.clickOpenButton.bind(this)}>open</span>
-                    {this.editModeButton(EditMode.PUT_MAP, "背景パーツ設置")}
-                    {this.editModeButton(EditMode.PUT_OBJECT, "物体パーツ設置")}
-                    {this.editModeButton(EditMode.EDIT_MAP, "背景パーツ編集")}
-                    {this.editModeButton(EditMode.EDIT_OBJECT, "物体パーツ編集")}
-                    {this.editModeButton(EditMode.DELETE_OBJECT, "物体パーツ削除")}
-                </div>
-                <div>
-                    <span>X: {this.props.currentPos.chipX}</span>
-                    <span>Y: {this.props.currentPos.chipY}</span>
-                </div>
+                <List horizontal>
+                    <List.Item>
+                        <Input
+                            action={{
+                                icon: "folder open",
+                                onClick: this.clickOpenButton.bind(this)
+                            }}
+                            type="text"
+                            value={this.state.mapdataFileName}
+                            onChange={this.changeMapdataFileName.bind(this)}
+                        />
+                    </List.Item>
+                    <List.Item>
+                        <Button.Group basic>
+                            {this.editModeButton(EditMode.PUT_MAP, "背景パーツ設置")}
+                            {this.editModeButton(EditMode.PUT_OBJECT, "物体パーツ設置")}
+                            {this.editModeButton(EditMode.EDIT_MAP, "背景パーツ編集")}
+                            {this.editModeButton(EditMode.EDIT_OBJECT, "物体パーツ編集")}
+                            {this.editModeButton(EditMode.DELETE_OBJECT, "物体パーツ削除")}
+                        </Button.Group>
+                    </List.Item>
+                    <List.Item>
+                        <Label.Group>
+                            <Label>
+                                X
+                                <Label.Detail>{this.props.currentPos.chipX}</Label.Detail>
+                            </Label>
+                            <Label>
+                                Y
+                                <Label.Detail>{this.props.currentPos.chipY}</Label.Detail>
+                            </Label>
+                        </Label.Group>
+                    </List.Item>
+                    <List.Item>
+                        <Button onClick={() => this.props.toggleInfoPanel()} active={this.props.isInfoPanelOpened}>
+                            <Icon name="edit" />
+                        </Button>
+                    </List.Item>
+                </List>
             </div>
         );
     }
 
     private editModeButton(editMode: EditMode, labelName: string) {
-        return <label>
-                <input type='radio' checked={this.state.editMode === editMode} onChange={() => this.selectEditMode(editMode)}></input>
+        return (
+            <Button active={this.state.editMode === editMode} onClick={() => this.selectEditMode(editMode)}>
                 {labelName}
-            </label>
+            </Button>
+        );
     }
 }
 

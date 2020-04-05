@@ -26,9 +26,7 @@ export default class App extends React.Component {
                             <PartsSelect></PartsSelect>
                         </SplitPane>
                     </Sidebar.Pusher>
-                    <Sidebar animation="push" direction="right" width="wide" visible>
-                        <InfoPanel></InfoPanel>
-                    </Sidebar>
+                    <InfoPanel></InfoPanel>
                 </Sidebar.Pushable>
             </div>
         );

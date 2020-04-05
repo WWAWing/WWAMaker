@@ -153,7 +153,13 @@ class MapFoundation extends React.Component<Props, State> {
         this.setStateField(name, event.target.value);
     }
 
-    private expandValue(name: keyof MapFoundationField, increaseValue: number) {
+    /**
+     * フィールドの値を増やします。
+     * @param name 増やしたいフィールドの名前
+     * @param increaseValue 増やす値
+     * @param valueMax 最大値
+     */
+    private expandValue(name: keyof MapFoundationField, increaseValue: number, valueMax: number) {
         if (this.state.field === undefined) {
             return;
         }
@@ -163,7 +169,7 @@ class MapFoundation extends React.Component<Props, State> {
             throw new Error(`${name} は数字ではありません。`);
         }
 
-        const newValue = value + increaseValue;
+        const newValue = Math.min(value + increaseValue, valueMax);
         this.setStateField(name, newValue);
     }
 
@@ -255,7 +261,7 @@ class MapFoundation extends React.Component<Props, State> {
                     <Input
                         action={{
                             content: "拡張",
-                            onClick: () => expandValue("mapWidth", WWAConsts.MAP_SIZE_INCREASE_UNIT)
+                            onClick: () => expandValue("mapWidth", WWAConsts.MAP_SIZE_INCREASE_UNIT, WWAConsts.MAP_SIZE_MAX)
                         }}
                         name="mapWidth"
                         value={`${this.state.field.mapWidth} × ${this.state.field.mapWidth}`}
@@ -266,7 +272,7 @@ class MapFoundation extends React.Component<Props, State> {
                     <Input
                         action={{
                             content: "拡張",
-                            onClick: () => expandValue("objectPartsMax", WWAConsts.PARTS_SIZE_INCREASE_UNIT)
+                            onClick: () => expandValue("objectPartsMax", WWAConsts.PARTS_SIZE_INCREASE_UNIT, WWAConsts.PARTS_SIZE_MAX)
                         }}
                         name="objectPartsMax"
                         value={this.state.field.objectPartsMax}
@@ -277,7 +283,7 @@ class MapFoundation extends React.Component<Props, State> {
                     <Input
                         action={{
                             content: "拡張",
-                            onClick: () => expandValue("mapPartsMax", WWAConsts.PARTS_SIZE_INCREASE_UNIT)
+                            onClick: () => expandValue("mapPartsMax", WWAConsts.PARTS_SIZE_INCREASE_UNIT, WWAConsts.PARTS_SIZE_MAX)
                         }}
                         name="mapPartsMax"
                         value={this.state.field.mapPartsMax}
