@@ -10,6 +10,7 @@ import WWAConsts from "../classes/WWAConsts";
 import { ObjectEditTable } from "./editforms/ObjectEditForm";
 import { MapEditTable } from "./editforms/MapEditForm";
 import { PartsEditComponentTable } from "./editforms/PartsEditComponent";
+import { Form } from "semantic-ui-react";
 
 interface StateProps {
     /**
@@ -65,7 +66,7 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
         this.handleMessageChange = this.handleMessageChange.bind(this);
     }
 
-    componentDidUpdate(prevProps: Props) {
+    public componentDidUpdate(prevProps: Props) {
         if (this.props.state !== prevProps.state) {
             this.setState(this.receive());
         }
@@ -80,14 +81,14 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
         }
 
         if (this.props.state.type === PartsType.MAP) {
-            const attribute = this.props.wwaData.mapAttribute[this.props.state.number];
+            const attribute = this.props.wwaData.mapAttribute[this.props.state.number].slice();
             const message = this.props.wwaData.message[attribute[WWAConsts.ATR_STRING]] || '';
             return {
                 attribute: attribute,
                 message: message
             };
         } else if (this.props.state.type === PartsType.OBJECT) {
-            const attribute = this.props.wwaData.objectAttribute[this.props.state.number];
+            const attribute = this.props.wwaData.objectAttribute[this.props.state.number].slice();
             const message = this.props.wwaData.message[attribute[WWAConsts.ATR_STRING]] || '';
             return {
                 attribute: attribute,
@@ -228,14 +229,14 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
 
     render() {
         return (
-            <div>
+            <Form>
                 {this.renderPartsSelectBox()}
                 {this.renderEditForm()}
                 <div>
                     <button onClick={() => this.handleEditButtonClick()}>OK</button>
                     <button onClick={() => this.handleCancelButtonClick()}>取り消し</button>
                 </div>
-            </div>
+            </Form>
         )
     }
 }
