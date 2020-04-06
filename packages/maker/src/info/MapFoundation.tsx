@@ -2,7 +2,7 @@ import React from "react";
 import { MapStateToProps, connect } from "react-redux";
 import { StoreType } from "../State";
 import { WWAData } from "@wwawing/common-interface";
-import { getPartsCountPerIncreaseUnit } from "../common/PartsList";
+import getPartsCountPerIncreaseUnit from "../common/getPartsCountPerIncreaseUnit";
 import { bindActionCreators, Dispatch } from "redux";
 import { setMapFoundation } from "../wwadata/WWADataState";
 import { Form, Button, Input } from "semantic-ui-react";

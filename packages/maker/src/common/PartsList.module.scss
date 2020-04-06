@@ -1,5 +1,6 @@
 .partsList {
     background-color: rgb(158, 158, 158);
+    overflow-y: scroll;
     /**
      * @todo 単純に済ませるために line-height: 0 としているが、問題があったら flex や grid に変更しておく。
      */
