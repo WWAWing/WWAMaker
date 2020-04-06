@@ -49,21 +49,30 @@ type Props = StateProps & ReturnType<typeof mapDispatchToProps>;
  *     message はパーツのメッセージです。
  *     graphicSelect はパーツのグラフィックの選択状態を示すステートです。
  */
-interface PartsEditState {
-    attribute?: number[];
-    message?: string;
-    // graphicSelect: "NONE" | "1" | "2";
+interface State {
+    parts?: PartsEditState;
+    graphicSelect: GraphicSelectState;
 }
+
+interface PartsEditState {
+    attribute: number[];
+    message: string;
+}
+
+type GraphicSelectState = "NONE" | "1" | "2";
 
 /**
  * パーツ編集の管理を行う Container コンポーネントです。
  *     編集フォームは、パーツ種別毎に用意した専用のコンポーネントを取り出して表示されます。
  */
-class PartsEdit extends React.Component<Props, PartsEditState> {
+class PartsEdit extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        this.state = this.receive();
+        this.state = {
+            parts: this.receive(),
+            graphicSelect: "NONE"
+        };
 
         /**
          * 予め子コンポーネントに渡すメソッドに対して this を bind します。
@@ -74,16 +83,18 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
 
     public componentDidUpdate(prevProps: Props) {
         if (this.props.state !== prevProps.state) {
-            this.setState(this.receive());
+            this.setState({
+                parts: this.receive()
+            });
         }
     }
 
     /**
      * Redux のステートからパーツ情報を出力します。
      */
-    private receive(): PartsEditState {
+    private receive(): PartsEditState | undefined {
         if (this.props.state === undefined || this.props.wwaData === undefined) {
-            return {};
+            return undefined;
         }
 
         if (this.props.state.type === PartsType.MAP) {
@@ -102,40 +113,90 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
             };
         }
 
-        return {};
+        return undefined;
     }
 
     /**
      * 入力画面のステートを Redux のステートにも反映させます。
      */
     private send() {
-        if (this.props.state === undefined ||
-            this.state.attribute === undefined ||
-            this.state.message === undefined
-        ) {
+        if (this.props.state === undefined || this.state.parts === undefined) {
             return;
         }
         
         this.props.editParts({
             type: this.props.state.type,
             number: this.props.state.number,
-            attributes: this.state.attribute,
-            message: this.state.message
+            attributes: this.state.parts.attribute,
+            message: this.state.parts.message
         });
+    }
+
+    /**
+     * パーツCGの選択画面を開きます。
+     * @param type 開きたいパーツCG選択の種類
+     */
+    private showGraphicSelect(type: GraphicSelectState) {
+        this.setState({
+            graphicSelect: type
+        });
+    }
+
+    /**
+     * パーツCGの選択画面を閉じます。
+     */
+    private closeGraphicSelect() {
+        this.setState({
+            graphicSelect: "NONE"
+        })
+    }
+
+    /**
+     * パーツのグラフィック画像を変更し、ステートに反映します。
+     */
+    private setPartsGraphic(chipX: number, chipY: number, type: GraphicSelectState) {
+        if (this.state.parts === undefined || type === "NONE") {
+            return;
+        }
+
+        let newAttribute = this.state.parts.attribute.slice();
+        switch (type) {
+            case "1":
+                newAttribute[WWAConsts.ATR_X] = chipX * WWAConsts.CHIP_SIZE;
+                newAttribute[WWAConsts.ATR_Y] = chipY * WWAConsts.CHIP_SIZE;
+                break;
+            case "2":
+                newAttribute[WWAConsts.ATR_X2] = chipX * WWAConsts.CHIP_SIZE;
+                newAttribute[WWAConsts.ATR_Y2] = chipY * WWAConsts.CHIP_SIZE;
+                break;
+        }
+
+        this.setState({
+            parts: {
+                attribute: newAttribute,
+                message: this.state.parts.message
+            }
+        });
+
+        this.closeGraphicSelect();
     }
 
     /**
      * @see PartsEditAttributeChange
      */
     private handleAttributeChange(value: string, attributeIndex: number) {
-        let newAttribute = this.state.attribute?.slice();
-        if (newAttribute === undefined) {
+        if (this.state.parts === undefined) {
             return;
         }
+
+        let newAttribute = this.state.parts.attribute.slice();
         newAttribute[attributeIndex] = parseInt(value);
 
         this.setState({
-            attribute: newAttribute
+            parts: {
+                attribute: newAttribute,
+                message: this.state.parts.message
+            }
         });
     }
 
@@ -143,12 +204,15 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
      * @see PartsEditMessageChange
      */
     private handleMessageChange(value: string) {
-        if (this.state.message === undefined) {
+        if (this.state.parts === undefined) {
             return;
         }
         
         this.setState({
-            message: value
+            parts: {
+                attribute: this.state.parts.attribute,
+                message: value
+            }
         });
     }
 
@@ -182,11 +246,11 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
      */
     private renderPartsSelectBox() {
         const partsEditTable = this.getPartsEditTable();
-        if (!partsEditTable || this.state.attribute === undefined) {
+        if (!partsEditTable || this.state.parts === undefined) {
             return;
         }
         
-        const partsEditType = this.state.attribute[WWAConsts.ATR_TYPE];
+        const partsEditType = this.state.parts.attribute[WWAConsts.ATR_TYPE];
         return (
             <select onChange={event => this.handleAttributeChange(event.target.value, WWAConsts.ATR_TYPE)} value={partsEditType}>
                 {partsEditTable.map((partsEditItem, partsEditIndex) =>
@@ -196,56 +260,48 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
         );
     }
 
+    /**
+     * パーツCGの選択部分を出力します。
+     */
+    private renderPartsGraphic(type: GraphicSelectState, attributeIndexX: number, attributeIndexY: number) {
+        if (this.state.parts === undefined || this.props.image === undefined) {
+            return;
+        }
+
+        const attribute = this.state.parts.attribute;
+        return (
+            <Portal
+                trigger={
+                    <PartsChip
+                        cropX={attribute[attributeIndexX]}
+                        cropY={attribute[attributeIndexY]}
+                        image={this.props.image}
+                        isSelected={false}
+                        onClick={() => {}}
+                    />
+                }
+                onOpen={() => this.showGraphicSelect(type)}
+                onClose={() => this.closeGraphicSelect()}
+            >
+                <GraphicSelect
+                    image={this.props.image}
+                    onChange={(chipX, chipY) => this.setPartsGraphic(chipX, chipY, type)}
+                />
+            </Portal>
+        );
+    }
+
     private renderPartsGraphics() {
-        if (
-            this.props.state === undefined ||
-            this.props.image === undefined ||
-            this.state.attribute === undefined 
-        ) {
+        if (this.props.state === undefined) {
             return null;
         }
 
-        const attribute = this.state.attribute;
         return (
             <>
-                <Portal
-                    trigger={
-                        <PartsChip
-                            cropX={attribute[WWAConsts.ATR_X]}
-                            cropY={attribute[WWAConsts.ATR_Y]}
-                            image={this.props.image}
-                            isSelected={false}
-                            onClick={() => {}}
-                        />
-                    }
-                >
-                    <GraphicSelect
-                        image={this.props.image}
-                        onChange={(chipX, chipY) => {
-                            // TODO: パーツ画像を変更する処理を書く
-                        }}
-                    />
-                </Portal>
+                {this.renderPartsGraphic("1", WWAConsts.ATR_X, WWAConsts.ATR_Y)}
 
                 {this.props.state.type === PartsType.OBJECT &&
-                    <Portal
-                        trigger={
-                            <PartsChip
-                                cropX={attribute[WWAConsts.ATR_X2]}
-                                cropY={attribute[WWAConsts.ATR_Y2]}
-                                image={this.props.image}
-                                isSelected={false}
-                                onClick={() => {}}
-                            />
-                        }
-                    >
-                        <GraphicSelect
-                            image={this.props.image}
-                            onChange={(chipX, chipY) => {
-                                // TODO: パーツ画像を変更する処理を書く
-                            }}
-                        />
-                    </Portal>
+                    this.renderPartsGraphic("2", WWAConsts.ATR_X2, WWAConsts.ATR_Y2)
                 }
             </>
         );
@@ -257,8 +313,7 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
     private renderEditForm() {
         if (
             this.props.state === undefined ||
-            this.state.attribute === undefined ||
-            this.state.message === undefined
+            this.state.parts === undefined
         ) {
             return <p>WWAデータがありません。マップデータを開いてください。</p>;
         }
@@ -268,8 +323,8 @@ class PartsEdit extends React.Component<Props, PartsEditState> {
             return null;
         }
         
-        const attribute = this.state.attribute;
-        const message = this.state.message;
+        const attribute = this.state.parts.attribute;
+        const message = this.state.parts.message;
         const typeNumber = attribute[WWAConsts.ATR_TYPE];
         
         const PartsEditComponent = partsEditTable.find(item => item.id === typeNumber)?.component;
