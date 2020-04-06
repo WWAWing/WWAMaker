@@ -67,7 +67,7 @@ export const SelectInput: React.FunctionComponent<{
         <label>{props.label}</label>
         <Dropdown
             options={props.selectableItems}
-            defaultValue={props.value}
+            value={props.value}
             selection
             onChange={(event, data) => {
                 if (data.value === undefined) {

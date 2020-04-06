@@ -132,13 +132,13 @@ const ObjectItemEdit: PartsEditComponent = ({attribute, message, onAttributeChan
             label="使用属性"
             selectableItems={[
                 {
-                    label: "通常",
+                    text: "通常",
                     value: ItemMode.NORMAL
                 }, {
-                    label: "クリックで使用可",
+                    text: "クリックで使用可",
                     value: ItemMode.CAN_USE
                 }, {
-                    label: "使用しても無くならない",
+                    text: "使用しても無くならない",
                     value: ItemMode.NOT_DISAPPEAR
                 }
             ]}
@@ -164,10 +164,10 @@ const ObjectDoorEdit: PartsEditComponent = ({attribute, message, onAttributeChan
             label="扉の種類"
             selectableItems={[
                 {
-                    label: "鍵なくなる",
+                    text: "鍵なくなる",
                     value: 0
                 }, {
-                    label: "鍵なくならない",
+                    text: "鍵なくならない",
                     value: 1
                 }
             ]}
