@@ -67,12 +67,20 @@ type GraphicSelectState = "NONE" | "1" | "2";
  */
 class PartsEdit extends React.Component<Props, State> {
 
+    /**
+     * パーツCGの選択画面を表示する場所を決める要素の Ref です。
+     *     Semantic UI React の Portal では、切り替えで表示される要素は原則HTMLのルートに配置されます。
+     *     ルートで配置された場合、 WWA Maker としては都合が良くないため、編集画面の決まった位置で表示されるように Ref を設けて、その Ref に対してマウントするようにしています。
+     */
+    private graphicSelectMountRef: React.RefObject<HTMLDivElement>;
+
     constructor(props: Props) {
         super(props);
         this.state = {
             parts: this.receive(),
             graphicSelect: "NONE"
         };
+        this.graphicSelectMountRef = React.createRef();
 
         /**
          * 予め子コンポーネントに渡すメソッドに対して this を bind します。
@@ -148,7 +156,7 @@ class PartsEdit extends React.Component<Props, State> {
     private closeGraphicSelect() {
         this.setState({
             graphicSelect: "NONE"
-        })
+        });
     }
 
     /**
@@ -280,8 +288,10 @@ class PartsEdit extends React.Component<Props, State> {
                         onClick={() => {}}
                     />
                 }
+                open={this.state.graphicSelect === type}
                 onOpen={() => this.showGraphicSelect(type)}
                 onClose={() => this.closeGraphicSelect()}
+                mountNode={this.graphicSelectMountRef?.current}
             >
                 <GraphicSelect
                     image={this.props.image}
@@ -348,6 +358,7 @@ class PartsEdit extends React.Component<Props, State> {
             <Form>
                 {this.renderPartsSelectBox()}
                 {this.renderPartsGraphics()}
+                <div ref={this.graphicSelectMountRef}></div>
                 {this.renderEditForm()}
                 <div>
                     <button onClick={() => this.handleEditButtonClick()}>OK</button>
