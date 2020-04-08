@@ -5,7 +5,7 @@ import { WWAData } from "@wwawing/common-interface";
 import getPartsCountPerIncreaseUnit from "../common/getPartsCountPerIncreaseUnit";
 import { bindActionCreators, Dispatch } from "redux";
 import { setMapFoundation } from "../wwadata/WWADataState";
-import { Form, Button, Input } from "semantic-ui-react";
+import { Form, Button, Input, Icon } from "semantic-ui-react";
 import WWAConsts from "../classes/WWAConsts";
 
 interface StateProps {
@@ -289,10 +289,16 @@ class MapFoundation extends React.Component<Props, State> {
                         value={this.state.field.mapPartsMax}
                     />
                 </Form.Field>
-                <div>
-                    <Button onClick={() => { this.send() }}>決定</Button>
-                    <Button onClick={() => { this.reset() }}>リセット</Button>
-                </div>
+                <Form.Field>
+                    <Button primary onClick={() => { this.send() }}>
+                        <Icon name="check" />
+                        決定
+                    </Button>
+                    <Button onClick={() => { this.reset() }}>
+                        <Icon name="cancel" />
+                        リセット
+                    </Button>
+                </Form.Field>
             </Form>
         );
     }

@@ -313,6 +313,8 @@ class PartsEdit extends React.Component<Props, State> {
                 {this.props.state.type === PartsType.OBJECT &&
                     this.renderPartsGraphic("2", WWAConsts.ATR_X2, WWAConsts.ATR_Y2)
                 }
+
+                <div ref={this.graphicSelectMountRef}></div>
             </>
         );
     }
@@ -358,7 +360,6 @@ class PartsEdit extends React.Component<Props, State> {
             <Form>
                 {this.renderPartsSelectBox()}
                 {this.renderPartsGraphics()}
-                <div ref={this.graphicSelectMountRef}></div>
                 {this.renderEditForm()}
                 <Form.Field>
                     <Button primary onClick={() => this.handleEditButtonClick()}>

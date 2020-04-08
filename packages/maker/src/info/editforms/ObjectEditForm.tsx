@@ -11,6 +11,7 @@ import {
     SelectInput,
     ObjectCommonInput
 } from "./EditFormUtils";
+import { PartsApperarInput, getPartsAppearValues } from "./PartsAppearInput";
 import { PartsEditComponent, PartsEditComponentTable, PartsEditAttributeChange } from "./PartsEditComponent";
 import { ItemMode } from "../../classes/WWAData";
 import { URLGateEdit, LocalGateEdit } from "./CommonEditForm";
@@ -66,6 +67,10 @@ const ObjectMessageEdit: PartsEditComponent = ({attribute, message, onAttributeC
             value={message}
             label="表示メッセージ"
             onChange={value => onMessageChange(value)}
+        />
+        <PartsApperarInput
+            items={getPartsAppearValues(attribute)}
+            onChange={() => {}}
         />
     </>
 );

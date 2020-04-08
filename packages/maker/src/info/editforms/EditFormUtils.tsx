@@ -4,6 +4,7 @@ import { MoveType } from "../../classes/WWAData";
 import { Input, Dropdown, DropdownItemProps, Form, TextArea } from "semantic-ui-react";
 
 // このファイルはパーツ編集画面で頻繁に使用されるテキストボックスやセレクトボックスなどをまとめたコンポーネント集です。
+// 指定位置にパーツを出現 については、 PartsAppearInput からどうぞ。
 
 /**
  * テキストボックスやセレクトボックスで変更が生じた際に実行するコールバック関数の型です。

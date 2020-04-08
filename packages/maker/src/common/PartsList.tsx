@@ -1,12 +1,9 @@
 import React from "react";
-import { WWAData } from "@wwawing/common-interface";
 import PartsChip from "./PartsChip";
 import WWAConsts from "../classes/WWAConsts";
-import { PartsType, createEmptyPartsAttribute } from "../classes/WWAData";
+import { PartsType, createEmptyPartsAttribute, PartsAttributes } from "../classes/WWAData";
 import getPartsCountPerIncreaseUnit from "./getPartsCountPerIncreaseUnit";
 import styles from "./PartsList.module.scss";
-
-type PartsAttributes = WWAData["mapAttribute"] | WWAData["objectAttribute"];
 
 interface Props {
     type: PartsType;

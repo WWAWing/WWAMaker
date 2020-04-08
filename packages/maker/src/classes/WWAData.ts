@@ -135,6 +135,9 @@ function createEmptyMap(size: number): number[][] {
 
 export type SystemMessageType = SystemMessage1 | SystemMessage2;
 
+export type PartsAttributes = WWAData["mapAttribute"] | WWAData["objectAttribute"];
+export type PartsAttributeItems = PartsAttributes[number];
+
 /**
  * 空のパーツ属性配列を作成します。
  */
