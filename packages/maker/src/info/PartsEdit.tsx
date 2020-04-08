@@ -10,7 +10,7 @@ import WWAConsts from "../classes/WWAConsts";
 import { ObjectEditTable } from "./editforms/ObjectEditForm";
 import { MapEditTable } from "./editforms/MapEditForm";
 import { PartsEditComponentTable } from "./editforms/PartsEditComponent";
-import { Form, Portal } from "semantic-ui-react";
+import { Form, Portal, Button, Icon } from "semantic-ui-react";
 import PartsChip from "../common/PartsChip";
 import { GraphicSelect } from "../common/GraphicSelect";
 
@@ -360,10 +360,16 @@ class PartsEdit extends React.Component<Props, State> {
                 {this.renderPartsGraphics()}
                 <div ref={this.graphicSelectMountRef}></div>
                 {this.renderEditForm()}
-                <div>
-                    <button onClick={() => this.handleEditButtonClick()}>OK</button>
-                    <button onClick={() => this.handleCancelButtonClick()}>取り消し</button>
-                </div>
+                <Form.Field>
+                    <Button primary onClick={() => this.handleEditButtonClick()}>
+                        <Icon name="check" />
+                        OK
+                    </Button>
+                    <Button onClick={() => this.handleCancelButtonClick()}>
+                        <Icon name="cancel" />
+                        取り消し
+                    </Button>
+                </Form.Field>
             </Form>
         )
     }

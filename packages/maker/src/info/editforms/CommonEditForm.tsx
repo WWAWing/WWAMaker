@@ -24,8 +24,7 @@ export const URLGateEdit: PartsEditComponent = ({attribute, message, onAttribute
     };
 
     return (
-        <div>
-            <p>URLゲート</p>
+        <>
             <URLInput
                 label="リンク先のURLアドレス"
                 value={urlValue}
@@ -36,7 +35,7 @@ export const URLGateEdit: PartsEditComponent = ({attribute, message, onAttribute
                 value={targetValue}
                 onChange={value => handleTargetChange(value)}
             />
-        </div>
+        </>
     );
 };
 
@@ -45,8 +44,7 @@ export const URLGateEdit: PartsEditComponent = ({attribute, message, onAttribute
  */
 export const LocalGateEdit: PartsEditComponent = ({attribute, message, onAttributeChange}) => {
     return (
-        <div>
-            <p>ジャンプゲート</p>
+        <>
             <NumberInput
                 label="ジャンプ先X座標"
                 value={attribute[WWAConsts.ATR_JUMP_X]}
@@ -57,6 +55,6 @@ export const LocalGateEdit: PartsEditComponent = ({attribute, message, onAttribu
                 value={attribute[WWAConsts.ATR_JUMP_Y]}
                 onChange={value => onAttributeChange(value, WWAConsts.ATR_JUMP_Y)}
             />
-        </div>
+        </>
     );
 };

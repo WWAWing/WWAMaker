@@ -10,8 +10,7 @@ import { PartsEditComponent, PartsEditComponentTable } from "./PartsEditComponen
 import { LocalGateEdit, URLGateEdit } from "./CommonEditForm";
 
 const MapStreetEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
-    <div>
-        <p>道</p>
+    <>
         <WaitTimeInput
             value={attribute[WWAConsts.ATR_NUMBER]}
             onChange={value => onAttributeChange(value, WWAConsts.ATR_NUMBER)}
@@ -30,18 +29,17 @@ const MapStreetEdit: PartsEditComponent = ({attribute, message, onAttributeChang
             value={message}
             onChange={value => onMessageChange(value)}
         />
-    </div>
+    </>
 );
 
 const MapWallEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
-    <div>
-        <p>壁</p>
+    <>
         <MessageInput
             label="表示メッセージ"
             value={message}
             onChange={value => onMessageChange(value)}
         />
-    </div>
+    </>
 );
 
 export const MapEditTable: PartsEditComponentTable = [
