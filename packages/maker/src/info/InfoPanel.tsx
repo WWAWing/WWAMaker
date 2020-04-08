@@ -88,7 +88,7 @@ class InfoPanel extends React.Component<Props> {
 
     public render() {
         return (
-            <Sidebar animation="push" direction="right" width="wide" visible={this.props.isOpened}>
+            <Sidebar animation="push" direction="right" width="very wide" visible={this.props.isOpened}>
                 {this.renderInside()}
             </Sidebar>
         );

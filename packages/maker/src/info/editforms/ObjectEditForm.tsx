@@ -70,7 +70,7 @@ const ObjectMessageEdit: PartsEditComponent = ({attribute, message, onAttributeC
         />
         <PartsApperarInput
             items={getPartsAppearValues(attribute)}
-            onChange={() => {}}
+            onChange={onAttributeChange}
         />
     </>
 );
