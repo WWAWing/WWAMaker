@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { PartsType, PartsAttributeItems } from "../../classes/WWAData";
-import { Accordion, Input, Form, Icon, Button } from "semantic-ui-react";
+import { Accordion, Form, Icon, Button, InputOnChangeData } from "semantic-ui-react";
 import WWAConsts from "../../classes/WWAConsts";
+import { RelativeValue, convertRelativeValueFromCoord } from "../../common/convertRelativeValue";
 
 // 指定位置にパーツを出現 関係のコンポーネントをまとめたファイルです。
 
 /**
  * 指定位置にパーツを出現の各項目を表した型です。
  */
-type AppearPartsItem = { number: number, chipX: number, chipY: number, type: PartsType };
+type AppearPartsItem = { number: number, chipX: RelativeValue, chipY: RelativeValue, type: PartsType };
 
 type InputChangeFunctionWithIndex = (value: string, index: number) => void;
 
@@ -44,19 +45,15 @@ export const PartsApperarInput: React.FunctionComponent<{
                             />
                             <Form.Input
                                 width={4}
-                                type="number"
-                                value={item.chipX}
-                                onChange={(event, data) => {
-                                    props.onChange(data.value, indexBase + WWAConsts.REL_ATR_APPERANCE_X)
-                                }}
+                                type="text"
+                                value={getStringValueByRelativePos(item.chipX)}
+                                onChange={getOnChangeByRelativePos(indexBase + WWAConsts.REL_ATR_APPERANCE_X, props.onChange)}
                             />
                             <Form.Input
                                 width={4}
-                                type="number"
-                                value={item.chipY}
-                                onChange={(event, data) => {
-                                    props.onChange(data.value, indexBase + WWAConsts.REL_ATR_APPERANCE_Y)
-                                }}
+                                type="text"
+                                value={getStringValueByRelativePos(item.chipY)}
+                                onChange={getOnChangeByRelativePos(indexBase + WWAConsts.REL_ATR_APPERANCE_Y, props.onChange)}
                             />
                             <Button.Group>
                                 <Button
@@ -93,8 +90,8 @@ export function getPartsAppearValues(attributes: PartsAttributeItems): AppearPar
 
         const item: AppearPartsItem = {
             number: values[valuesIndex + WWAConsts.REL_ATR_APPERANCE_ID],
-            chipX: values[valuesIndex + WWAConsts.REL_ATR_APPERANCE_X],
-            chipY: values[valuesIndex + WWAConsts.REL_ATR_APPERANCE_Y],
+            chipX: convertRelativeValueFromCoord(values[valuesIndex + WWAConsts.REL_ATR_APPERANCE_X]),
+            chipY: convertRelativeValueFromCoord(values[valuesIndex + WWAConsts.REL_ATR_APPERANCE_Y]),
             type: values[valuesIndex + WWAConsts.REL_ATR_APPERANCE_TYPE]
         };
 
@@ -106,4 +103,51 @@ export function getPartsAppearValues(attributes: PartsAttributeItems): AppearPar
     }
 
     return result;
+}
+
+/**
+ * RelativeValue から文字列の値に変換します。
+ */
+function getStringValueByRelativePos(value: RelativeValue): string {
+    if (value.type === "PLAYER") {
+        return "p";
+    } else if (value.type === "RELATIVE_MINUS") {
+        return `-${value.value}`;
+    } else if (value.type === "RELATIVE_PLUS") {
+        return `+${value.value}`;
+    }
+
+    return value.value.toString();
+}
+
+/**
+ * 座標値から WWAData に格納する数字の値に変換し、イベントメソッドを呼び出します。
+ * @todo 9000 や 10000 などを定数にしたい
+ */
+function getOnChangeByRelativePos(
+    index: number,
+    onChange: InputChangeFunctionWithIndex
+) {
+    return (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
+        if (data.value === "p") {
+            onChange("9000", index);
+            return;
+        }
+
+        const valueRegex = data.value.match(/([+-])([0-9]+)/);
+        if (valueRegex === null) {
+            if (Number.isNaN(Number(data.value))) {
+                return;
+            }
+
+            onChange(data.value, index);
+            return;
+        }
+
+        if (valueRegex[1] === "-") {
+            onChange((10000 - parseInt(valueRegex[2])).toString(), index);
+        } else if (valueRegex[1] === "+") {
+            onChange((10000 + parseInt(valueRegex[2])).toString(), index);
+        }
+    }
 }
