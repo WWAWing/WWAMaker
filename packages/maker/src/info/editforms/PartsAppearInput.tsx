@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { PartsType, PartsAttributeItems } from "../../classes/WWAData";
-import { Accordion, Form, Icon, Button, InputOnChangeData } from "semantic-ui-react";
+import { Accordion, Form, Icon, Button } from "semantic-ui-react";
 import WWAConsts from "../../classes/WWAConsts";
 import { RelativeValue, convertRelativeValueFromCoord } from "../../common/convertRelativeValue";
+import { CoordInput } from "./EditFormUtils";
 
 // 指定位置にパーツを出現 関係のコンポーネントをまとめたファイルです。
 
@@ -34,40 +35,42 @@ export const PartsApperarInput: React.FunctionComponent<{
                     const indexBase = WWAConsts.ATR_APPERANCE_BASE + (index * WWAConsts.REL_ATR_APPERANCE_UNIT_LENGTH);
 
                     return (
-                        <Form.Group inline key={index}>
-                            <Form.Input
-                                width={4}
-                                type="number"
-                                value={item.number}
-                                onChange={(event, data) => {
-                                    props.onChange(data.value, indexBase + WWAConsts.REL_ATR_APPERANCE_ID)
-                                }}
-                            />
-                            <Form.Input
-                                width={4}
-                                type="text"
-                                value={getStringValueByRelativePos(item.chipX)}
-                                onChange={getOnChangeByRelativePos(indexBase + WWAConsts.REL_ATR_APPERANCE_X, props.onChange)}
-                            />
-                            <Form.Input
-                                width={4}
-                                type="text"
-                                value={getStringValueByRelativePos(item.chipY)}
-                                onChange={getOnChangeByRelativePos(indexBase + WWAConsts.REL_ATR_APPERANCE_Y, props.onChange)}
-                            />
-                            <Button.Group>
-                                <Button
-                                    active={item.type === PartsType.OBJECT}
-                                    onClick={() => props.onChange(PartsType.OBJECT.toString(), indexBase + WWAConsts.REL_ATR_APPERANCE_TYPE)}
-                                    content="物体"
+                        <div key={index}>
+                            <Form.Group>
+                                <Form.Input
+                                    width={6}
+                                    type="number"
+                                    value={item.number}
+                                    onChange={(event, data) => {
+                                        props.onChange(data.value, indexBase + WWAConsts.REL_ATR_APPERANCE_ID)
+                                    }}
                                 />
-                                <Button
-                                    active={item.type === PartsType.MAP}
-                                    onClick={() => props.onChange(PartsType.MAP.toString(), indexBase + WWAConsts.REL_ATR_APPERANCE_TYPE)}
-                                    content="背景"
+                                <Button.Group widths={3}>
+                                    <Button
+                                        active={item.type === PartsType.OBJECT}
+                                        onClick={() => props.onChange(PartsType.OBJECT.toString(), indexBase + WWAConsts.REL_ATR_APPERANCE_TYPE)}
+                                        content="物体"
+                                    />
+                                    <Button
+                                        active={item.type === PartsType.MAP}
+                                        onClick={() => props.onChange(PartsType.MAP.toString(), indexBase + WWAConsts.REL_ATR_APPERANCE_TYPE)}
+                                        content="背景"
+                                    />
+                                </Button.Group>
+                            </Form.Group>
+                            <Form.Group>
+                                <CoordInput
+                                    width={6}
+                                    value={item.chipX}
+                                    onChange={(value) => props.onChange(value, indexBase + WWAConsts.REL_ATR_APPERANCE_X)}
                                 />
-                            </Button.Group>
-                        </Form.Group>
+                                <CoordInput
+                                    width={6}
+                                    value={item.chipY}
+                                    onChange={(value) => props.onChange(value, indexBase + WWAConsts.REL_ATR_APPERANCE_Y)}
+                                />
+                            </Form.Group>
+                        </div>
                     );
                 })}
             </Accordion.Content>
@@ -103,51 +106,4 @@ export function getPartsAppearValues(attributes: PartsAttributeItems): AppearPar
     }
 
     return result;
-}
-
-/**
- * RelativeValue から文字列の値に変換します。
- */
-function getStringValueByRelativePos(value: RelativeValue): string {
-    if (value.type === "PLAYER") {
-        return "p";
-    } else if (value.type === "RELATIVE_MINUS") {
-        return `-${value.value}`;
-    } else if (value.type === "RELATIVE_PLUS") {
-        return `+${value.value}`;
-    }
-
-    return value.value.toString();
-}
-
-/**
- * 座標値から WWAData に格納する数字の値に変換し、イベントメソッドを呼び出します。
- * @todo 9000 や 10000 などを定数にしたい
- */
-function getOnChangeByRelativePos(
-    index: number,
-    onChange: InputChangeFunctionWithIndex
-) {
-    return (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
-        if (data.value === "p") {
-            onChange("9000", index);
-            return;
-        }
-
-        const valueRegex = data.value.match(/([+-])([0-9]+)/);
-        if (valueRegex === null) {
-            if (Number.isNaN(Number(data.value))) {
-                return;
-            }
-
-            onChange(data.value, index);
-            return;
-        }
-
-        if (valueRegex[1] === "-") {
-            onChange((10000 - parseInt(valueRegex[2])).toString(), index);
-        } else if (valueRegex[1] === "+") {
-            onChange((10000 + parseInt(valueRegex[2])).toString(), index);
-        }
-    }
 }

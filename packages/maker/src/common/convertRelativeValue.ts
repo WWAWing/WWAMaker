@@ -1,3 +1,5 @@
+import WWAConsts from "../classes/WWAConsts";
+
 // 相対指定の値を表す型やメソッドを含めたファイルです。
 // TODO: テストを実装したい
 // TODO: WWA Wing と共用するために別パッケージの切り出しを考える
@@ -6,7 +8,7 @@
  * 相対値の型情報です。
  */
 export type RelativeValue = {
-    type: "ABSOLUTE" | "RELATIVE_PLUS" | "RELATIVE_MINUS" | "PLAYER",
+    type: "ABSOLUTE" | "RELATIVE",
     value: number
 } | {
     type: "PLAYER"
@@ -17,22 +19,17 @@ export type RelativeValue = {
  * @param coordValue 
  */
 export function convertRelativeValueFromCoord(coordValue: number): RelativeValue {
-    // 9000 以降は相対値とします。
-    if (coordValue >= 9000) {
-        if (coordValue >= 10000) {
+
+    if (coordValue >= WWAConsts.RELATIVE_COORD_LOWER) {
+        if (coordValue === WWAConsts.PLAYER_COORD) {
             return {
-                type: "RELATIVE_PLUS",
-                value: coordValue - 10000
-            };
-        } else if (coordValue < 10000) {
-            return {
-                type: "RELATIVE_MINUS",
-                value: Math.abs(coordValue - 10000)
+                type: "PLAYER"
             };
         }
 
         return {
-            type: "PLAYER"
+            type: "RELATIVE",
+            value: coordValue - WWAConsts.RELATIVE_COORD_BIAS
         };
     }
 
@@ -43,12 +40,27 @@ export function convertRelativeValueFromCoord(coordValue: number): RelativeValue
 }
 
 /**
- * WWAData の値から相対値に変換します。
+ * RelativeValue から WWAData で使用する値に変換します。
+ */
+export function convertDataValueFromRelativeCoord(value: RelativeValue): number {
+    if (value.type === "PLAYER") {
+        return WWAConsts.PLAYER_COORD;
+    }
+
+    if (value.type === "RELATIVE") {
+        return value.value + WWAConsts.RELATIVE_COORD_BIAS;
+    }
+
+    return value.value;
+}
+
+/**
+ * WWAData のステータス値から相対値に変換します。
  * @param statusValue 
  */
 export function convertRelativeValueFromStatus(statusValue: number): number {
-    if (statusValue > 30000) {
-        return (statusValue - 30000) * -1;
+    if (statusValue > WWAConsts.STATUS_MINUS_BORDER) {
+        return (statusValue - WWAConsts.STATUS_MINUS_BORDER) * -1;
     }
 
     return statusValue;

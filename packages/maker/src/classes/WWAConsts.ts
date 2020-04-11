@@ -59,12 +59,18 @@ export default class WWAConsts {
 
     static CHIP_SIZE = 40;
 
+    static RELATIVE_COORD_BIAS: number = 10000;
+    static RELATIVE_COORD_LOWER: number = WWAConsts.RELATIVE_COORD_BIAS - 1000;
+    static PLAYER_COORD: number = WWAConsts.RELATIVE_COORD_BIAS - 1000;
+
     static PASSABLE_OBJECT: number = 1;
 
     static APPERANCE_PARTS_MIN_INDEX: number = 0;
     static APPERANCE_PARTS_MAX_INDEX: number = 9;
     static APPERANCE_PARTS_MIN_INDEX_NO: number = 5;
     static APPERANCE_PARTS_MAX_INDEX_YES: number = 4;
+
+    static STATUS_MINUS_BORDER: number = 30000;
 
     // WWA Wing で定義されていた WWAConsts はここまでになります。
     // ここからは、 WWA Maker 独自で定義する定数になります。

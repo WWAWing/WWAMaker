@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import WWAConsts from "../../classes/WWAConsts";
 import { MoveType } from "../../classes/WWAData";
-import { Input, Dropdown, DropdownItemProps, Form, TextArea } from "semantic-ui-react";
+import { Input, Dropdown, DropdownItemProps, Form, TextArea, StrictFormFieldProps } from "semantic-ui-react";
+import { RelativeValue, convertDataValueFromRelativeCoord } from "../../common/convertRelativeValue";
 
 // このファイルはパーツ編集画面で頻繁に使用されるテキストボックスやセレクトボックスなどをまとめたコンポーネント集です。
 // 指定位置にパーツを出現 については、 PartsAppearInput からどうぞ。
@@ -252,4 +253,68 @@ export const ObjectCommonInput: React.FunctionComponent<{
             onChange={props.onMessageChange}
         />
     </>
-)
+);
+
+/**
+ * 座標を入力するコンポーネントです。
+ */
+export const CoordInput: React.FunctionComponent<{
+    label?: string,
+    width?: StrictFormFieldProps["width"],
+    value: RelativeValue,
+    onChange: InputChangeFunction
+}> = props => {
+    const coordOptions: { text: string, value: RelativeValue["type"] }[] = [{
+        text: "絶対",
+        value: "ABSOLUTE"
+    }, {
+        text: "相対",
+        value: "RELATIVE"
+    }, {
+        text: "プレイヤー",
+        value: "PLAYER"
+    }];
+    const handleChange = () => {
+        props.onChange(convertDataValueFromRelativeCoord({
+            type: type,
+            value: coord
+        }).toString());
+    };
+
+    // FIXME: パーツを連続で編集すると前のパーツの State が残ってしまう
+    const [type, setType] = useState(props.value.type);
+    const [coord, setCoord] = useState(props.value.type === "PLAYER" ? 0 : props.value.value);
+
+    return (
+        <Form.Field width={props.width}>
+            {props.label !== undefined &&
+                <label>{props.label}</label>
+            }
+            <Input
+                action={
+                    <Dropdown
+                        button
+                        basic
+                        options={coordOptions}
+                        value={type}
+                        onChange={(event, { value }) => {
+                            setType(value as RelativeValue["type"]);
+                            handleChange();
+                        }}
+                    />
+                }
+                actionPosition="left"
+                type="number"
+                disabled={type === "PLAYER"}
+                value={type !== "PLAYER" ? coord : ""}
+                onChange={(event, { value }) => {
+                    if (type === "PLAYER") {
+                        return;
+                    }
+                    setCoord(parseInt(value));
+                    handleChange();
+                }}
+            />
+        </Form.Field>
+    );
+};
