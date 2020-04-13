@@ -60,12 +60,12 @@ export const PartsApperarInput: React.FunctionComponent<{
                             </Form.Group>
                             <Form.Group>
                                 <CoordInput
-                                    width={6}
+                                    width={12}
                                     value={item.chipX}
                                     onChange={(value) => props.onChange(value, indexBase + WWAConsts.REL_ATR_APPERANCE_X)}
                                 />
                                 <CoordInput
-                                    width={6}
+                                    width={12}
                                     value={item.chipY}
                                     onChange={(value) => props.onChange(value, indexBase + WWAConsts.REL_ATR_APPERANCE_Y)}
                                 />

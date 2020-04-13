@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import WWAConsts from "../../classes/WWAConsts";
 import { MoveType } from "../../classes/WWAData";
-import { Input, Dropdown, DropdownItemProps, Form, TextArea, StrictFormFieldProps } from "semantic-ui-react";
+import { Input, Dropdown, DropdownItemProps, Form, TextArea, StrictFormFieldProps, Icon, StrictIconProps } from "semantic-ui-react";
 import { RelativeValue, convertDataValueFromRelativeCoord } from "../../common/convertRelativeValue";
 
 // このファイルはパーツ編集画面で頻繁に使用されるテキストボックスやセレクトボックスなどをまとめたコンポーネント集です。
@@ -264,26 +264,32 @@ export const CoordInput: React.FunctionComponent<{
     value: RelativeValue,
     onChange: InputChangeFunction
 }> = props => {
-    const coordOptions: { text: string, value: RelativeValue["type"] }[] = [{
+    /**
+     * coordOptions は座標の種別を選択するドロップダウンの項目定数です。
+     */
+    const coordOptions: { text: string, value: RelativeValue["type"], icon: StrictIconProps["name"] }[] = [{
         text: "絶対",
-        value: "ABSOLUTE"
+        value: "ABSOLUTE",
+        icon: "point"
     }, {
         text: "相対",
-        value: "RELATIVE"
+        value: "RELATIVE",
+        icon: "arrows alternate"
     }, {
         text: "プレイヤー",
-        value: "PLAYER"
+        value: "PLAYER",
+        icon: "user"
     }];
-    const handleChange = () => {
-        props.onChange(convertDataValueFromRelativeCoord({
-            type: type,
-            value: coord
-        }).toString());
-    };
 
-    // FIXME: パーツを連続で編集すると前のパーツの State が残ってしまう
-    const [type, setType] = useState(props.value.type);
-    const [coord, setCoord] = useState(props.value.type === "PLAYER" ? 0 : props.value.value);
+    const PartsTypeDropdownLabel = () => {
+        const coordOption = coordOptions.find(value => props.value.type === value.value);
+        return (
+            <>
+                <Icon name={coordOption?.icon} />
+                {coordOption?.text}
+            </>
+        );
+    }
 
     return (
         <Form.Field width={props.width}>
@@ -296,23 +302,28 @@ export const CoordInput: React.FunctionComponent<{
                         button
                         basic
                         options={coordOptions}
-                        value={type}
+                        value={props.value.type}
+                        trigger={<PartsTypeDropdownLabel />}
                         onChange={(event, { value }) => {
-                            setType(value as RelativeValue["type"]);
-                            handleChange();
+                            props.onChange(convertDataValueFromRelativeCoord({
+                                type: value as RelativeValue["type"],
+                                value: props.value.type === "PLAYER" ? 0 : props.value.value
+                            }).toString());
                         }}
                     />
                 }
                 actionPosition="left"
                 type="number"
-                disabled={type === "PLAYER"}
-                value={type !== "PLAYER" ? coord : ""}
+                disabled={props.value.type === "PLAYER"}
+                value={props.value.type !== "PLAYER" ? props.value.value : ""}
                 onChange={(event, { value }) => {
-                    if (type === "PLAYER") {
+                    if (props.value.type === "PLAYER") {
                         return;
                     }
-                    setCoord(parseInt(value));
-                    handleChange();
+                    props.onChange(convertDataValueFromRelativeCoord({
+                        ...props.value,
+                        value: parseInt(value)
+                    }).toString());
                 }}
             />
         </Form.Field>
