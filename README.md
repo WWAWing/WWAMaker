@@ -1,6 +1,13 @@
 WWA Maker
 ===
 
+インターネットRPG World Wide Adventure (WWA) のマップ作成ツールです。 Windows アプリケーション「[WWA マップ作成ツール](https://wwajp.com/making.html)」を Electron と Web 技術によって作り直すことを目標としています。
+
+作り直すことによって下記が実現されることを期待しています。
+
+- Mac や Linux などの WWA マップ作成ツールが起動できない環境でも WWA ゲームが制作できる
+- [WWA Wing](https://github.com/WWAWing/WWAWing) の新機能追加の自由度が高くなる
+
 ## 始めるには？
 この WWA Maker には [yarn (1.x)](https://classic.yarnpkg.com/ja/) を利用しています。
 yarn をインストールし、以下のコマンドを入力することで、 WWA Maker を実行することが出来ます。
@@ -25,6 +32,7 @@ yarn start
 ## できていないところ
 下記の機能はまだ実装していません。後ほど実装予定です。
 
+- 指定位置にパーツを出現
 - パーツの削除機能
 - 暗証番号の入力機能
 - ファイルへの保存
