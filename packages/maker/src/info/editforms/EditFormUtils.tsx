@@ -257,6 +257,8 @@ export const ObjectCommonInput: React.FunctionComponent<{
 
 /**
  * 座標を入力するコンポーネントです。
+ *     パーツ属性から利用する際は value プロパティに getPartsAppearValues を呼び出した状態でご利用ください。
+ * @example <PartsApperarInput items={getPartsAppearValues(attribute)} onChange={onAttributeChange} />
  */
 export const CoordInput: React.FunctionComponent<{
     label?: string,
@@ -281,6 +283,9 @@ export const CoordInput: React.FunctionComponent<{
         icon: "user"
     }];
 
+    /**
+     * 座標の種別で表示されるラベル部分のコンポーネントです。
+     */
     const PartsTypeDropdownLabel = () => {
         const coordOption = coordOptions.find(value => props.value.type === value.value);
         return (
@@ -289,7 +294,7 @@ export const CoordInput: React.FunctionComponent<{
                 {coordOption?.text}
             </>
         );
-    }
+    };
 
     return (
         <Form.Field width={props.width}>
@@ -314,7 +319,6 @@ export const CoordInput: React.FunctionComponent<{
                 }
                 actionPosition="left"
                 type="number"
-                disabled={props.value.type === "PLAYER"}
                 value={props.value.type !== "PLAYER" ? props.value.value : ""}
                 onChange={(event, { value }) => {
                     if (props.value.type === "PLAYER") {
