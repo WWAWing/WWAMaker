@@ -264,6 +264,7 @@ export const CoordInput: React.FunctionComponent<{
     label?: string,
     width?: StrictFormFieldProps["width"],
     value: RelativeValue,
+    mapWidthMax?: number,
     onChange: InputChangeFunction
 }> = props => {
     /**
@@ -296,6 +297,30 @@ export const CoordInput: React.FunctionComponent<{
         );
     };
 
+    /**
+     * 座標の最小値を指定します。
+     */
+    const getCoordMin = () => {
+        if (props.value.type === "RELATIVE") {
+            return -WWAConsts.RELATIVE_COORD_MAX;
+        } else if (props.value.type === "ABSOLUTE") {
+            return 0;
+        }
+        return undefined;
+    }
+
+    /**
+     * 座標の最大値を指定します。
+     */
+    const getCoordMax = () => {
+        if (props.value.type === "RELATIVE") {
+            return WWAConsts.RELATIVE_COORD_MAX;
+        } else if (props.value.type === "ABSOLUTE") {
+            return props.mapWidthMax;
+        }
+        return undefined;
+    }
+
     return (
         <Form.Field width={props.width}>
             {props.label !== undefined &&
@@ -320,6 +345,8 @@ export const CoordInput: React.FunctionComponent<{
                 actionPosition="left"
                 type="number"
                 value={props.value.type !== "PLAYER" ? props.value.value : ""}
+                min={getCoordMin()}
+                max={getCoordMax()}
                 onChange={(event, { value }) => {
                     if (props.value.type === "PLAYER") {
                         return;

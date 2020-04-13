@@ -90,4 +90,7 @@ export default class WWAConsts {
     static PARTS_SIZE_DEFAULT: number = 200;
     static PARTS_SIZE_INCREASE_UNIT: number = 50;
     static PARTS_SIZE_MAX: number = 4000;
+
+    // 相対座標の最大値
+    static RELATIVE_COORD_MAX: number = 100;
 }

@@ -4,6 +4,8 @@ import { Accordion, Form, Icon, Button } from "semantic-ui-react";
 import WWAConsts from "../../classes/WWAConsts";
 import { RelativeValue, convertRelativeValueFromCoord } from "../../common/convertRelativeValue";
 import { CoordInput } from "./EditFormUtils";
+import { connect, MapStateToProps } from "react-redux";
+import { StoreType } from "../../State";
 
 // 指定位置にパーツを出現 関係のコンポーネントをまとめたファイルです。
 
@@ -14,15 +16,36 @@ type AppearPartsItem = { number: number, chipX: RelativeValue, chipY: RelativeVa
 
 type InputChangeFunctionWithIndex = (value: string, index: number) => void;
 
+type StateProps = {
+    objPartsMax?: number,
+    mapPartsMax?: number,
+    mapMax?: number
+};
+
+const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = state => ({
+    objPartsMax: state.wwaData?.objPartsMax,
+    mapPartsMax: state.wwaData?.mapPartsMax,
+    mapMax: state.wwaData?.mapWidth
+});
+
 /**
  * 指定位置にパーツを出現の入力フォームです。
  * @todo onChange の処理内容を正しく整える
  */
-export const PartsApperarInput: React.FunctionComponent<{
+const PartsApperarInputComponent: React.FunctionComponent<{
     items: AppearPartsItem[],
     onChange: InputChangeFunctionWithIndex
-}> = props => {
+} & StateProps> = props => {
     const [isOpen, setOpen] = useState(false);
+
+    function getPartsIDMax(type: PartsType) {
+        switch (type) {
+            case PartsType.OBJECT:
+                return props.objPartsMax || 0;
+            case PartsType.MAP:
+                return props.mapPartsMax || 0;
+        }
+    }
 
     return (
         <Accordion>
@@ -33,6 +56,7 @@ export const PartsApperarInput: React.FunctionComponent<{
             <Accordion.Content active={isOpen}>
                 {props.items.map((item, index) => {
                     const indexBase = WWAConsts.ATR_APPERANCE_BASE + (index * WWAConsts.REL_ATR_APPERANCE_UNIT_LENGTH);
+                    const partsIDMax = getPartsIDMax(item.type);
 
                     return (
                         <div key={index}>
@@ -40,9 +64,12 @@ export const PartsApperarInput: React.FunctionComponent<{
                                 <Form.Input
                                     width={6}
                                     type="number"
+                                    min={0}
+                                    max={partsIDMax}
                                     value={item.number}
                                     onChange={(event, data) => {
-                                        props.onChange(data.value, indexBase + WWAConsts.REL_ATR_APPERANCE_ID)
+                                        // FIXME: 空欄にすると Received NaN for the `value` attribute. If this is expected, cast the value to a string. が発生する
+                                        props.onChange(data.value as string, indexBase + WWAConsts.REL_ATR_APPERANCE_ID)
                                     }}
                                 />
                                 <Button.Group widths={3}>
@@ -62,11 +89,13 @@ export const PartsApperarInput: React.FunctionComponent<{
                                 <CoordInput
                                     width={12}
                                     value={item.chipX}
+                                    mapWidthMax={props.mapMax}
                                     onChange={(value) => props.onChange(value, indexBase + WWAConsts.REL_ATR_APPERANCE_X)}
                                 />
                                 <CoordInput
                                     width={12}
                                     value={item.chipY}
+                                    mapWidthMax={props.mapMax}
                                     onChange={(value) => props.onChange(value, indexBase + WWAConsts.REL_ATR_APPERANCE_Y)}
                                 />
                             </Form.Group>
@@ -77,6 +106,8 @@ export const PartsApperarInput: React.FunctionComponent<{
         </Accordion>
     );
 };
+
+export const PartsApperarInput = connect(mapStateToProps)(PartsApperarInputComponent);
 
 /**
  * パーツ属性から「指定位置にパーツを出現」に対応した値を出力します。
