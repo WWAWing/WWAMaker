@@ -6,6 +6,7 @@ import { RelativeValue, convertRelativeValueFromCoord } from "../../common/conve
 import { CoordInput } from "./EditFormUtils";
 import { connect, MapStateToProps } from "react-redux";
 import { StoreType } from "../../State";
+import getPartsCountPerIncreaseUnit from "../../common/getPartsCountPerIncreaseUnit";
 
 // 指定位置にパーツを出現 関係のコンポーネントをまとめたファイルです。
 
@@ -22,6 +23,9 @@ type StateProps = {
     mapMax?: number
 };
 
+/**
+ * PartsAppearInput では扱えるパーツの最大値を取得するために WWAData から値を受け取ります。
+ */
 const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = state => ({
     objPartsMax: state.wwaData?.objPartsMax,
     mapPartsMax: state.wwaData?.mapPartsMax,
@@ -56,7 +60,7 @@ const PartsApperarInputComponent: React.FunctionComponent<{
             <Accordion.Content active={isOpen}>
                 {props.items.map((item, index) => {
                     const indexBase = WWAConsts.ATR_APPERANCE_BASE + (index * WWAConsts.REL_ATR_APPERANCE_UNIT_LENGTH);
-                    const partsIDMax = getPartsIDMax(item.type);
+                    const partsIDMax = getPartsCountPerIncreaseUnit(getPartsIDMax(item.type));
 
                     return (
                         <div key={index}>

@@ -198,7 +198,8 @@ class PartsEdit extends React.Component<Props, State> {
         }
 
         let newAttribute = this.state.parts.attribute.slice();
-        newAttribute[attributeIndex] = parseInt(value);
+        const parsedValue = parseInt(value);
+        newAttribute[attributeIndex] = Number.isNaN(parsedValue) ? 0 : parsedValue;
 
         this.setState({
             parts: {

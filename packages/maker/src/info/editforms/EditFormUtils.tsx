@@ -307,7 +307,7 @@ export const CoordInput: React.FunctionComponent<{
             return 0;
         }
         return undefined;
-    }
+    };
 
     /**
      * 座標の最大値を指定します。
@@ -319,7 +319,7 @@ export const CoordInput: React.FunctionComponent<{
             return props.mapWidthMax;
         }
         return undefined;
-    }
+    };
 
     return (
         <Form.Field width={props.width}>
@@ -351,9 +351,11 @@ export const CoordInput: React.FunctionComponent<{
                     if (props.value.type === "PLAYER") {
                         return;
                     }
+                    // 空欄のように、 parseInt では NaN になる値は 0 にリセット
+                    const parsedValue = parseInt(value);
                     props.onChange(convertDataValueFromRelativeCoord({
                         ...props.value,
-                        value: parseInt(value)
+                        value: Number.isNaN(parsedValue) ? 0 : parsedValue
                     }).toString());
                 }}
             />
