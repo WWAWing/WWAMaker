@@ -10,7 +10,7 @@ import WWAConsts from "../classes/WWAConsts";
 import { ObjectEditTable } from "./editforms/ObjectEditForm";
 import { MapEditTable } from "./editforms/MapEditForm";
 import { PartsEditComponentTable } from "./editforms/PartsEditComponent";
-import { Form, Portal, Button, Icon } from "semantic-ui-react";
+import { Form, Portal, Button, Icon, Dropdown, DropdownItemProps } from "semantic-ui-react";
 import PartsChip from "../common/PartsChip";
 import { GraphicSelect } from "../common/GraphicSelect";
 
@@ -260,12 +260,20 @@ class PartsEdit extends React.Component<Props, State> {
         }
         
         const partsEditType = this.state.parts.attribute[WWAConsts.ATR_TYPE];
+        const partsEditOptions: DropdownItemProps[] = partsEditTable.map(partsEdit => ({
+            text: partsEdit.name,
+            value: partsEdit.id
+        }));
         return (
-            <select onChange={event => this.handleAttributeChange(event.target.value, WWAConsts.ATR_TYPE)} value={partsEditType}>
-                {partsEditTable.map((partsEditItem, partsEditIndex) =>
-                    <option key={partsEditIndex} value={partsEditItem.id}>{partsEditItem.name}</option>
-                )}
-            </select>
+            <Dropdown
+                button
+                basic
+                options={partsEditOptions}
+                onChange={(event, data) => {
+                    this.handleAttributeChange(data.value as string, WWAConsts.ATR_TYPE);
+                }}
+                value={partsEditType}
+            />
         );
     }
 
