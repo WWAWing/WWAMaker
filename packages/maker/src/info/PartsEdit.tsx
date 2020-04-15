@@ -90,7 +90,7 @@ class PartsEdit extends React.Component<Props, State> {
     }
 
     public componentDidUpdate(prevProps: Props) {
-        if (this.props.state !== prevProps.state) {
+        if (this.props.state?.number !== prevProps.state?.number || this.props.state?.type !== prevProps.state?.type) {
             this.setState({
                 parts: this.receive()
             });
