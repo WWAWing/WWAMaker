@@ -9,7 +9,8 @@ import {
     StatusInput,
     NumberInput,
     SelectInput,
-    ObjectCommonInput
+    ObjectCommonInput,
+    AdjustStatusInput
 } from "./EditFormUtils";
 import { PartsApperarInput, getPartsAppearValues } from "./PartsAppearInput";
 import { PartsEditComponent, PartsEditComponentTable, PartsEditAttributeChange } from "./PartsEditComponent";
@@ -197,7 +198,7 @@ const ObjectDoorEdit: PartsEditComponent = ({attribute, message, onAttributeChan
 
 const ObjectStatusEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
     <>
-        <StatusInput
+        <AdjustStatusInput
             items={{
                 energy: {
                     value: attribute[WWAConsts.ATR_ENERGY]

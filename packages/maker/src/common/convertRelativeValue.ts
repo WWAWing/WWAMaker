@@ -65,3 +65,15 @@ export function convertRelativeValueFromStatus(statusValue: number): number {
 
     return statusValue;
 }
+
+/**
+ * 相対値から WWAData のステータス値に変換します。
+ * @param relativeValue 
+ */
+export function convertDataValueFromRelativeStatus(relativeValue: number): number {
+    if (relativeValue < 0) {
+        return Math.abs(relativeValue) + WWAConsts.STATUS_MINUS_BORDER;
+    }
+
+    return relativeValue;
+}

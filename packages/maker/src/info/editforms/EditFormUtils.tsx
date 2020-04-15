@@ -2,7 +2,7 @@ import React from "react";
 import WWAConsts from "../../classes/WWAConsts";
 import { MoveType } from "../../classes/WWAData";
 import { Input, Dropdown, DropdownItemProps, Form, TextArea, StrictFormFieldProps, Icon, StrictIconProps } from "semantic-ui-react";
-import { RelativeValue, convertDataValueFromRelativeCoord } from "../../common/convertRelativeValue";
+import { RelativeValue, convertDataValueFromRelativeCoord, convertRelativeValueFromStatus, convertDataValueFromRelativeStatus } from "../../common/convertRelativeValue";
 
 // このファイルはパーツ編集画面で頻繁に使用されるテキストボックスやセレクトボックスなどをまとめたコンポーネント集です。
 // 指定位置にパーツを出現 については、 PartsAppearInput からどうぞ。
@@ -25,6 +25,8 @@ export const NumberInput: React.FunctionComponent<{
     value: number,
     label: string,
     name?: string
+    min?: number,
+    max?: number
     onChange: InputChangeFunction
 }> = props => (
     <Form.Field>
@@ -33,6 +35,8 @@ export const NumberInput: React.FunctionComponent<{
             type="number"
             name={props.name}
             value={props.value}
+            min={props.min}
+            max={props.max}
             onChange={(event, data) => {
                 props.onChange(data.value);
             }}
@@ -146,15 +150,18 @@ export const MessageInput: React.FunctionComponent<{
 
 /**
  * モンスターやアイテムで使用するステータス入力欄です。
- * @param props 下記の情報を含めた連想配列
- * 
- *     items: energy, strength, defence, gold の情報
- *     label の指定がない場合はそれぞれ 生命力、攻撃力、防御力、所持金 になります。
- * 
- *     onChange: 入力欄が変更した場合に発生するメソッド
- *     どのテキストボックから入力されたかは、 event.target.name から確認できます。
+ *     「ステータス変化」といった負の値を扱うステータス入力欄と、「モンスター」や「アイテム」といった正の値しか扱わないステータス入力欄を分けるため、作成するメソッドを予め用意しています。
+ * @param min 最小値
+ * @param max 最大値
+ * @param getValue NumberInput コンポーネントに値を渡す際に実行するメソッド
+ * @param setValue NumberInput コンポーネントで入力した値からプロパティの onChange メソッドに渡す際に実行するメソッド
  */
-export const StatusInput: React.FunctionComponent<{
+function createStatusInput(
+    min: number,
+    max: number,
+    getValue: (value: number) => number,
+    setValue: (value: string) => string
+): React.FC<{
     items: {
         energy?: NumberEditFormItem,
         strength: NumberEditFormItem,
@@ -162,30 +169,57 @@ export const StatusInput: React.FunctionComponent<{
         gold?: NumberEditFormItem,
     },
     onChange: InputChangeFunctionWithName
-}> = props => {
+}> {
+    /**
+     * @param props 下記の情報を含めた連想配列
+     * 
+     *     items: energy, strength, defence, gold の情報
+     *     label の指定がない場合はそれぞれ 生命力、攻撃力、防御力、所持金 になります。
+     * 
+     *     onChange: 入力欄が変更した場合に発生するメソッド
+     *     どのテキストボックから入力されたかは、 event.target.name から確認できます。
+     */
+    return (props) => {
 
-    const statusNumberInput = (item: NumberEditFormItem, name: string, defaultLabel: string) => (
-        <NumberInput
-            label={item.label !== undefined ? item.label : defaultLabel}
-            onChange={value => props.onChange(value, name)}
-            name={name}
-            value={item.value}
-        />
-    )
+        const statusNumberInput = (item: NumberEditFormItem, name: string, defaultLabel: string) => (
+            <NumberInput
+                label={item.label !== undefined ? item.label : defaultLabel}
+                min={min}
+                max={max}
+                onChange={value => props.onChange(setValue(value), name)}
+                name={name}
+                value={getValue(item.value)}
+            />
+        );
 
-    return (
-        <>
-            {props.items.energy !== undefined &&
-                statusNumberInput(props.items.energy, "energy", "生命力")
-            }
-            {statusNumberInput(props.items.strength, "strength", "攻撃力")}
-            {statusNumberInput(props.items.defence, "defence", "防御力")}
-            {props.items.gold !== undefined &&
-                statusNumberInput(props.items.gold, "gold", "所持金")
-            }
-        </>
-    );
-};
+        return (
+            <>
+                {props.items.energy !== undefined &&
+                    statusNumberInput(props.items.energy, "energy", "生命力")
+                }
+                {statusNumberInput(props.items.strength, "strength", "攻撃力")}
+                {statusNumberInput(props.items.defence, "defence", "防御力")}
+                {props.items.gold !== undefined &&
+                    statusNumberInput(props.items.gold, "gold", "所持金")
+                }
+            </>
+        );
+    };
+}
+
+/**
+ * 正の値しか扱わないステータス入力欄
+ */
+export const StatusInput = createStatusInput(0, 60000, value => value, value => value);
+/**
+ * 正の値と負の値を扱うステータス入力欄
+ */
+export const AdjustStatusInput = createStatusInput(
+    -30000,
+    30000,
+    value => convertRelativeValueFromStatus(value),
+    value => convertDataValueFromRelativeStatus(parseInt(value)).toString()
+);
 
 /**
  * URL を入力するテキストボックスです。
