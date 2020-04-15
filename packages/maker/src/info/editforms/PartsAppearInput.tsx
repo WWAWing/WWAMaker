@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { PartsType, PartsAttributeItems } from "../../classes/WWAData";
-import { Accordion, Form, Icon, Button } from "semantic-ui-react";
+import { Accordion, Form, Icon, Dropdown } from "semantic-ui-react";
 import WWAConsts from "../../classes/WWAConsts";
 import { RelativeValue, convertRelativeValueFromCoord } from "../../common/convertRelativeValue";
 import { CoordInput } from "./EditFormUtils";
@@ -16,6 +16,19 @@ import getPartsCountPerIncreaseUnit from "../../common/getPartsCountPerIncreaseU
 type AppearPartsItem = { number: number, chipX: RelativeValue, chipY: RelativeValue, type: PartsType };
 
 type InputChangeFunctionWithIndex = (value: string, index: number) => void;
+
+/**
+ * パーツ種類のドロップダウンで使用するオプション値です。
+ */
+const PartsTypeOptions = [
+    {
+        text: "物体",
+        value: PartsType.OBJECT.toString()
+    }, {
+        text: "背景",
+        value: PartsType.MAP.toString()
+    }
+];
 
 type StateProps = {
     objPartsMax?: number,
@@ -70,24 +83,24 @@ const PartsApperarInputComponent: React.FunctionComponent<{
                                     type="number"
                                     min={0}
                                     max={partsIDMax}
+                                    action={(
+                                        <Dropdown
+                                            button
+                                            basic
+                                            options={PartsTypeOptions}
+                                            value={item.type.toString()}
+                                            onChange={(event, data) => {
+                                                props.onChange(data.value as string, indexBase + WWAConsts.REL_ATR_APPERANCE_TYPE);
+                                            }}
+                                        />
+                                    )}
+                                    actionPosition="left"
                                     value={item.number}
                                     onChange={(event, data) => {
                                         // FIXME: 空欄にすると Received NaN for the `value` attribute. If this is expected, cast the value to a string. が発生する
                                         props.onChange(data.value as string, indexBase + WWAConsts.REL_ATR_APPERANCE_ID)
                                     }}
                                 />
-                                <Button.Group widths={3}>
-                                    <Button
-                                        active={item.type === PartsType.OBJECT}
-                                        onClick={() => props.onChange(PartsType.OBJECT.toString(), indexBase + WWAConsts.REL_ATR_APPERANCE_TYPE)}
-                                        content="物体"
-                                    />
-                                    <Button
-                                        active={item.type === PartsType.MAP}
-                                        onClick={() => props.onChange(PartsType.MAP.toString(), indexBase + WWAConsts.REL_ATR_APPERANCE_TYPE)}
-                                        content="背景"
-                                    />
-                                </Button.Group>
                             </Form.Group>
                             <Form.Group>
                                 <CoordInput
