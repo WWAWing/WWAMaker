@@ -1,5 +1,6 @@
 import { WWAData } from "@wwawing/common-interface";
 import { WWAConsts } from "../utils/wwa_data";
+import getMapWidth from "./getMapWidth";
 
 /**
  * WWAData から不要な文字列を取り除きます。
@@ -23,6 +24,12 @@ export default function clean(wwaData: WWAData): WWAData {
     newWWAData.message = (() => {
         return usedMessageIndex.map((messageIndex) => wwaData.message[messageIndex]);
     })();
+
+    /**
+     * 3. マップの幅を最適化します。
+     */
+    const newMapWidth = getMapWidth(wwaData.map, wwaData.mapObject);
+    newWWAData.mapWidth = newMapWidth;
 
     return newWWAData;
 }

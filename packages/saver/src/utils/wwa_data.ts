@@ -5,9 +5,12 @@ export class WWAConsts {
     static MAP_ATR_MAX: number = 60;
     static OBJ_ATR_MAX: number = 60;
     static ATR_STRING: number = 5;
+    static MAP_SIZE_DEFAULT: number = 101;
+    static MAP_SIZE_INCREASE_UNIT: number = 100;
     static MAP_SIZE_MAX: number = 1001;
 
     // ここからは作成ツールから引っ張った定数一覧です。
+    static DATA_CHECK: number = 0;
     static DATA_VERSION: number = 2;
     static DATA_STATUS_ENERGY: number = 10;
     static DATA_STATUS_STRENGTH: number = 12;
@@ -22,4 +25,8 @@ export class WWAConsts {
     static DATA_OVER_X: number = 42;
     static DATA_OVER_Y: number = 44;
     static DATA_MAP_SIZE: number = 46;
+    static DATA_MES_NUMBER: number = 48;
+
+    // 作成ツールのソースコードには無い、データ場所の定数一覧です。
+    static DATA_MAP: number = 90;
 }
