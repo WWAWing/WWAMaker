@@ -7,9 +7,13 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "@wwawing/common-interface": "^3.3.0",
     "typescript": "^3.4.5"
   },
   "scripts": {
     "build": "tsc -p ."
+  },
+  "devDependencies": {
+    "jest": "^25.3.0"
   }
 }
