@@ -2,7 +2,14 @@ import { WWAData } from "@wwawing/common-interface";
 import clean from "./cleaner";
 import press from "./presser";
 import compress from "./compressor";
+import append from "./appender";
+import { WWAConsts } from "./utils/wwa_data";
 
+/**
+ * WWA Saver のメインメソッドです。
+ * @param wwaData 
+ * @todo WWADataArray を press から append までをすべて扱う形に変更したい
+ */
 async function Saver(wwaData: WWAData): Promise<Uint8ClampedArray> {
     return new Promise((resolve, reject) => {
 
@@ -15,7 +22,14 @@ async function Saver(wwaData: WWAData): Promise<Uint8ClampedArray> {
         // 3. 8ビット空間配列を圧縮
         const compressedWWADataArray = compress(pressedWWADataArray);
 
-        resolve(compressedWWADataArray);
+        // 4. テキストデータを付与
+        const wwaDataArray = append(compressedWWADataArray, wwaData);
+
+        if (wwaDataArray.length > WWAConsts.FILE_DATA_MAX) {
+            reject("マップデータの総容量が許容値を超えています。");
+        }
+
+        resolve(wwaDataArray);
     });
 }
 
