@@ -1,6 +1,7 @@
 import { WWAData } from "@wwawing/common-interface";
 import clean from "./cleaner";
 import press from "./presser";
+import compress from "./compressor";
 
 async function Saver(wwaData: WWAData): Promise<Uint8ClampedArray> {
     return new Promise((resolve, reject) => {
@@ -11,7 +12,10 @@ async function Saver(wwaData: WWAData): Promise<Uint8ClampedArray> {
         // 2. データから8ビット空間配列を作成
         const pressedWWADataArray = press(cleanedWWAData);
 
-        resolve(pressedWWADataArray);
+        // 3. 8ビット空間配列を圧縮
+        const compressedWWADataArray = compress(pressedWWADataArray);
+
+        resolve(compressedWWADataArray);
     });
 }
 

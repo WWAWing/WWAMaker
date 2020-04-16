@@ -7,7 +7,6 @@ export class WWAConsts {
     static ATR_STRING: number = 5;
     static MAP_SIZE_DEFAULT: number = 101;
     static MAP_SIZE_INCREASE_UNIT: number = 100;
-    static MAP_SIZE_MAX: number = 1001;
 
     // ここからは作成ツールから引っ張った定数一覧です。
     static DATA_CHECK: number = 0;
@@ -26,6 +25,11 @@ export class WWAConsts {
     static DATA_OVER_Y: number = 44;
     static DATA_MAP_SIZE: number = 46;
     static DATA_MES_NUMBER: number = 48;
+
+    static MAP_SIZE_MAX: number = 1001;
+    static PARTS_NUMBER_MAX: number = 4000;
+    // マップ＋パーツ＋メッセージ領域
+    static FILE_DATA_MAX: number = (4000 + 1000 + 1000) * 1024;
 
     // 作成ツールのソースコードには無い、データ場所の定数一覧です。
     static DATA_MAP: number = 90;
