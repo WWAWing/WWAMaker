@@ -4,6 +4,7 @@
 export class WWAConsts {
     static MAP_ATR_MAX: number = 60;
     static OBJ_ATR_MAX: number = 60;
+    static ATR_0: number = 0;
     static ATR_STRING: number = 5;
     static MAP_SIZE_DEFAULT: number = 101;
     static MAP_SIZE_INCREASE_UNIT: number = 100;

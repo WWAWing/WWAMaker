@@ -6,13 +6,14 @@ export default function saveMapdata() {
     if (state.wwaData === null) {
         return;
     }
-    
+
     console.log(state.wwaData);
     saver(state.wwaData).then(data => {
-        console.log("データ完成！");
-        
         const blob = new Blob([data], { type: "application/octet-stream" });
         const url = window.URL.createObjectURL(blob);
-        console.log(url);
+
+        const aElement = document.createElement("a");
+        aElement.href = url;
+        aElement.click();
     });
 }

@@ -10,17 +10,22 @@ import WWADataArray from "../utils/WWADataArray";
 export default function press(wwaData: WWAData): WWADataArray {
     let array = new WWADataArray(WWAConsts.DATA_MAP);
 
-    array.set2ByteNumber(wwaData.version, WWAConsts.DATA_VERSION);
+    array.set1ByteNumber(wwaData.version, WWAConsts.DATA_VERSION);
     array.set2ByteNumber(wwaData.statusEnergyMax, WWAConsts.DATA_STATUS_ENERGYMAX);
     array.set2ByteNumber(wwaData.statusEnergy, WWAConsts.DATA_STATUS_ENERGY);
     array.set2ByteNumber(wwaData.statusStrength, WWAConsts.DATA_STATUS_STRENGTH);
     array.set2ByteNumber(wwaData.statusDefence, WWAConsts.DATA_STATUS_DEFENCE);
     array.set2ByteNumber(wwaData.statusGold, WWAConsts.DATA_STATUS_GOLD);
+
     array.set2ByteNumber(wwaData.playerX, WWAConsts.DATA_CHARA_X);
     array.set2ByteNumber(wwaData.playerY, WWAConsts.DATA_CHARA_Y);
     array.set2ByteNumber(wwaData.gameoverX, WWAConsts.DATA_OVER_X);
     array.set2ByteNumber(wwaData.gameoverY, WWAConsts.DATA_OVER_Y);
-    // WWAマップ作成ツールのソースコードでは、所持アイテムの情報を含ませていましたが、 3.x では未使用のため、ここでは使用しません。
+
+    wwaData.itemBox.forEach((itemNo, index) => {
+        array.set1ByteNumber(itemNo, WWAConsts.DATA_ITEM + index);
+    });
+
     // WWAマップ作成ツールのソースコードでは、マップサイズの圧縮処理を含ませていましたが、ここでは cleaner 内で処理を済ませています。
     array.set2ByteNumber(wwaData.mapWidth, WWAConsts.DATA_MAP_SIZE);
 
@@ -40,7 +45,10 @@ export default function press(wwaData: WWAData): WWADataArray {
             array.set2ByteNumber(attributeValue);
         });
     }
+    // マップと同様、パーツ数の計算処理は cleaner 内で処理を済ませています。
+    array.set2ByteNumber(wwaData.mapPartsMax, WWAConsts.DATA_MAP_COUNT);
     wwaData.mapAttribute.forEach(setPartsAttributes);
+    array.set2ByteNumber(wwaData.objPartsMax, WWAConsts.DATA_OBJECT_COUNT);
     wwaData.objectAttribute.forEach(setPartsAttributes);
 
     array.set2ByteNumber(wwaData.messageNum, WWAConsts.DATA_MES_NUMBER);

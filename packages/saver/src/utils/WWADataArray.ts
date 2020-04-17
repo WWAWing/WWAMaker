@@ -11,7 +11,7 @@ export default class WWADataArray {
     private currentIndex: number;
 
     constructor(length: number) {
-        this.array = new Uint8Array(length).fill(0, 0, length);
+        this.array = new Uint8Array(length);
         this.currentIndex = 0;
     }
 
@@ -73,7 +73,7 @@ export default class WWADataArray {
             return previousValue + (currentValue * (shiftedIndex % 8 + 1));
         }, 0);
 
-        return checkData;
+        return checkData % 0x10000;
     }
 
     /**
@@ -86,6 +86,11 @@ export default class WWADataArray {
 
         let j = 0;
         for (let i = 0, counter = 0; i < this.array.length; ++i){
+            /**
+             * 数字値の圧縮は、同じ値が連続で続いた場合に、「値」「値」「回数」の配列に書き換える方法で実現している。
+             *     ループの中で値が連続していると判断されると、 counter の値の計算を始める。
+             *     途中で違う値が検出されたり、16回分続いたりした場合は counter の計算を終わらせ、圧縮した値を書き足す。
+             */
             if (this.array[i] == this.array[i + 1]){
                 ++counter;
                 if ( (counter == 0xff) || (i + 2 > this.array.length) ){
