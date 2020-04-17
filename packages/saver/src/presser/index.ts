@@ -1,13 +1,13 @@
 import { WWAData } from "@wwawing/common-interface";
 import { WWAConsts } from "../utils/wwa_data";
-import WWADataArray from "./WWADataArray";
+import WWADataArray from "../utils/WWADataArray";
 
 /**
  * WWAData から 8ビット配列 に変換します。
  *     Q: なんで press と言うの？
  *     A: WWAマップ作成ツールのソースコードでは、8ビット配列の変数名が PressData だったので
  */
-export default function press(wwaData: WWAData): Uint8ClampedArray {
+export default function press(wwaData: WWAData): WWADataArray {
     let array = new WWADataArray(WWAConsts.DATA_MAP);
 
     array.set2ByteNumber(wwaData.version, WWAConsts.DATA_VERSION);
@@ -46,5 +46,5 @@ export default function press(wwaData: WWAData): Uint8ClampedArray {
     array.set2ByteNumber(wwaData.messageNum, WWAConsts.DATA_MES_NUMBER);
     array.set2ByteNumber(array.getCheckData(WWAConsts.DATA_VERSION), WWAConsts.DATA_CHECK);
 
-    return array.getArray();
+    return array;
 }

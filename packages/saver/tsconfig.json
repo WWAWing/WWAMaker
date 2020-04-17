@@ -5,7 +5,8 @@
     "outDir": "./lib",
     "lib": [
       "esnext"
-    ]
+    ],
+    "declaration": true
   },
   "include": [
     "src/**/*.ts"

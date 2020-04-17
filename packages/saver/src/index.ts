@@ -1,7 +1,6 @@
 import { WWAData } from "@wwawing/common-interface";
 import clean from "./cleaner";
 import press from "./presser";
-import compress from "./compressor";
 import append from "./appender";
 import { WWAConsts } from "./utils/wwa_data";
 
@@ -17,19 +16,20 @@ async function Saver(wwaData: WWAData): Promise<Uint8ClampedArray> {
         const cleanedWWAData = clean(wwaData);
 
         // 2. データから8ビット空間配列を作成
-        const pressedWWADataArray = press(cleanedWWAData);
+        const wwaDataArray = press(cleanedWWAData);
 
         // 3. 8ビット空間配列を圧縮
-        const compressedWWADataArray = compress(pressedWWADataArray);
+        const lastIndex = wwaDataArray.compress();
+        wwaDataArray.setCurrentIndex(lastIndex);
 
         // 4. テキストデータを付与
-        const wwaDataArray = append(compressedWWADataArray, wwaData);
+        append(wwaDataArray, wwaData);
 
-        if (wwaDataArray.length > WWAConsts.FILE_DATA_MAX) {
+        if (wwaDataArray.getLength() > WWAConsts.FILE_DATA_MAX) {
             reject("マップデータの総容量が許容値を超えています。");
         }
 
-        resolve(wwaDataArray);
+        resolve(wwaDataArray.getArray());
     });
 }
 

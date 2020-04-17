@@ -16,7 +16,7 @@ export default function getMapWidth(map: WWAData["map"], mapObject: WWAData["map
      *     その確認のところで端に着いた場合はパーツが配置されていないと判断し、1マス左上に point を進みます。
      *     途中で見つかった場合はその時点の point を出力します。
      */
-    for (let point = maxWidth; point >= 0; point--) {
+    for (let point = maxWidth - 1; point >= 0; point--) {
         if (map[point][point] !== 0 || mapObject[point][point] !== 0) {
             return getMapWidthPerIncreaseUnit(point);
         }
