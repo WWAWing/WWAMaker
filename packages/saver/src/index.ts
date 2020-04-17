@@ -9,7 +9,7 @@ import { WWAConsts } from "./utils/wwa_data";
  * @param wwaData 
  * @todo WWADataArray を press から append までをすべて扱う形に変更したい
  */
-async function Saver(wwaData: WWAData): Promise<Uint8ClampedArray> {
+async function Saver(wwaData: WWAData): Promise<Uint8Array> {
     return new Promise((resolve, reject) => {
 
         // 1. 不要なメッセージや属性値を削除

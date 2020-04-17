@@ -4,14 +4,14 @@ import { WWAConsts } from "./wwa_data";
  * 8ビット配列空間を持つクラスです。
  */
 export default class WWADataArray {
-    private array: Uint8ClampedArray;
+    private array: Uint8Array;
     /**
      * set*ByteNumber で index を指定しなかった場合に使用するインデックスの値
      */
     private currentIndex: number;
 
     constructor(length: number) {
-        this.array = new Uint8ClampedArray(length).fill(0, 0, length);
+        this.array = new Uint8Array(length).fill(0, 0, length);
         this.currentIndex = 0;
     }
 
@@ -41,7 +41,6 @@ export default class WWADataArray {
      * @param index セットしたいインデックスの1ビット目の値
      */
     public set2ByteNumber(value: number, index: number = this.currentIndex) {
-        // FIXME: 256 以上の値になると下位8ビットが必ず 256 になってしまう
         this.array[index] = value;
         this.array[index + 1] = value >> 8;
         if (index === this.currentIndex) {
@@ -83,7 +82,7 @@ export default class WWADataArray {
      * @todo 近いうちにリファクタリングする
      */
     public compress(): number {
-        let compressedData = new Uint8ClampedArray(WWAConsts.FILE_DATA_MAX);
+        let compressedData = new Uint8Array(WWAConsts.FILE_DATA_MAX);
 
         let j = 0;
         for (let i = 0, counter = 0; i < this.array.length; ++i){
@@ -91,8 +90,8 @@ export default class WWADataArray {
                 ++counter;
                 if ( (counter == 0xff) || (i + 2 > this.array.length) ){
                     compressedData[j] = this.array[i];
-                    compressedData[j+1] = this.array[i];
-                    compressedData[j+2] = counter;
+                    compressedData[j + 1] = this.array[i];
+                    compressedData[j + 2] = counter;
                     j += 3;
                     ++i;
                     counter = 0;
@@ -103,8 +102,8 @@ export default class WWADataArray {
                     ++j;
                 } else {
                     compressedData[j] = this.array[i];
-                    compressedData[j+1] = this.array[i];
-                    compressedData[j+2] = counter;
+                    compressedData[j + 1] = this.array[i];
+                    compressedData[j + 2] = counter;
                     j += 3;
                 }
                 counter = 0;
