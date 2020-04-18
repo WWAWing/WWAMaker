@@ -82,7 +82,7 @@ export default class WWADataArray {
      * @param start 
      */
     public getCheckData(start: number): number {
-        const targetData = this.array.slice(start);
+        const targetData = this.array.slice(start, this.lastIndex);
         const checkData = targetData.reduce((previousValue, currentValue, currentIndex) => {
             const shiftedIndex = start + currentIndex;
             // TODO: 8 と 1 の意味を調べる

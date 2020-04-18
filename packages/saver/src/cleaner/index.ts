@@ -52,6 +52,11 @@ export default function clean(wwaData: WWAData): WWAData {
     newWWAData.mapPartsMax = newMapCount;
     const newObjectCount = getPartsCount(wwaData.objectAttribute);
     newWWAData.objPartsMax = newObjectCount;
+    function removePartsAttributeOutside(partsAttribute: number[][], partsCount: number) {
+        partsAttribute.splice(partsCount + 1);
+    }
+    removePartsAttributeOutside(newWWAData.mapAttribute, newMapCount);
+    removePartsAttributeOutside(newWWAData.objectAttribute, newObjectCount);
 
 
     return newWWAData;
