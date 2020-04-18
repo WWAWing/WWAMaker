@@ -4,6 +4,11 @@ import { WWAConsts } from "./wwa_data";
  * 8ビット配列空間を持つクラスです。
  */
 export default class WWADataArray {
+    /**
+     * 8ビット配列本体
+     *     通常は FILE_DATA_MAX の長さを持つため、そのまま出力すると非常に長いデータを持ちます。
+     *     そのため、どこまで使われているかを後述の lastIndex で管理しています。
+     */
     private array: Uint8Array;
 
     /**
@@ -32,6 +37,10 @@ export default class WWADataArray {
         this.currentIndex = index;
     }
 
+    /**
+     * lastIndex を設定します。ただし、 lastIndex の値が既に大きい場合は何も変化しません。
+     * @param index 
+     */
     private setLastIndex(index: number) {
         this.lastIndex = Math.max(index, this.lastIndex);
     }
@@ -64,9 +73,8 @@ export default class WWADataArray {
     }
 
     /**
-     * 文字列の値を設定します。
+     * 文字列の値を設定します。配置される位置は currentIndex の値の従います。
      * @param value 
-     * @todo 日本語といったマルチバイト文字については予期しない処理を起こすかもしれないので気を付ける
      */
     public setString(value: string) {
         const valueCodes = value.split("").reduce((previousCodes: number[], currentChar) => {
@@ -83,6 +91,12 @@ export default class WWADataArray {
      */
     public getCheckData(start: number): number {
 
+        /**
+         * 8ビット値の値に対して符号を与えます。
+         *     WWA Loader の utils からそのまま持ってきています。
+         * @param b 
+         * @see https://github.com/WWAWing/WWAWing/blob/develop/packages/loader/src/infra/util.ts
+         */
         const signedByte = (b: number): number => {
             b = b % 0x100;
             return b >= 0x80 ? b - 0x100 : b;
@@ -91,7 +105,6 @@ export default class WWADataArray {
         const targetData = this.array.slice(start, this.lastIndex);
         const checkData = targetData.reduce((previousValue, currentValue, currentIndex) => {
             const shiftedIndex = start + currentIndex;
-            // TODO: 8 と 1 の意味を調べる
             return previousValue + (signedByte(currentValue) * (shiftedIndex % 8 + 1));
         }, 0);
 
@@ -100,6 +113,7 @@ export default class WWADataArray {
 
     /**
      * 数字値を圧縮します。
+     *     WWAマップ作成ツールの圧縮処理をそのまま引っ張っています。
      * @returns 圧縮後の末尾の位置
      * @todo 近いうちにリファクタリングする
      */
@@ -109,9 +123,9 @@ export default class WWADataArray {
         let j = 0;
         for (let i = 0, counter = 0; i < this.lastIndex; ++i){
             /**
-             * 数字値の圧縮は、同じ値が連続で続いた場合に、「値」「値」「回数」の配列に書き換える方法で実現している。
-             *     ループの中で値が連続していると判断されると、 counter の値の計算を始める。
-             *     途中で違う値が検出されたり、16回分続いたりした場合は counter の計算を終わらせ、圧縮した値を書き足す。
+             * 数字値の圧縮は、同じ値が連続で続いた場合に、「値」「値」「回数」の配列に書き換える方法で実現しています。
+             *     ループの中で値が連続していると判断されると、 counter の値の計算を始めます。
+             *     途中で違う値が検出されたり、16回分続いたりした場合は counter の計算を終わらせ、圧縮した値を書き出すことで圧縮が終わります。
              */
             if (this.array[i] == this.array[i + 1]){
                 ++counter;
@@ -147,7 +161,6 @@ export default class WWADataArray {
 
     /**
      * 配列空間を出力します。
-     * @todo 圧縮処理も含めたい
      */
     public getArray() {
         return this.array.slice(0, this.lastIndex);

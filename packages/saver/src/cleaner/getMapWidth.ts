@@ -3,9 +3,9 @@ import { WWAConsts } from "../utils/wwa_data";
 
 /**
  * マップを正方形の範囲に収めて、その1辺の長さをマス単位で取得します。
- * @param map 
- * @param mapObject 
- * @todo 実装する
+ * @param map 対象の背景パーツのマップ
+ * @param mapObject 対象の物体パーツのマップ
+ * @returns 正方形で収められる最小の1辺の長さ
  */
 export default function getMapWidth(map: WWAData["map"], mapObject: WWAData["mapObject"]): number {
     const maxWidth = Math.min(map.length, mapObject.length, WWAConsts.MAP_SIZE_MAX);
@@ -37,6 +37,7 @@ export default function getMapWidth(map: WWAData["map"], mapObject: WWAData["map
  * 指定したマップ幅をマップ増減幅の単位で収まる値に計算します。
  *     例えばマップ幅 390 でマップ増減幅の単位が 100 とした場合は、 401 が出力されます。
  * @param mapWidth
+ * @todo common-interface とかで共通化したい
  */
 function getMapWidthPerIncreaseUnit(mapWidth: number): number {
     if (mapWidth < WWAConsts.MAP_SIZE_DEFAULT) {

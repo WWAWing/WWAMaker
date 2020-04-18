@@ -6,8 +6,7 @@ import { WWAConsts } from "./utils/wwa_data";
 
 /**
  * WWA Saver のメインメソッドです。
- * @param wwaData 
- * @todo WWADataArray を press から append までをすべて扱う形に変更したい
+ * @param wwaData セーブしたい編集用のWWAデータ
  */
 async function Saver(wwaData: WWAData): Promise<Uint8Array> {
     return new Promise((resolve, reject) => {

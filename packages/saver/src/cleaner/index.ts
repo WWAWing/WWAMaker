@@ -38,6 +38,7 @@ export default function clean(wwaData: WWAData): WWAData {
      */
     const newMapWidth = getMapWidth(wwaData.map, wwaData.mapObject);
     newWWAData.mapWidth = newMapWidth;
+
     function removeMapPartsOutside(map: number[][], mapWidth: number) {
         map.splice(mapWidth + 1);
         map.forEach(line => line.splice(mapWidth + 1));
@@ -53,6 +54,7 @@ export default function clean(wwaData: WWAData): WWAData {
     newWWAData.mapPartsMax = newMapCount;
     const newObjectCount = getPartsCount(wwaData.objectAttribute);
     newWWAData.objPartsMax = newObjectCount;
+
     function removePartsAttributeOutside(partsAttribute: number[][], partsCount: number) {
         partsAttribute.splice(partsCount);
     }
