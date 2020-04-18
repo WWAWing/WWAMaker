@@ -5,14 +5,23 @@ import { WWAConsts } from "./wwa_data";
  */
 export default class WWADataArray {
     private array: Uint8Array;
+
     /**
      * set*ByteNumber で index を指定しなかった場合に使用するインデックスの値
      */
     private currentIndex: number;
 
-    constructor(length: number) {
-        this.array = new Uint8Array(length);
+    /**
+     * 最後の項目の末尾の index
+     *     getArray 実行時に lastIndex までの項目を取り出して出力します。
+     *     **最後の項目** の index ではありません
+     */
+    private lastIndex: number;
+
+    constructor() {
+        this.array = new Uint8Array(WWAConsts.FILE_DATA_MAX);
         this.currentIndex = 0;
+        this.lastIndex = 0;
     }
 
     /**
@@ -23,6 +32,10 @@ export default class WWADataArray {
         this.currentIndex = index;
     }
 
+    private setLastIndex(index: number) {
+        this.lastIndex = Math.max(index, this.lastIndex);
+    }
+
     /**
      * 1ビット値の値を設定します。
      * @param value 値
@@ -30,6 +43,7 @@ export default class WWADataArray {
      */
     public set1ByteNumber(value: number, index: number = this.currentIndex) {
         this.array[index] = value;
+        this.setLastIndex(index + 1);
         if (index === this.currentIndex) {
             this.currentIndex++;
         }
@@ -43,6 +57,7 @@ export default class WWADataArray {
     public set2ByteNumber(value: number, index: number = this.currentIndex) {
         this.array[index] = value;
         this.array[index + 1] = value >> 8;
+        this.setLastIndex(index + 2);
         if (index === this.currentIndex) {
             this.currentIndex += 2;
         }
@@ -59,6 +74,7 @@ export default class WWADataArray {
         }, []).concat(0, 0);
         this.array.set(valueCodes, this.currentIndex);
         this.currentIndex += valueCodes.length;
+        this.setLastIndex(this.currentIndex);
     }
 
     /**
@@ -85,7 +101,7 @@ export default class WWADataArray {
         let compressedData = new Uint8Array(WWAConsts.FILE_DATA_MAX);
 
         let j = 0;
-        for (let i = 0, counter = 0; i < this.array.length; ++i){
+        for (let i = 0, counter = 0; i < this.lastIndex; ++i){
             /**
              * 数字値の圧縮は、同じ値が連続で続いた場合に、「値」「値」「回数」の配列に書き換える方法で実現している。
              *     ループの中で値が連続していると判断されると、 counter の値の計算を始める。
@@ -119,6 +135,7 @@ export default class WWADataArray {
         compressedData[j + 2] = 0;
 
         this.array = compressedData;
+        this.setLastIndex(j + 3);
         return j + 3;
     }
 
@@ -127,13 +144,13 @@ export default class WWADataArray {
      * @todo 圧縮処理も含めたい
      */
     public getArray() {
-        return this.array;
+        return this.array.slice(0, this.lastIndex);
     }
 
     /**
      * 配列空間の長さを出力します。
      */
     public getLength() {
-        return this.array.length;
+        return this.lastIndex;
     }
 }

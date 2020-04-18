@@ -8,7 +8,7 @@ import WWADataArray from "../utils/WWADataArray";
  *     A: WWAマップ作成ツールのソースコードでは、8ビット配列の変数名が PressData だったので
  */
 export default function press(wwaData: WWAData): WWADataArray {
-    let array = new WWADataArray(WWAConsts.DATA_MAP);
+    let array = new WWADataArray();
 
     array.set1ByteNumber(wwaData.version, WWAConsts.DATA_VERSION);
     array.set2ByteNumber(wwaData.statusEnergyMax, WWAConsts.DATA_STATUS_ENERGYMAX);
