@@ -28,9 +28,9 @@ export default function clean(wwaData: WWAData): WWAData {
         return "";
     });
 
-    newWWAData.message.splice(lastItemIndex + 1);
     // message は message[0] が空文字列のため、1つ分余裕を持たせる
-    newWWAData.messageNum = newWWAData.message.length + 1;
+    newWWAData.messageNum = lastItemIndex + 1;
+    newWWAData.message.splice(newWWAData.messageNum);
 
 
     /**

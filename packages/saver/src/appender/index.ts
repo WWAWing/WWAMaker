@@ -13,7 +13,7 @@ export default function append(array: WWADataArray, wwaData: WWAData) {
         array.setString(passwordNumber.toString());
     } else {
         // TODO: \0 を JavaScript ではどう表現するのか確かめる
-        array.setString("\0");
+        array.setString("");
     }
 
     wwaData.message.forEach(message => {
