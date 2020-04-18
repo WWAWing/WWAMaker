@@ -7,7 +7,6 @@ export default function saveMapdata() {
         return;
     }
 
-    console.log(state.wwaData);
     saver(state.wwaData).then(data => {
         const blob = new Blob([data], { type: "application/octet-stream" });
         const url = window.URL.createObjectURL(blob);
