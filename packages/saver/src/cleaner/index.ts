@@ -29,7 +29,8 @@ export default function clean(wwaData: WWAData): WWAData {
     });
 
     newWWAData.message.splice(lastItemIndex + 1);
-    newWWAData.messageNum = newWWAData.message.length;
+    // message は message[0] が空文字列のため、1つ分余裕を持たせる
+    newWWAData.messageNum = newWWAData.message.length + 1;
 
 
     /**
@@ -53,7 +54,7 @@ export default function clean(wwaData: WWAData): WWAData {
     const newObjectCount = getPartsCount(wwaData.objectAttribute);
     newWWAData.objPartsMax = newObjectCount;
     function removePartsAttributeOutside(partsAttribute: number[][], partsCount: number) {
-        partsAttribute.splice(partsCount + 1);
+        partsAttribute.splice(partsCount);
     }
     removePartsAttributeOutside(newWWAData.mapAttribute, newMapCount);
     removePartsAttributeOutside(newWWAData.objectAttribute, newObjectCount);

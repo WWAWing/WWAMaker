@@ -6,9 +6,10 @@ export default function getPartsCount(partsAttribute: WWAData["objectAttribute"]
 
     for (let index = maxCount - 1; index > 0; index--) {
         if (partsAttribute[index][WWAConsts.ATR_0] !== 0) {
-            return index;
+            // パーツ数は 0番 も含めた値になるのでその分含めて 1 を足す
+            return index + 1;
         }
     }
 
-    return 0;
+    return 1;
 }
