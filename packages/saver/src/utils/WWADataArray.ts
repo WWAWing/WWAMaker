@@ -82,11 +82,17 @@ export default class WWADataArray {
      * @param start 
      */
     public getCheckData(start: number): number {
+
+        const signedByte = (b: number): number => {
+            b = b % 0x100;
+            return b >= 0x80 ? b - 0x100 : b;
+        };
+  
         const targetData = this.array.slice(start, this.lastIndex);
         const checkData = targetData.reduce((previousValue, currentValue, currentIndex) => {
             const shiftedIndex = start + currentIndex;
             // TODO: 8 と 1 の意味を調べる
-            return previousValue + (currentValue * (shiftedIndex % 8 + 1));
+            return previousValue + (signedByte(currentValue) * (shiftedIndex % 8 + 1));
         }, 0);
 
         return checkData % 0x10000;
