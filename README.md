@@ -21,10 +21,10 @@ yarn start
 
 ## 構造について
 このリポジトリでは、 monorepo による複数パッケージの構成を取っています。
-現時点では **maker** パッケージしか機能していませんが、後にパッケージを追加したり、他のパッケージも機能するように調整したりする予定です。
 
 - **assets** ... アセットファイル (現在未使用)
 - **maker** ... WWA Maker 本体
+- **saver** ... WWA Saver (編集しているマップデータからファイルに出力する機能)
 
 ### より詳しい情報は
 [GitHub のWiki](https://github.com/WWAWing/WWAMaker/wiki/) をご参照ください。
