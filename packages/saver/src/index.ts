@@ -23,7 +23,7 @@ async function Saver(wwaData: WWAData): Promise<Uint8Array> {
         wwaDataArray.setCurrentIndex(lastIndex);
 
         // 4. テキストデータを付与
-        append(wwaDataArray, wwaData);
+        append(wwaDataArray, cleanedWWAData);
 
         if (wwaDataArray.getLength() > WWAConsts.FILE_DATA_MAX) {
             reject("マップデータの総容量が許容値を超えています。");
