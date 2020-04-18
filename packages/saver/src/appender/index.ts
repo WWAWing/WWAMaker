@@ -12,7 +12,6 @@ export default function append(array: WWADataArray, wwaData: WWAData) {
         const passwordNumber = ((wwaData.worldPassNumber + 2357) * 17 + 1197) * 10 + (wwaData.worldPassNumber % 9);
         array.setString(passwordNumber.toString());
     } else {
-        // TODO: \0 を JavaScript ではどう表現するのか確かめる
         array.setString("");
     }
 
