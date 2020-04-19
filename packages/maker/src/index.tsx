@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { Store } from './State';
 
+import "semantic-ui-css/semantic.min.css";
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';

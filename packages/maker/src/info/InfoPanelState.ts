@@ -6,11 +6,11 @@ import { PartsType } from "../classes/WWAData";
  * InfoPanel のモードです。
  */
 export type InfoPanelMode =
-    'MAP_FOUNDATION' | // 基本設定の編集
-    'SYSTEM_MESSAGE' | // システムメッセージの編集
+    'GENERAL' | // 基本設定の編集 と システムメッセージの編集
     'PARTS_EDIT'; // パーツ編集
 
 export interface InfoPanelState {
+    isOpened: boolean,
     viewMode: InfoPanelMode,
     partsEdit?: InfoPanelPartsEditState
 }
@@ -21,10 +21,15 @@ export interface InfoPanelPartsEditState {
 }
 
 export const INITIAL_STATE: InfoPanelState = {
-    viewMode: 'MAP_FOUNDATION'
+    isOpened: true, // 始めて利用した際 InfoPanel が現れてびっくりしないために、最初から表示するようにしています。
+    viewMode: 'GENERAL'
 }
 
 const actionCreator = actionCreatorFactory();
+/**
+ * InfoPanel の表示を切り替えます。
+ */
+export const toggleInfoPanel = actionCreator<{ isOpened?: boolean }>("TOGGLE_INFOPANEL");
 /**
  * InfoPanel で表示する内容を変更します。
  */
@@ -35,12 +40,17 @@ export const switchInfoPanel = actionCreator<{ mode: InfoPanelMode }>("SWITCH_IN
 export const showPartsEdit = actionCreator<InfoPanelPartsEditState>("SHOW_PARTS_EDIT");
 
 export const InfoPanelReducer = reducerWithInitialState(INITIAL_STATE)
+    .case(toggleInfoPanel, (state, payload) => ({
+        ...state,
+        isOpened: payload?.isOpened !== undefined ? payload.isOpened : !state.isOpened
+    }))
     .case(switchInfoPanel, (state, payload) => ({
         ...state,
         viewMode: payload.mode
     }))
     .case(showPartsEdit, (state, payload) => ({
         ...state,
+        isOpened: true,
         viewMode: "PARTS_EDIT",
         partsEdit: payload
     }))

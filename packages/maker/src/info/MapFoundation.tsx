@@ -2,9 +2,11 @@ import React from "react";
 import { MapStateToProps, connect } from "react-redux";
 import { StoreType } from "../State";
 import { WWAData } from "@wwawing/common-interface";
-import { getPartsCountPerIncreaseUnit } from "../common/PartsList";
+import getPartsCountPerIncreaseUnit from "../common/getPartsCountPerIncreaseUnit";
 import { bindActionCreators, Dispatch } from "redux";
 import { setMapFoundation } from "../wwadata/WWADataState";
+import { Form, Button, Input, Icon } from "semantic-ui-react";
+import WWAConsts from "../classes/WWAConsts";
 
 interface StateProps {
     wwaData: WWAData | null
@@ -120,18 +122,10 @@ class MapFoundation extends React.Component<Props, State> {
         this.receive();
     }
 
-    private handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-        if (this.state.field === undefined) {
-            return;
-        }
-
-        const name = event.target.name as keyof MapFoundationField;
-        if (!(name in this.state.field)) {
-            return;
-        }
-
-        const value = typeof this.state.field[name] === "number" ? parseInt(event.target.value)
-            : event.target.value;
+    /**
+     * this.state.field の内容を変更したい場合に使用するコールバックメソッドです。
+     */
+    private setStateField(name: keyof MapFoundationField, value: string|number) {
         // HACK: オブジェクトで実装すると型が合わないため、メソッド形式で実行している
         this.setState(prevState => {
             if (prevState.field === undefined) {
@@ -146,6 +140,39 @@ class MapFoundation extends React.Component<Props, State> {
         });
     }
 
+    private handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+        if (this.state.field === undefined) {
+            return;
+        }
+
+        const name = event.target.name as keyof MapFoundationField;
+        if (!(name in this.state.field)) {
+            return;
+        }
+
+        this.setStateField(name, event.target.value);
+    }
+
+    /**
+     * フィールドの値を増やします。
+     * @param name 増やしたいフィールドの名前
+     * @param increaseValue 増やす値
+     * @param valueMax 最大値
+     */
+    private expandValue(name: keyof MapFoundationField, increaseValue: number, valueMax: number) {
+        if (this.state.field === undefined) {
+            return;
+        }
+
+        const value = this.state.field[name];
+        if (typeof value !== "number") {
+            throw new Error(`${name} は数字ではありません。`);
+        }
+
+        const newValue = Math.min(value + increaseValue, valueMax);
+        this.setStateField(name, newValue);
+    }
+
     public render() {
         if (this.state.field === undefined) {
             return (
@@ -156,9 +183,10 @@ class MapFoundation extends React.Component<Props, State> {
         }
 
         const handleChange = this.handleChange.bind(this);
+        const expandValue = this.expandValue.bind(this);
 
         return (
-            <div>
+            <Form>
                 <TextInput
                     name="worldName"
                     label="ワールド名"
@@ -228,29 +256,50 @@ class MapFoundation extends React.Component<Props, State> {
                         onChange={handleChange}
                     />
 
-                <TextInput
-                    name="mapWidth"
-                    label="現在のマップサイズ"
-                    value={this.state.field.mapWidth}
-                    onChange={handleChange}
-                />
-                <TextInput
-                    name="objectPartsMax"
-                    label="物体パーツ最大数"
-                    value={this.state.field.objectPartsMax}
-                    onChange={handleChange}
-                />
-                <TextInput
-                    name="mapPartsMax"
-                    label="背景パーツ最大数"
-                    value={this.state.field.mapPartsMax}
-                    onChange={handleChange}
-                />
-                <div>
-                    <button onClick={() => { this.send() }}>決定</button>
-                    <button onClick={() => { this.reset() }}>リセット</button>
-                </div>
-            </div>
+                <Form.Field>
+                    <label>現在のマップサイズ</label>
+                    <Input
+                        action={{
+                            content: "拡張",
+                            onClick: () => expandValue("mapWidth", WWAConsts.MAP_SIZE_INCREASE_UNIT, WWAConsts.MAP_SIZE_MAX)
+                        }}
+                        name="mapWidth"
+                        value={`${this.state.field.mapWidth} × ${this.state.field.mapWidth}`}
+                    />
+                </Form.Field>
+                <Form.Field>
+                    <label>物体パーツ最大数</label>
+                    <Input
+                        action={{
+                            content: "拡張",
+                            onClick: () => expandValue("objectPartsMax", WWAConsts.PARTS_SIZE_INCREASE_UNIT, WWAConsts.PARTS_SIZE_MAX)
+                        }}
+                        name="objectPartsMax"
+                        value={this.state.field.objectPartsMax}
+                    />
+                </Form.Field>
+                <Form.Field>
+                    <label>背景パーツ最大数</label>
+                    <Input
+                        action={{
+                            content: "拡張",
+                            onClick: () => expandValue("mapPartsMax", WWAConsts.PARTS_SIZE_INCREASE_UNIT, WWAConsts.PARTS_SIZE_MAX)
+                        }}
+                        name="mapPartsMax"
+                        value={this.state.field.mapPartsMax}
+                    />
+                </Form.Field>
+                <Form.Field>
+                    <Button primary onClick={() => { this.send() }}>
+                        <Icon name="check" />
+                        決定
+                    </Button>
+                    <Button onClick={() => { this.reset() }}>
+                        <Icon name="cancel" />
+                        リセット
+                    </Button>
+                </Form.Field>
+            </Form>
         );
     }
 }
@@ -262,8 +311,8 @@ const TextInput: React.FunctionComponent<{
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }> = props => {
     return (
-        <div>
-            {props.label}
+        <Form.Field>
+            <label>{props.label}</label>
             <input
                 type="text"
                 name={props.name}
@@ -271,7 +320,7 @@ const TextInput: React.FunctionComponent<{
                 onChange={props.onChange}
             >
             </input>
-        </div>
+        </Form.Field>
     )
 };
 

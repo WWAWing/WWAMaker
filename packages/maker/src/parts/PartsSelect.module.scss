@@ -8,18 +8,14 @@
 .toolPanelItem {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 2em 1fr 2em;
+    grid-template-rows: auto 1fr auto;
     /**
      * .toolPanelItemContent の長いコンテンツで .toolPanelItem がはみ出ないようにするためのプロパティ
      */
-    overflow-y: hidden;
+    overflow: hidden;
 }
 
-.toolPanelItemHeader {
-    background-color: #c0c0c0;
-    font-weight: bold;
-}
-
-.toolPanelItemContent {
-    overflow-y: scroll;
+.toolPanelItemHeader,
+.toolPanelItemFooter {
+    flex: 0 0 auto;
 }

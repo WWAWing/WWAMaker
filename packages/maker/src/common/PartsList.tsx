@@ -1,78 +1,48 @@
-import React from 'react';
-import styles from './PartsList.module.scss';
-import PartsChip from './PartsChip';
-import { createEmptyPartsAttribute } from '../classes/WWAData';
-import WWAConsts from '../classes/WWAConsts';
+import React from "react";
+import PartsChip from "./PartsChip";
+import WWAConsts from "../classes/WWAConsts";
+import { PartsType, createEmptyPartsAttribute, PartsAttributes } from "../classes/WWAData";
+import getPartsCountPerIncreaseUnit from "./getPartsCountPerIncreaseUnit";
+import styles from "./PartsList.module.scss";
 
 interface Props {
-    attribute: number[][];
-    selectParts: number;
+    type: PartsType;
+    attribute: PartsAttributes;
+    selectPartsNumber: number;
     image: CanvasImageSource;
-    onClick: (partsNumber: number) => void;
+    onPartsSelect: (partsNumber: number, partsType: PartsType) => void;
 }
 
 export default class PartsList extends React.Component<Props> {
-    /**
-     * @todo dispatch を defaultProps に含める場合どうするか調べる。
-     */
-    public static defaultProps: Props = {
-        attribute: [],
-        selectParts: 0,
-        image: new Image(),
-        onClick: () => {}
-    }
 
-    private getAttributes(): number[][] {
+    /**
+     * パーツの属性を空部分を補填した形で取得します。
+     */
+    private getAttributes(): PartsAttributes {
         let partsAttribute = this.props.attribute;
         const partsMax = getPartsCountPerIncreaseUnit(this.props.attribute.length);
 
         for (let index = this.props.attribute.length; index < partsMax; index++) {
-            partsAttribute.push(createEmptyPartsAttribute());
+            partsAttribute.push(createEmptyPartsAttribute(this.props.type));
         }
         return partsAttribute;
-    }
-
-    /**
-     * PartsChip を描画します。
-     * @param {number} partsAttribute パーツ属性
-     * @param {number} partsNumber パーツ番号
-     * @returns {JSX.Element}
-     */
-    private renderPartsChip(partsAttribute: number[], partsNumber: number): JSX.Element {
-        const cropX = partsAttribute[WWAConsts.ATR_X];
-        const cropY = partsAttribute[WWAConsts.ATR_Y];
-        const isSelected = partsNumber === this.props.selectParts;
-        return (
-            <PartsChip
-                key={partsNumber.toString()}
-                image={this.props.image}
-                cropX={cropX}
-                cropY={cropY}
-                isSelected={isSelected}
-                onClick={() => { this.props.onClick(partsNumber) } }
-            ></PartsChip>
-        );
     }
 
     public render() {
         return (
             <div className={styles.partsList}>
-                {this.getAttributes().map(
-                    (partsAttribute, partsNumber) => this.renderPartsChip(partsAttribute, partsNumber)
+                {this.getAttributes().map((partsAttribute, partsNumber) =>
+                    <PartsChip
+                        key={partsNumber.toString()}
+                        image={this.props.image}
+                        cropX={partsAttribute[WWAConsts.ATR_X]}
+                        cropY={partsAttribute[WWAConsts.ATR_Y]}
+                        isSelected={partsNumber === this.props.selectPartsNumber}
+                        onClick={() => this.props.onPartsSelect(partsNumber, this.props.type)}
+                    />
                 )}
             </div>
-        )
+        );
     }
-}
 
-/**
- * 指定したパーツ数をパーツ増減数の単位で収まる値に計算します。
- *     例えばパーツ数が 256 でパーツ増減数の単位が 50 とした場合は、 300 が出力されます。
- * @param partsCount 
- */
-export function getPartsCountPerIncreaseUnit(partsCount: number): number {
-    if (partsCount < WWAConsts.PARTS_SIZE_DEFAULT) {
-        return WWAConsts.PARTS_SIZE_DEFAULT;
-    }
-    return Math.ceil(partsCount / WWAConsts.PARTS_SIZE_INCREASE_UNIT) * WWAConsts.PARTS_SIZE_INCREASE_UNIT;
-}
+};

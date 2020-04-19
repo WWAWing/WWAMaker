@@ -59,6 +59,10 @@ export default class WWAConsts {
 
     static CHIP_SIZE = 40;
 
+    static RELATIVE_COORD_BIAS: number = 10000;
+    static RELATIVE_COORD_LOWER: number = WWAConsts.RELATIVE_COORD_BIAS - 1000;
+    static PLAYER_COORD: number = WWAConsts.RELATIVE_COORD_BIAS - 1000;
+
     static PASSABLE_OBJECT: number = 1;
 
     static APPERANCE_PARTS_MIN_INDEX: number = 0;
@@ -66,16 +70,19 @@ export default class WWAConsts {
     static APPERANCE_PARTS_MIN_INDEX_NO: number = 5;
     static APPERANCE_PARTS_MAX_INDEX_YES: number = 4;
 
+    static STATUS_MINUS_BORDER: number = 30000;
+
     // WWA Wing で定義されていた WWAConsts はここまでになります。
     // ここからは、 WWA Maker 独自で定義する定数になります。
 
-    static CURRENT_VERSION = 32;
-
     /**
-     * ATR_MAX は所有できるパーツ属性の上限個数です。
-     *     パーツ属性を新たに設ける場合は、この値を増やしてください。
+     * パーツ属性の一番最初のインデックス値です。
+     *     普通はこの位置に対応した領域にパーツ番号が記録され、パーツが使用されているか確認することができます。
+     *     WWAマップ作成ツールのソースコードから引っ張った定数です。
      */
-    static ATR_MAX: number = 20;
+    static ATR_0 = 0;
+
+    static CURRENT_VERSION = 32;
 
     static MAP_SIZE_DEFAULT: number = 101;
     static MAP_SIZE_INCREASE_UNIT: number = 100;
@@ -84,4 +91,7 @@ export default class WWAConsts {
     static PARTS_SIZE_DEFAULT: number = 200;
     static PARTS_SIZE_INCREASE_UNIT: number = 50;
     static PARTS_SIZE_MAX: number = 4000;
+
+    // 相対座標の最大値
+    static RELATIVE_COORD_MAX: number = 100;
 }

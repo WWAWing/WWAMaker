@@ -3,20 +3,15 @@
 .app {
     display: grid;
     grid-template:
-        [toolbar]   "toolbar  toolbar"   60px  [toolbar]
-        [editarea]  "editarea infopanel" 1fr   [infopanel]
-                   / 1fr       320px;
+        [toolbar]   "toolbar  toolbar" 60px  [toolbar]
+        [editarea]  "editarea info"    1fr   [info]
+                   / 1fr      auto;
     height: 100vh;
     width: 100vw;
 }
 
 .mainToolbar {
     grid-area: toolbar;
-}
-
-.infoPanel {
-    background-color: #d0d0d0;
-    grid-area: infopanel;
 }
 
 .editArea {
@@ -28,6 +23,18 @@
      * @todo SplitPane の親要素用の CSS を common ディレクトリに置いても良いかもしれない。
      */
     position: relative;
-    overflow: auto;
     text-align: left;
+}
+
+.infoPanel {
+    background-color: #fff;
+    grid-area: info;
+    width: 450px;
+    overflow-x: hidden; // Segment や Menu のはみ出し対策
+    overflow-y: auto;
+
+    display: none;
+    &.isOpened {
+        display: block;
+    }
 }

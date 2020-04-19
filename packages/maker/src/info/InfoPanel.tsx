@@ -6,14 +6,17 @@ import MapFoundation from './MapFoundation';
 import SystemMessage from './SystemMessage';
 import PartsEdit from './PartsEdit';
 import { Dispatch, bindActionCreators } from 'redux';
+import { Header, Segment, Tab, Button, Icon } from 'semantic-ui-react';
 
 interface StateProps {
-    viewMode: InfoPanelMode
+    viewMode: InfoPanelMode,
+    hasMapdata: boolean
 }
 
 const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = (state) => {
     return {
-        viewMode: state.info.viewMode
+        viewMode: state.info.viewMode,
+        hasMapdata: state.wwaData !== null
     };
 }
 
@@ -32,36 +35,64 @@ type Props = StateProps & ReturnType<typeof mapDispatchToProps>;
 class InfoPanel extends React.Component<Props> {
 
     public static defaultProps: StateProps = {
-        viewMode: "MAP_FOUNDATION"
-    }
-
-    private getInfoPanelView() {
-        switch (this.props.viewMode) {
-            case "MAP_FOUNDATION":
-                return <MapFoundation></MapFoundation>;
-            case "SYSTEM_MESSAGE":
-                return <SystemMessage></SystemMessage>;
-            case "PARTS_EDIT":
-                return <PartsEdit></PartsEdit>;
-        }
+        viewMode: "GENERAL",
+        hasMapdata: false
     }
 
     public render() {
+
+        if (!this.props.hasMapdata) {
+            return (
+                <Segment placeholder>
+                    <Header icon>
+                        <Icon name="file" />
+                        ツールバーやメニューバーから WWA のマップデータを開いてください。
+                    </Header>
+                    { /* TODO: 開くボタンを設ける */}
+                </Segment>
+            );
+        }
+
+        switch (this.props.viewMode) {
+            case "PARTS_EDIT":
+                return (
+                    <>
+                        <Header attached="top">
+                            <Button onClick={() => this.props.switchInfoPanel({ mode: "GENERAL" })}>
+                                <Icon name="close"/>
+                            </Button>
+                            パーツの編集
+                        </Header>
+                        <Segment attached>
+                            <PartsEdit></PartsEdit>
+                        </Segment>
+                    </>
+                );
+        }
+
+        const panes = [
+            {
+                menuItem: {
+                    key: "MAP_FOUNDATION",
+                    content: "基本設定の編集"
+                },
+                render: () => <MapFoundation></MapFoundation>,
+            }, {
+                menuItem: {
+                    key: "SYSTEM_MESSAGE",
+                    content: "システムメッセージの編集"
+                },
+                render: () => <SystemMessage></SystemMessage>,
+            }
+        ];
+
         return (
-            <div>
-                <header>
-                    <div>インフォパネル</div>
-                </header>
-                <div>
-                    <button onClick={ () => this.props.switchInfoPanel({ mode: "MAP_FOUNDATION" }) }>基本設定の編集</button>
-                    <button onClick={ () => this.props.switchInfoPanel({ mode: "SYSTEM_MESSAGE" }) }>システムメッセージの編集</button>
-                </div>
-                <div>
-                    {this.getInfoPanelView()}
-                </div>
-            </div>
+            <Segment attached>
+                <Tab menu={{ attached: "top" }} panes={panes} />
+            </Segment>
         );
     }
+
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(InfoPanel);

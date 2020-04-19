@@ -7,9 +7,9 @@ import { PartsType } from '../classes/WWAData';
 import { WWAData } from "@wwawing/common-interface";
 import { Dispatch, bindActionCreators } from 'redux';
 import { setCurrentPos, EditMode } from './MapStates';
-import WWAConsts from '../classes/WWAConsts';
 import { putParts } from '../wwadata/WWADataState';
 import getRect from '../common/getRect';
+import getPosEachChip from '../common/getPosEachChip';
 
 interface StateProps {
     wwaData: WWAData|null;
@@ -195,14 +195,6 @@ class MapView extends React.Component<Props, State> {
             </div>
         );
     }
-}
-
-/**
- * 座標をマス単位の値に変換します。
- * @return マス単位の値に変換したX座標とY座標の配列
- */
-function getPosEachChip(x: number, y: number): [number, number] {
-    return [Math.floor(x / WWAConsts.CHIP_SIZE),  Math.floor(y / WWAConsts.CHIP_SIZE)];
 }
 
 /**
