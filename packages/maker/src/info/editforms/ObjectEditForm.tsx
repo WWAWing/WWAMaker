@@ -407,12 +407,12 @@ export const ObjectEditTable: PartsEditComponentTable = [
         partsAppear: "APPEAR_10"
     }, {
         id: WWAConsts.OBJECT_SELL,
-        name: "アイテムを売る",
+        name: "物を売る",
         component: ObjectSellItemEdit,
         partsAppear: "APPEAR_10"
     }, {
         id: WWAConsts.OBJECT_BUY,
-        name: "アイテムを買う",
+        name: "物を買う",
         component: ObjectBuyItemEdit,
         partsAppear: "APPEAR_10"
     }, {
