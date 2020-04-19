@@ -23,6 +23,9 @@
      * @todo SplitPane の親要素用の CSS を common ディレクトリに置いても良いかもしれない。
      */
     position: relative;
-    overflow: auto;
     text-align: left;
+}
+
+.infoPanel {
+    background-color: #fff;
 }

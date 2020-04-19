@@ -20,13 +20,13 @@ export default class App extends React.Component {
                     <MainToolbar></MainToolbar>
                 </div>
                 <Sidebar.Pushable as="div" className={styles.editArea}>
+                    <InfoPanel className={styles.infoPanel}></InfoPanel>
                     <Sidebar.Pusher>
                         <SplitPane split="horizontal" defaultSize={300} primary="second">
                             <MapView></MapView>
                             <PartsSelect></PartsSelect>
                         </SplitPane>
                     </Sidebar.Pusher>
-                    <InfoPanel></InfoPanel>
                 </Sidebar.Pushable>
             </div>
         );

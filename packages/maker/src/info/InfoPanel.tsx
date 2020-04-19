@@ -54,7 +54,10 @@ class InfoPanel extends React.Component<Props> {
                 return (
                     <>
                         <Header attached="top">
-                            <Button><Icon name="close"/></Button> パーツの編集
+                            <Button onClick={() => this.props.switchInfoPanel({ mode: "GENERAL" })}>
+                                <Icon name="close"/>
+                            </Button>
+                            パーツの編集
                         </Header>
                         <Segment attached>
                             <PartsEdit></PartsEdit>
@@ -88,7 +91,13 @@ class InfoPanel extends React.Component<Props> {
 
     public render() {
         return (
-            <Sidebar animation="push" direction="right" width="very wide" visible={this.props.isOpened}>
+            <Sidebar
+                animation="overlay"
+                direction="right"
+                width="very wide"
+                visible={this.props.isOpened}
+                className={this.props.className}
+            >
                 {this.renderInside()}
             </Sidebar>
         );
