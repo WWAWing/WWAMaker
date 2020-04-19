@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { PartsType, PartsAttributeItems } from "../../classes/WWAData";
 import { Accordion, Form, Icon, Dropdown } from "semantic-ui-react";
 import WWAConsts from "../../classes/WWAConsts";
@@ -45,15 +45,18 @@ const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = stat
     mapMax: state.wwaData?.mapWidth
 });
 
+export type PartsAppearInputProps = {
+    active: boolean,
+    items: AppearPartsItem[],
+    onToggle: (active: boolean) => void,
+    onChange: InputChangeFunctionWithIndex
+};
+
 /**
  * 指定位置にパーツを出現の入力フォームです。
  * @todo onChange の処理内容を正しく整える
  */
-const PartsApperarInputComponent: React.FunctionComponent<{
-    items: AppearPartsItem[],
-    onChange: InputChangeFunctionWithIndex
-} & StateProps> = props => {
-    const [isOpen, setOpen] = useState(false);
+const PartsApperarInputComponent: React.FunctionComponent<PartsAppearInputProps & StateProps> = props => {
 
     function getPartsIDMax(type: PartsType) {
         switch (type) {
@@ -66,11 +69,11 @@ const PartsApperarInputComponent: React.FunctionComponent<{
 
     return (
         <Accordion>
-            <Accordion.Title active={isOpen} onClick={() => setOpen(!isOpen)}>
+            <Accordion.Title active={props.active} onClick={() => props.onToggle(!props.active)}>
                 <Icon name="dropdown" />
                 指定位置にパーツを出現
             </Accordion.Title>
-            <Accordion.Content active={isOpen}>
+            <Accordion.Content active={props.active}>
                 {props.items.map((item, index) => {
                     const indexBase = WWAConsts.ATR_APPERANCE_BASE + (index * WWAConsts.REL_ATR_APPERANCE_UNIT_LENGTH);
                     const partsIDMax = getPartsCountPerIncreaseUnit(getPartsIDMax(item.type));

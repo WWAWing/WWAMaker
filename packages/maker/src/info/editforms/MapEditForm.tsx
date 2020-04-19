@@ -46,18 +46,22 @@ export const MapEditTable: PartsEditComponentTable = [
     {
         id: WWAConsts.MAP_STREET,
         name: "道",
-        component: MapStreetEdit
+        component: MapStreetEdit,
+        partsAppear: "APPEAR_10"
     }, {
         id: WWAConsts.MAP_WALL,
         name: "壁",
-        component: MapWallEdit
+        component: MapWallEdit,
+        partsAppear: "APPEAR_10"
     }, {
         id: WWAConsts.MAP_LOCALGATE,
         name: "ジャンプゲート",
-        component: LocalGateEdit
+        component: LocalGateEdit,
+        partsAppear: "APPEAR_10"
     }, {
         id: WWAConsts.MAP_URLGATE,
         name: "URLゲート",
-        component: URLGateEdit
+        component: URLGateEdit,
+        partsAppear: "NONE"
     }
 ];

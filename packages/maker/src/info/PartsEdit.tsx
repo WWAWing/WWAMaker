@@ -9,10 +9,11 @@ import { PartsType } from "../classes/WWAData";
 import WWAConsts from "../classes/WWAConsts";
 import { ObjectEditTable } from "./editforms/ObjectEditForm";
 import { MapEditTable } from "./editforms/MapEditForm";
-import { PartsEditComponentTable } from "./editforms/PartsEditComponent";
+import { PartsEditComponentTable, PartsAppearType } from "./editforms/PartsEditComponent";
 import { Form, Portal, Button, Icon, Dropdown, DropdownItemProps } from "semantic-ui-react";
 import PartsChip from "../common/PartsChip";
 import { GraphicSelect } from "../common/GraphicSelect";
+import { PartsApperarInput, getPartsAppearValues, PartsAppearInputProps } from "./editforms/PartsAppearInput";
 
 interface StateProps {
     /**
@@ -48,10 +49,12 @@ type Props = StateProps & ReturnType<typeof mapDispatchToProps>;
  *     attribute はパーツの属性そのままです。
  *     message はパーツのメッセージです。
  *     graphicSelect はパーツのグラフィックの選択状態を示すステートです。
+ *     partsAppearOpened は指定位置にパーツを出現の開閉状態を示すステートでし。
  */
 interface State {
     parts?: PartsEditState;
     graphicSelect: GraphicSelectState;
+    partsAppearOpened: boolean;
 }
 
 interface PartsEditState {
@@ -78,7 +81,8 @@ class PartsEdit extends React.Component<Props, State> {
         super(props);
         this.state = {
             parts: this.receive(),
-            graphicSelect: "NONE"
+            graphicSelect: "NONE",
+            partsAppearOpened: false
         };
         this.graphicSelectMountRef = React.createRef();
 
@@ -348,18 +352,34 @@ class PartsEdit extends React.Component<Props, State> {
         const message = this.state.parts.message;
         const typeNumber = attribute[WWAConsts.ATR_TYPE];
         
-        const PartsEditComponent = partsEditTable.find(item => item.id === typeNumber)?.component;
-        if (PartsEditComponent === undefined) {
+        const partsEditItem = partsEditTable.find(item => item.id === typeNumber);
+        if (partsEditItem === undefined) {
             throw new Error(`パーツ種別 ${typeNumber} 番に対応するパーツ種別が見つかりませんでした。`);
         }
 
+        const PartsEditComponent = partsEditItem.component;
+        const PartsAppearEditComponent = getPartsAppearEditComponent(partsEditItem.partsAppear);
+        const handlePartsAppearToggle = (active: boolean) => {
+            this.setState({
+                partsAppearOpened: active
+            });
+        };
+
         return (
-            <PartsEditComponent
-                attribute={attribute}
-                message={message}
-                onAttributeChange={this.handleAttributeChange}
-                onMessageChange={this.handleMessageChange}
-            />
+            <>
+                <PartsEditComponent
+                    attribute={attribute}
+                    message={message}
+                    onAttributeChange={this.handleAttributeChange}
+                    onMessageChange={this.handleMessageChange}
+                />
+                <PartsAppearEditComponent
+                    active={this.state.partsAppearOpened}
+                    items={getPartsAppearValues(attribute)}
+                    onToggle={handlePartsAppearToggle}
+                    onChange={this.handleAttributeChange}
+                />
+            </>
         );
 
     }
@@ -386,3 +406,21 @@ class PartsEdit extends React.Component<Props, State> {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PartsEdit);
+
+/**
+ * 指定位置にパーツを出現の編集コンポーネントを出力します。
+ * @param appearType
+ */
+function getPartsAppearEditComponent(appearType: PartsAppearType): React.FC<PartsAppearInputProps> {
+
+    return props => {
+        switch (appearType) {
+            case "APPEAR_10":
+                return <PartsApperarInput active={props.active} items={props.items} onToggle={props.onToggle} onChange={props.onChange} />;
+            case "SELECT_YES_NO":
+                return null; // TODO: 実装する
+        }
+
+        return null;
+    }
+}
