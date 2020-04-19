@@ -3,9 +3,9 @@
 .app {
     display: grid;
     grid-template:
-        [toolbar]   "toolbar " 60px  [toolbar]
-        [editarea]  "editarea" 1fr   [editarea]
-                   / 1fr;
+        [toolbar]   "toolbar  toolbar" 60px  [toolbar]
+        [editarea]  "editarea info"    1fr   [info]
+                   / 1fr      auto;
     height: 100vh;
     width: 100vw;
 }
@@ -28,4 +28,8 @@
 
 .infoPanel {
     background-color: #fff;
+    grid-area: info;
+    width: 450px;
+    overflow-x: hidden; // Segment や Menu のはみ出し対策
+    overflow-y: auto;
 }

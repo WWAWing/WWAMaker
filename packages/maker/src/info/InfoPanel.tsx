@@ -6,7 +6,7 @@ import MapFoundation from './MapFoundation';
 import SystemMessage from './SystemMessage';
 import PartsEdit from './PartsEdit';
 import { Dispatch, bindActionCreators } from 'redux';
-import { Sidebar, Header, Segment, Tab, Button, Icon } from 'semantic-ui-react';
+import { Header, Segment, Tab, Button, Icon } from 'semantic-ui-react';
 
 interface UserProps {
     className: string
@@ -90,16 +90,14 @@ class InfoPanel extends React.Component<Props> {
     }
 
     public render() {
+        if (!this.props.isOpened) {
+            return null;
+        }
+
         return (
-            <Sidebar
-                animation="overlay"
-                direction="right"
-                width="very wide"
-                visible={this.props.isOpened}
-                className={this.props.className}
-            >
+            <div className={this.props.className}>
                 {this.renderInside()}
-            </Sidebar>
+            </div>
         );
     }
 
