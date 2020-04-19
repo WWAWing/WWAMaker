@@ -143,8 +143,13 @@ export type PartsAttributeItems = PartsAttributes[number];
 /**
  * 空のパーツ属性配列を作成します。
  */
-export function createEmptyPartsAttribute(): number[] {
-    return new Array<number>(WWAConsts.ATR_MAX).fill(0);
+export function createEmptyPartsAttribute(type: PartsType): number[] {
+    switch (type) {
+        case PartsType.OBJECT:
+            return new Array<number>(WWAConsts.OBJ_ATR_MAX).fill(0);
+        case PartsType.MAP:
+            return new Array<number>(WWAConsts.MAP_ATR_MAX).fill(0);
+    }
 }
 
 export enum ObjectPartsType {

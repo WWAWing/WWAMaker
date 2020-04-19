@@ -156,9 +156,11 @@ export const WWADataReducer = reducerWithInitialState<WWAData | null>(null)
          */
         if (payload.type === PartsType.MAP) {
             newState.mapAttribute[payload.number] = payload.attributes;
+            newState.mapAttribute[payload.number][WWAConsts.ATR_0] = payload.number;
             newState.mapAttribute[payload.number][WWAConsts.ATR_STRING] = newMessageIndex;
         } else if (payload.type === PartsType.OBJECT) {
             newState.objectAttribute[payload.number] = payload.attributes;
+            newState.objectAttribute[payload.number][WWAConsts.ATR_0] = payload.number;
             newState.objectAttribute[payload.number][WWAConsts.ATR_STRING] = newMessageIndex;
         }
 

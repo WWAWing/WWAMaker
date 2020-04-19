@@ -23,7 +23,7 @@ export default class PartsList extends React.Component<Props> {
         const partsMax = getPartsCountPerIncreaseUnit(this.props.attribute.length);
 
         for (let index = this.props.attribute.length; index < partsMax; index++) {
-            partsAttribute.push(createEmptyPartsAttribute());
+            partsAttribute.push(createEmptyPartsAttribute(this.props.type));
         }
         return partsAttribute;
     }

@@ -75,13 +75,14 @@ export default class WWAConsts {
     // WWA Wing で定義されていた WWAConsts はここまでになります。
     // ここからは、 WWA Maker 独自で定義する定数になります。
 
-    static CURRENT_VERSION = 32;
-
     /**
-     * ATR_MAX は所有できるパーツ属性の上限個数です。
-     *     パーツ属性を新たに設ける場合は、この値を増やしてください。
+     * パーツ属性の一番最初のインデックス値です。
+     *     普通はこの位置に対応した領域にパーツ番号が記録され、パーツが使用されているか確認することができます。
+     *     WWAマップ作成ツールのソースコードから引っ張った定数です。
      */
-    static ATR_MAX: number = 20;
+    static ATR_0 = 0;
+
+    static CURRENT_VERSION = 32;
 
     static MAP_SIZE_DEFAULT: number = 101;
     static MAP_SIZE_INCREASE_UNIT: number = 100;
