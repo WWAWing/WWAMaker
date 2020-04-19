@@ -32,4 +32,9 @@
     width: 450px;
     overflow-x: hidden; // Segment や Menu のはみ出し対策
     overflow-y: auto;
+
+    display: none;
+    &.isOpened {
+        display: block;
+    }
 }

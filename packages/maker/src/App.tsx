@@ -6,12 +6,37 @@ import InfoPanel from './info/InfoPanel';
 import MapView from './map/MapView';
 import SplitPane from 'react-split-pane';
 import './common/SplitPane.scss';
+import { connect, MapStateToProps } from 'react-redux';
+import { StoreType } from './State';
+
+interface StateProps {
+    isOpened: boolean
+}
+
+const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = state => ({
+    isOpened: state.info.isOpened
+});
 
 /**
  * WWA Maker 全体のコンポーネントです。
  * この中に各パネルと MapView が含まれていて、これらの要素のレイアウトを行う役割を持ちます。
  */
-export default class App extends React.Component {
+class App extends React.Component<StateProps> {
+
+    public static defaultProps: StateProps = {
+        isOpened: false
+    }
+
+    private getInfoPanelClassName() {
+        const className = styles.infoPanel;
+
+        if (this.props.isOpened) {
+            return `${className} ${styles.isOpened}`;
+        }
+
+        return className;
+    }
+
     public render() {
         return (
             <div className={styles.app}>
@@ -24,8 +49,12 @@ export default class App extends React.Component {
                         <PartsSelect></PartsSelect>
                     </SplitPane>
                 </div>
-                <InfoPanel className={styles.infoPanel}></InfoPanel>
+                <div className={this.getInfoPanelClassName()}>
+                    <InfoPanel></InfoPanel>
+                </div>
             </div>
         );
     }
 }
+
+export default connect(mapStateToProps)(App);

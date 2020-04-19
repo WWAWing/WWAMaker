@@ -21,7 +21,7 @@ export interface InfoPanelPartsEditState {
 }
 
 export const INITIAL_STATE: InfoPanelState = {
-    isOpened: false,
+    isOpened: true, // 始めて利用した際 InfoPanel が現れてびっくりしないために、最初から表示するようにしています。
     viewMode: 'GENERAL'
 }
 

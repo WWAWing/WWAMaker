@@ -8,19 +8,15 @@ import PartsEdit from './PartsEdit';
 import { Dispatch, bindActionCreators } from 'redux';
 import { Header, Segment, Tab, Button, Icon } from 'semantic-ui-react';
 
-interface UserProps {
-    className: string
-}
-
 interface StateProps {
-    isOpened: boolean,
-    viewMode: InfoPanelMode
+    viewMode: InfoPanelMode,
+    hasMapdata: boolean
 }
 
 const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = (state) => {
     return {
-        isOpened: state.info.isOpened,
-        viewMode: state.info.viewMode
+        viewMode: state.info.viewMode,
+        hasMapdata: state.wwaData !== null
     };
 }
 
@@ -30,7 +26,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     }), dispatch);
 }
 
-type Props = UserProps & StateProps & ReturnType<typeof mapDispatchToProps>;
+type Props = StateProps & ReturnType<typeof mapDispatchToProps>;
 
 /**
  * InfoPanel は画面右に配置されるパネルのことで、主にパーツの編集やマップデータの情報などではこの InfoPanel から表示されます。
@@ -38,15 +34,23 @@ type Props = UserProps & StateProps & ReturnType<typeof mapDispatchToProps>;
  */
 class InfoPanel extends React.Component<Props> {
 
-    public static defaultProps: UserProps & StateProps = {
-        className: "",
-        isOpened: false,
-        viewMode: "GENERAL"
+    public static defaultProps: StateProps = {
+        viewMode: "GENERAL",
+        hasMapdata: false
     }
 
-    public renderInside() {
-        if (!this.props.isOpened) {
-            return null;
+    public render() {
+
+        if (!this.props.hasMapdata) {
+            return (
+                <Segment placeholder>
+                    <Header icon>
+                        <Icon name="file" />
+                        ツールバーやメニューバーから WWA のマップデータを開いてください。
+                    </Header>
+                    { /* TODO: 開くボタンを設ける */}
+                </Segment>
+            );
         }
 
         switch (this.props.viewMode) {
@@ -86,18 +90,6 @@ class InfoPanel extends React.Component<Props> {
             <Segment attached>
                 <Tab menu={{ attached: "top" }} panes={panes} />
             </Segment>
-        );
-    }
-
-    public render() {
-        if (!this.props.isOpened) {
-            return null;
-        }
-
-        return (
-            <div className={this.props.className}>
-                {this.renderInside()}
-            </div>
         );
     }
 
