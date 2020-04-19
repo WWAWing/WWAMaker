@@ -25,10 +25,11 @@ export type PartsAppearEditComponent = React.FunctionComponent<PartsAppearEditPr
 
 /**
  * パーツ1つ分の項目を出力するメソッドを作成します。
+ * @param firstIndex ATR_APPERANCE_BASE から最初の項目のインデックス値 (入力時にステートへ送り込む際に使用します)
  */
-function createRenderingPartsAppearItem(props: PartsAppearEditProps) {
+function createRenderingPartsAppearItem(props: PartsAppearEditProps, firstIndex: number) {
     return (item: AppearPartsItem, index: number) => {
-        const indexBase = WWAConsts.ATR_APPERANCE_BASE + (index * WWAConsts.REL_ATR_APPERANCE_UNIT_LENGTH);
+        const indexBase = WWAConsts.ATR_APPERANCE_BASE + firstIndex + (index * WWAConsts.REL_ATR_APPERANCE_UNIT_LENGTH);
 
         return (
             <PartsAppearInputItem
@@ -57,7 +58,7 @@ export const PartsAppearInput: PartsAppearEditComponent = props => {
                 指定位置にパーツを出現
             </Accordion.Title>
             <Accordion.Content active={isOpened}>
-                {items.map(createRenderingPartsAppearItem(props))}
+                {items.map(createRenderingPartsAppearItem(props, 0))}
             </Accordion.Content>
         </Accordion>
     );
@@ -81,7 +82,7 @@ export const PartsAppearSelectInput: PartsAppearEditComponent = props => {
                     YESを選択したとき
                 </Accordion.Title>
                 <Accordion.Content active={isYesOpened}>
-                    {yesItems.map(createRenderingPartsAppearItem(props))}
+                    {yesItems.map(createRenderingPartsAppearItem(props, 0))}
                 </Accordion.Content>
             </Accordion>
             <Accordion>
@@ -90,7 +91,7 @@ export const PartsAppearSelectInput: PartsAppearEditComponent = props => {
                     NOを選択したとき
                 </Accordion.Title>
                 <Accordion.Content active={isNoOpened}>
-                    {noItems.map(createRenderingPartsAppearItem(props))}
+                    {noItems.map(createRenderingPartsAppearItem(props, WWAConsts.APPERANCE_PARTS_MIN_INDEX_NO * WWAConsts.REL_ATR_APPERANCE_UNIT_LENGTH))}
                 </Accordion.Content>
             </Accordion>
         </>
