@@ -90,7 +90,7 @@ const getMessageIndexes = (
     }
 
     if (messageIndex === 0) {
-        return [0, wwaData.message.length + 1];
+        return [0, wwaData.message.length];
     }
 
     return [messageIndex, messageIndex];
@@ -147,7 +147,9 @@ export const WWADataReducer = reducerWithInitialState<WWAData | null>(null)
         const [oldMessageIndex, newMessageIndex] = getMessageIndexes(payload.type, payload.number, payload.message.length <= 0, state);
         if (oldMessageIndex !== 0 && newMessageIndex === 0) { // メッセージ削除
             newState.message[oldMessageIndex] = "";
-        } else if (newMessageIndex !== 0) { // メッセージ追加とメッセージ編集
+        } else if (oldMessageIndex === 0 && newMessageIndex !== 0) { // メッセージ追加
+            newState.message.push(payload.message);
+        } else if (oldMessageIndex !== 0 && newMessageIndex !== 0) { // メッセージ編集
             newState.message[newMessageIndex] = payload.message;
         }
 
