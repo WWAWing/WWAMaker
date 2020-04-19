@@ -4,7 +4,7 @@ import { StoreType } from "../State";
 import { Dispatch, bindActionCreators } from "redux";
 import { SystemMessage1, SystemMessage2, SystemMessageType } from "../classes/WWAData";
 import { setSystemMessage } from "../wwadata/WWADataState";
-import { Form, Message, Button } from "semantic-ui-react";
+import { Form, Message, Button, Icon } from "semantic-ui-react";
 
 interface StateProps {
     systemMessage: string[] | null
@@ -167,8 +167,14 @@ class SystemMessage extends React.Component<Props, SystemMessageField> {
                     </Message.List>
                 </Message>
                 <div>
-                    <Button primary onClick={() => this.send()}>決定</Button>
-                    <Button onClick={this.handleResetButtonClick.bind(this)}>リセット</Button>
+                    <Button primary onClick={() => this.send()}>
+                        <Icon name="check" />
+                        決定
+                    </Button>
+                    <Button onClick={this.handleResetButtonClick.bind(this)}>
+                        <Icon name="check" />
+                        リセット
+                    </Button>
                 </div>
             </div>
         );

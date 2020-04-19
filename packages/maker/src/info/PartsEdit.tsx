@@ -391,7 +391,7 @@ class PartsEdit extends React.Component<Props, State> {
                 <Form.Field>
                     <Button primary onClick={() => this.handleEditButtonClick()}>
                         <Icon name="check" />
-                        OK
+                        決定
                     </Button>
                     <Button onClick={() => this.handleCancelButtonClick()}>
                         <Icon name="cancel" />
