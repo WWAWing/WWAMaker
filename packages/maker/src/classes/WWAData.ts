@@ -119,7 +119,9 @@ export const defaultWWAData: WWAData = {
     checkOriginalMapString: '',
     checkString: '',
     
-    isItemEffectEnabled: false
+    isItemEffectEnabled: false,
+
+    gamePadButtonItemTable: []
 }
 
 /**

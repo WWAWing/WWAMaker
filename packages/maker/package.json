@@ -29,7 +29,7 @@
     "typescript-fsa": "^3.0.0",
     "typescript-fsa-reducers": "^1.2.1",
     "typescript-fsa-redux-thunk": "^2.1.9",
-    "worker-loader": "^2.0.0"
+    "wwamaker-saver": "^0.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

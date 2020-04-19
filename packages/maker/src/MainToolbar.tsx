@@ -7,6 +7,7 @@ import { setEditMode, EditMode } from './map/MapStates';
 import { StoreType } from './State';
 import { Input, Button, Label, Icon, List } from 'semantic-ui-react';
 import { toggleInfoPanel } from './info/InfoPanelState';
+import saveMapdata from './common/saveMapdata';
 
 const mapStateToProps = (state: StoreType) => {
     return {
@@ -85,6 +86,11 @@ class MainToolbar extends React.Component<Props, State> {
                             value={this.state.mapdataFileName}
                             onChange={this.changeMapdataFileName.bind(this)}
                         />
+                    </List.Item>
+                    <List.Item>
+                        <Button onClick={() => saveMapdata()}>
+                            <Icon name="save" />
+                        </Button>
                     </List.Item>
                     <List.Item>
                         <Button.Group basic>
