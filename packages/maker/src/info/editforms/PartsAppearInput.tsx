@@ -1,133 +1,101 @@
-import React from "react";
+import React, { useState } from "react";
 import { PartsType, PartsAttributeItems } from "../../classes/WWAData";
-import { Accordion, Form, Icon, Dropdown } from "semantic-ui-react";
+import { Accordion, Icon } from "semantic-ui-react";
 import WWAConsts from "../../classes/WWAConsts";
-import { RelativeValue, convertRelativeValueFromCoord } from "../../common/convertRelativeValue";
-import { CoordInput } from "./EditFormUtils";
-import { connect, MapStateToProps } from "react-redux";
-import { StoreType } from "../../State";
-import getPartsCountPerIncreaseUnit from "../../common/getPartsCountPerIncreaseUnit";
+import { convertRelativeValueFromCoord } from "../../common/convertRelativeValue";
+import PartsAppearInputItem, { AppearPartsItem, InputChangeFunctionWithIndex } from "./PartsAppearInputItem";
 
 // 指定位置にパーツを出現 関係のコンポーネントをまとめたファイルです。
 
-/**
- * 指定位置にパーツを出現の各項目を表した型です。
- */
-type AppearPartsItem = { number: number, chipX: RelativeValue, chipY: RelativeValue, type: PartsType };
+interface PartsAppearEditProps {
+    attribute: PartsAttributeItems,
+    onChange: InputChangeFunctionWithIndex,
+    partsMax: {
+        [key in PartsType]: number
+    },
+    mapMax: number
+};
 
-type InputChangeFunctionWithIndex = (value: string, index: number) => void;
+/**
+ * 指定位置にパーツを出現の編集フォームのコンポーネントです。
+ *     指定位置にパーツを出現は二者択一だけ別の編集画面が用意されています。
+ *     このように、パーツ種別に応じて最適な編集フォームを用意することが目的となっています。
+ */
+export type PartsAppearEditComponent = React.FunctionComponent<PartsAppearEditProps>;
 
 /**
- * パーツ種類のドロップダウンで使用するオプション値です。
+ * パーツ1つ分の項目を出力するメソッドを作成します。
  */
-const PartsTypeOptions = [
-    {
-        text: "物体",
-        value: PartsType.OBJECT.toString()
-    }, {
-        text: "背景",
-        value: PartsType.MAP.toString()
+function createRenderingPartsAppearItem(props: PartsAppearEditProps) {
+    return (item: AppearPartsItem, index: number) => {
+        const indexBase = WWAConsts.ATR_APPERANCE_BASE + (index * WWAConsts.REL_ATR_APPERANCE_UNIT_LENGTH);
+
+        return (
+            <PartsAppearInputItem
+                key={index}
+                item={item}
+                index={indexBase}
+                partsIDMax={props.partsMax[item.type]}
+                mapMax={props.mapMax}
+                onChange={props.onChange}
+            />
+        );
     }
-];
-
-type StateProps = {
-    objPartsMax?: number,
-    mapPartsMax?: number,
-    mapMax?: number
-};
-
-/**
- * PartsAppearInput では扱えるパーツの最大値を取得するために WWAData から値を受け取ります。
- */
-const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = state => ({
-    objPartsMax: state.wwaData?.objPartsMax,
-    mapPartsMax: state.wwaData?.mapPartsMax,
-    mapMax: state.wwaData?.mapWidth
-});
-
-export type PartsAppearInputProps = {
-    active: boolean,
-    items: AppearPartsItem[],
-    onToggle: (active: boolean) => void,
-    onChange: InputChangeFunctionWithIndex
-};
+}
 
 /**
  * 指定位置にパーツを出現の入力フォームです。
- * @todo onChange の処理内容を正しく整える
  */
-const PartsApperarInputComponent: React.FunctionComponent<PartsAppearInputProps & StateProps> = props => {
-
-    function getPartsIDMax(type: PartsType) {
-        switch (type) {
-            case PartsType.OBJECT:
-                return props.objPartsMax || 0;
-            case PartsType.MAP:
-                return props.mapPartsMax || 0;
-        }
-    }
+export const PartsAppearInput: PartsAppearEditComponent = props => {
+    const [isOpened, toggle] = useState(false);
+    const items = getPartsAppearValues(props.attribute);
 
     return (
         <Accordion>
-            <Accordion.Title active={props.active} onClick={() => props.onToggle(!props.active)}>
+            <Accordion.Title active={isOpened} onClick={() => toggle(!isOpened)}>
                 <Icon name="dropdown" />
                 指定位置にパーツを出現
             </Accordion.Title>
-            <Accordion.Content active={props.active}>
-                {props.items.map((item, index) => {
-                    const indexBase = WWAConsts.ATR_APPERANCE_BASE + (index * WWAConsts.REL_ATR_APPERANCE_UNIT_LENGTH);
-                    const partsIDMax = getPartsCountPerIncreaseUnit(getPartsIDMax(item.type));
-
-                    return (
-                        <div key={index}>
-                            <Form.Group>
-                                <Form.Input
-                                    width={6}
-                                    type="number"
-                                    min={0}
-                                    max={partsIDMax}
-                                    action={(
-                                        <Dropdown
-                                            button
-                                            basic
-                                            options={PartsTypeOptions}
-                                            value={item.type.toString()}
-                                            onChange={(event, data) => {
-                                                props.onChange(data.value as string, indexBase + WWAConsts.REL_ATR_APPERANCE_TYPE);
-                                            }}
-                                        />
-                                    )}
-                                    actionPosition="left"
-                                    value={item.number}
-                                    onChange={(event, data) => {
-                                        // FIXME: 空欄にすると Received NaN for the `value` attribute. If this is expected, cast the value to a string. が発生する
-                                        props.onChange(data.value as string, indexBase + WWAConsts.REL_ATR_APPERANCE_ID)
-                                    }}
-                                />
-                            </Form.Group>
-                            <Form.Group>
-                                <CoordInput
-                                    width={12}
-                                    value={item.chipX}
-                                    mapWidthMax={props.mapMax}
-                                    onChange={(value) => props.onChange(value, indexBase + WWAConsts.REL_ATR_APPERANCE_X)}
-                                />
-                                <CoordInput
-                                    width={12}
-                                    value={item.chipY}
-                                    mapWidthMax={props.mapMax}
-                                    onChange={(value) => props.onChange(value, indexBase + WWAConsts.REL_ATR_APPERANCE_Y)}
-                                />
-                            </Form.Group>
-                        </div>
-                    );
-                })}
+            <Accordion.Content active={isOpened}>
+                {items.map(createRenderingPartsAppearItem(props))}
             </Accordion.Content>
         </Accordion>
     );
 };
 
-export const PartsApperarInput = connect(mapStateToProps)(PartsApperarInputComponent);
+/**
+ * 二者択一で使用する指定位置にパーツを出現の入力フォームです。
+ */
+export const PartsAppearSelectInput: PartsAppearEditComponent = props => {
+    const [isYesOpened, toggleYes] = useState(false);
+    const [isNoOpened, toggleNo] = useState(false);
+    const items = getPartsAppearValues(props.attribute);
+    const yesItems = items.slice(0, WWAConsts.APPERANCE_PARTS_MAX_INDEX_YES + 1);
+    const noItems = items.slice(WWAConsts.APPERANCE_PARTS_MIN_INDEX_NO);
+
+    return (
+        <>
+            <Accordion>
+                <Accordion.Title active={isYesOpened} onClick={() => toggleYes(!isYesOpened)}>
+                    <Icon name="dropdown" />
+                    YESを選択したとき
+                </Accordion.Title>
+                <Accordion.Content active={isYesOpened}>
+                    {yesItems.map(createRenderingPartsAppearItem(props))}
+                </Accordion.Content>
+            </Accordion>
+            <Accordion>
+                <Accordion.Title active={isNoOpened} onClick={() => toggleNo(!isNoOpened)}>
+                    <Icon name="dropdown" />
+                    NOを選択したとき
+                </Accordion.Title>
+                <Accordion.Content active={isNoOpened}>
+                    {noItems.map(createRenderingPartsAppearItem(props))}
+                </Accordion.Content>
+            </Accordion>
+        </>
+    );
+}
 
 /**
  * パーツ属性から「指定位置にパーツを出現」に対応した値を出力します。

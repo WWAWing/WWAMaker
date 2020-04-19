@@ -8,6 +8,7 @@ import {
 } from "./EditFormUtils";
 import { PartsEditComponent, PartsEditComponentTable } from "./PartsEditComponent";
 import { LocalGateEdit, URLGateEdit } from "./CommonEditForm";
+import { PartsAppearInput } from "./PartsAppearInput";
 
 const MapStreetEdit: PartsEditComponent = ({attribute, message, onAttributeChange, onMessageChange}) => (
     <>
@@ -47,21 +48,20 @@ export const MapEditTable: PartsEditComponentTable = [
         id: WWAConsts.MAP_STREET,
         name: "道",
         component: MapStreetEdit,
-        partsAppear: "APPEAR_10"
+        partsAppear: PartsAppearInput
     }, {
         id: WWAConsts.MAP_WALL,
         name: "壁",
         component: MapWallEdit,
-        partsAppear: "APPEAR_10"
+        partsAppear: PartsAppearInput
     }, {
         id: WWAConsts.MAP_LOCALGATE,
         name: "ジャンプゲート",
         component: LocalGateEdit,
-        partsAppear: "APPEAR_10"
+        partsAppear: PartsAppearInput
     }, {
         id: WWAConsts.MAP_URLGATE,
         name: "URLゲート",
-        component: URLGateEdit,
-        partsAppear: "NONE"
+        component: URLGateEdit
     }
 ];

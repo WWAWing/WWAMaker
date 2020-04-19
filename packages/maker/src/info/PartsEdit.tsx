@@ -9,11 +9,11 @@ import { PartsType } from "../classes/WWAData";
 import WWAConsts from "../classes/WWAConsts";
 import { ObjectEditTable } from "./editforms/ObjectEditForm";
 import { MapEditTable } from "./editforms/MapEditForm";
-import { PartsEditComponentTable, PartsAppearType } from "./editforms/PartsEditComponent";
+import { PartsEditComponentTable } from "./editforms/PartsEditComponent";
 import { Form, Portal, Button, Icon, Dropdown, DropdownItemProps } from "semantic-ui-react";
 import PartsChip from "../common/PartsChip";
 import { GraphicSelect } from "../common/GraphicSelect";
-import { PartsApperarInput, getPartsAppearValues, PartsAppearInputProps } from "./editforms/PartsAppearInput";
+import getPartsCountPerIncreaseUnit from "../common/getPartsCountPerIncreaseUnit";
 
 interface StateProps {
     /**
@@ -49,12 +49,10 @@ type Props = StateProps & ReturnType<typeof mapDispatchToProps>;
  *     attribute はパーツの属性そのままです。
  *     message はパーツのメッセージです。
  *     graphicSelect はパーツのグラフィックの選択状態を示すステートです。
- *     partsAppearOpened は指定位置にパーツを出現の開閉状態を示すステートでし。
  */
 interface State {
     parts?: PartsEditState;
     graphicSelect: GraphicSelectState;
-    partsAppearOpened: boolean;
 }
 
 interface PartsEditState {
@@ -81,8 +79,7 @@ class PartsEdit extends React.Component<Props, State> {
         super(props);
         this.state = {
             parts: this.receive(),
-            graphicSelect: "NONE",
-            partsAppearOpened: false
+            graphicSelect: "NONE"
         };
         this.graphicSelectMountRef = React.createRef();
 
@@ -338,6 +335,7 @@ class PartsEdit extends React.Component<Props, State> {
     private renderEditForm() {
         if (
             this.props.state === undefined ||
+            this.props.wwaData === undefined ||
             this.state.parts === undefined
         ) {
             return <p>WWAデータがありません。マップデータを開いてください。</p>;
@@ -358,12 +356,7 @@ class PartsEdit extends React.Component<Props, State> {
         }
 
         const PartsEditComponent = partsEditItem.component;
-        const PartsAppearEditComponent = getPartsAppearEditComponent(partsEditItem.partsAppear);
-        const handlePartsAppearToggle = (active: boolean) => {
-            this.setState({
-                partsAppearOpened: active
-            });
-        };
+        const PartsAppearEditComponent = partsEditItem.partsAppear;
 
         return (
             <>
@@ -373,12 +366,17 @@ class PartsEdit extends React.Component<Props, State> {
                     onAttributeChange={this.handleAttributeChange}
                     onMessageChange={this.handleMessageChange}
                 />
-                <PartsAppearEditComponent
-                    active={this.state.partsAppearOpened}
-                    items={getPartsAppearValues(attribute)}
-                    onToggle={handlePartsAppearToggle}
-                    onChange={this.handleAttributeChange}
-                />
+                {PartsAppearEditComponent !== undefined &&
+                    <PartsAppearEditComponent
+                        attribute={attribute}
+                        onChange={this.handleAttributeChange}
+                        partsMax={{
+                            [PartsType.OBJECT]: getPartsCountPerIncreaseUnit(this.props.wwaData.objPartsMax),
+                            [PartsType.MAP]: getPartsCountPerIncreaseUnit(this.props.wwaData.mapPartsMax)
+                        }}
+                        mapMax={this.props.wwaData.mapWidth}
+                    />
+                }
             </>
         );
 
@@ -406,21 +404,3 @@ class PartsEdit extends React.Component<Props, State> {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PartsEdit);
-
-/**
- * 指定位置にパーツを出現の編集コンポーネントを出力します。
- * @param appearType
- */
-function getPartsAppearEditComponent(appearType: PartsAppearType): React.FC<PartsAppearInputProps> {
-
-    return props => {
-        switch (appearType) {
-            case "APPEAR_10":
-                return <PartsApperarInput active={props.active} items={props.items} onToggle={props.onToggle} onChange={props.onChange} />;
-            case "SELECT_YES_NO":
-                return null; // TODO: 実装する
-        }
-
-        return null;
-    }
-}

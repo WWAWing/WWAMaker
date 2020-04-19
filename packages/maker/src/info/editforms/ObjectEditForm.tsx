@@ -16,6 +16,7 @@ import { PartsEditComponent, PartsEditComponentTable, PartsEditAttributeChange }
 import { ItemMode } from "../../classes/WWAData";
 import { URLGateEdit, LocalGateEdit } from "./CommonEditForm";
 import { Input, Form } from "semantic-ui-react";
+import { PartsAppearInput, PartsAppearSelectInput } from "./PartsAppearInput";
 
 /**
  * StatusInput で与えられた各入力欄の名前に対し、属性のインデックスを見つけ出します。
@@ -378,67 +379,64 @@ export const ObjectEditTable: PartsEditComponentTable = [
     {
         id: WWAConsts.OBJECT_NORMAL,
         name: "通常物体",
-        component: ObjectNormalEdit,
-        partsAppear: "NONE"
+        component: ObjectNormalEdit
     }, {
         id: WWAConsts.OBJECT_MESSAGE,
         name: "メッセージ",
         component: ObjectMessageEdit,
-        partsAppear: "APPEAR_10"
+        partsAppear: PartsAppearInput
     }, {
         id: WWAConsts.OBJECT_MONSTER,
         name: "モンスター",
         component: ObjectMonsterEdit,
-        partsAppear: "APPEAR_10"
+        partsAppear: PartsAppearInput
     }, {
         id: WWAConsts.OBJECT_ITEM,
         name: "アイテム",
         component: ObjectItemEdit,
-        partsAppear: "APPEAR_10"
+        partsAppear: PartsAppearInput
     }, {
         id: WWAConsts.OBJECT_DOOR,
         name: "扉",
         component: ObjectDoorEdit,
-        partsAppear: "APPEAR_10"
+        partsAppear: PartsAppearInput
     }, {
         id: WWAConsts.OBJECT_STATUS,
         name: "ステータス変化",
         component: ObjectStatusEdit,
-        partsAppear: "APPEAR_10"
+        partsAppear: PartsAppearInput
     }, {
         id: WWAConsts.OBJECT_SELL,
         name: "物を売る",
         component: ObjectSellItemEdit,
-        partsAppear: "APPEAR_10"
+        partsAppear: PartsAppearInput
     }, {
         id: WWAConsts.OBJECT_BUY,
         name: "物を買う",
         component: ObjectBuyItemEdit,
-        partsAppear: "APPEAR_10"
+        partsAppear: PartsAppearInput
     }, {
         id: WWAConsts.OBJECT_URLGATE,
         name: "URLゲート",
         component: URLGateEdit,
-        partsAppear: "APPEAR_10"
+        partsAppear: PartsAppearInput
     }, {
         id: WWAConsts.OBJECT_SCORE,
         name: "スコア表示",
-        component: ObjectScoreEdit,
-        partsAppear: "NONE"
+        component: ObjectScoreEdit
     }, {
         id: WWAConsts.OBJECT_RANDOM,
         name: "ランダム選択",
-        component: ObjectRandomEdit,
-        partsAppear: "NONE"
+        component: ObjectRandomEdit
     }, {
         id: WWAConsts.OBJECT_SELECT,
         name: "二者択一",
         component: ObjectSelectEdit,
-        partsAppear: "SELECT_YES_NO"
+        partsAppear: PartsAppearSelectInput
     }, {
         id: WWAConsts.OBJECT_LOCALGATE,
         name: "ジャンプゲート",
         component: LocalGateEdit,
-        partsAppear: "APPEAR_10"
+        partsAppear: PartsAppearInput
     }
 ];

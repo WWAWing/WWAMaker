@@ -1,3 +1,5 @@
+import { PartsAppearEditComponent } from "./PartsAppearInput";
+
 // パーツの編集画面で使用される型をまとめたファイルです。
 
 /**
@@ -22,14 +24,6 @@ export type PartsEditAttributeChange = (value: string, attributeIndex: number) =
 export type PartsEditMessageChange = (value: string) => void;
 
 /**
- * 指定位置にパーツを出現で使用するコンポーネントを指定する型です。
- */
-export type PartsAppearType =
-    "NONE" | // 無し (使用しない)
-    "APPEAR_10" | // 10個
-    "SELECT_YES_NO"; // YESの5個分、NOの5個分
-
-/**
  * 物体パーツや背景パーツの種別に対応した編集画面の情報の型です。
  *     name: 名前 (パーツ種別のセレクトボックスに表示されます)
  *     component: コンポーネントそのもの
@@ -39,6 +33,6 @@ type PartsEditTableItem = {
     id: number,
     name: string,
     component: PartsEditComponent,
-    partsAppear: PartsAppearType
+    partsAppear?: PartsAppearEditComponent
 };
 export type PartsEditComponentTable = PartsEditTableItem[];
