@@ -5,6 +5,7 @@ import { loadMapdata } from './load/LoadStates';
 import { thunkToAction } from 'typescript-fsa-redux-thunk';
 import { setEditMode, EditMode } from './map/MapStates';
 import { StoreType } from './State';
+import saveMapdata from './common/saveMapdata';
 
 const mapStateToProps = (state: StoreType) => {
     return {
@@ -73,6 +74,7 @@ class MainToolbar extends React.Component<Props, State> {
                 <div>
                     <input type='text' value={this.state.mapdataFileName} onChange={this.changeMapdataFileName.bind(this)} />
                     <span onClick={this.clickOpenButton.bind(this)}>open</span>
+                    <span onClick={() => saveMapdata()}>save</span>
                     {this.editModeButton(EditMode.PUT_MAP, "背景パーツ設置")}
                     {this.editModeButton(EditMode.PUT_OBJECT, "物体パーツ設置")}
                     {this.editModeButton(EditMode.EDIT_MAP, "背景パーツ編集")}

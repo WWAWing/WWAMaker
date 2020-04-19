@@ -74,9 +74,7 @@ function getSystemMessageIds() {
 function createEmptyMessages() {
     const messageIds = getSystemMessageIds();
 
-    let emptyMessages: string[] = [];
-    messageIds.forEach(messageId => emptyMessages[messageId] = "");
-
+    let emptyMessages: string[] = messageIds.map(() => "");
     return emptyMessages;
 }
 
@@ -124,11 +122,10 @@ class SystemMessage extends React.Component<Props, SystemMessageField> {
         // FIXME: setState のメソッドの中に直接 event.target.value で値を入れると event.target が無いと例外が起こる
         const messageValue = event.target.value;
         this.setState(prevState => {
+            const newMessages = prevState.messages.slice();
+            newMessages[targetMessageId] = messageValue;
             return {
-                messages: {
-                    ...prevState.messages,
-                    [targetMessageId]: messageValue
-                }
+                messages: newMessages
             };
         });
     }

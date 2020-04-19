@@ -1,0 +1,17 @@
+{
+  "name": "wwamaker-saver",
+  "version": "0.0.1",
+  "description": "WWA Mapdata Save API",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "author": "WWA Wing Team",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@wwawing/common-interface": "^3.3.0",
+    "typescript": "^3.4.5"
+  },
+  "scripts": {
+    "build": "tsc -p ."
+  }
+}
