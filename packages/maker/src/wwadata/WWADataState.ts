@@ -184,12 +184,12 @@ export const WWADataReducer = reducerWithInitialState<WWAData | null>(null)
         const emptyAttribute = createEmptyPartsAttribute(payload.type);
         switch (payload.type) {
             case PartsType.OBJECT:
-                newState.objectAttribute[payload.number] = emptyAttribute;
                 newState.message[state.objectAttribute[payload.number][WWAConsts.ATR_STRING]] = "";
+                newState.objectAttribute[payload.number] = emptyAttribute;
                 break;
             case PartsType.MAP:
-                newState.mapAttribute[payload.number] = emptyAttribute;
                 newState.message[state.mapAttribute[payload.number][WWAConsts.ATR_STRING]] = "";
+                newState.mapAttribute[payload.number] = emptyAttribute;
         }
 
         return newState;
