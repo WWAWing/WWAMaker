@@ -38,6 +38,9 @@ export enum SystemMessage2 {
 // ここまで WWA Wing の wwa_data.ts と一緒
 // ここからは WWA Maker 独自
 
+/**
+ * 新規作成時のWWAデータです。
+ */
 export const defaultWWAData: WWAData = {
     version: WWAConsts.CURRENT_VERSION,
 
