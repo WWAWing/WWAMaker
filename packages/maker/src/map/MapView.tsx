@@ -120,8 +120,8 @@ class MapView extends React.Component<Props, State> {
         const [chipX, chipY, chipWidth, chipHeight] = getRect(
             mouseChipX,
             mouseChipY,
-            this.state.startEditMapPos?.chipX || mouseChipX,
-            this.state.startEditMapPos?.chipY || mouseChipY
+            this.state.startEditMapPos?.chipX,
+            this.state.startEditMapPos?.chipY
         );
 
         this.props.putParts({

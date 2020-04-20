@@ -133,9 +133,15 @@ export const defaultWWAData: WWAData = {
  * @return 
  */
 function createEmptyMap(size: number): number[][] {
-    return new Array<Array<number>>(size).fill(
-        new Array<number>(size).fill(0)
-    );
+    let emptyMap = [];
+    for (let y = 0; y < size; y++) {
+        let line = [];
+        for (let x = 0; x < size; x++) {
+            line.push(0);
+        }
+        emptyMap.push(line);
+    }
+    return emptyMap;
 }
 
 export type SystemMessageType = SystemMessage1 | SystemMessage2;

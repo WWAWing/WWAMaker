@@ -1,6 +1,7 @@
 import React, { RefObject } from 'react';
 import WWAConsts from '../classes/WWAConsts';
 import getRect from './getRect';
+import drawRedRect from './drawRedRect';
 
 /**
  * 一番下に敷かれる背景色です。
@@ -166,20 +167,16 @@ export default class MapCanvas extends React.Component<Props, State> {
             });
         });
 
-        this.renderCurrentPos();
-    }
-    
-    /**
-     * 矩形部分を描画します。
-     */
-    private renderCurrentPos() {
+        // 選択部分の描画
         const [chipX, chipY, chipWidth, chipHeight] = getRect(
             this.props.currentPos.chipX,
             this.props.currentPos.chipY,
-            this.props.startEditMapPos?.chipX || this.props.currentPos.chipX,
-            this.props.startEditMapPos?.chipY || this.props.currentPos.chipY
+            this.props.startEditMapPos?.chipX,
+            this.props.startEditMapPos?.chipY
         );
-        this.canvasContext?.strokeRect(
+
+        drawRedRect(
+            this.canvasContext,
             chipX * WWAConsts.CHIP_SIZE,
             chipY * WWAConsts.CHIP_SIZE,
             (chipWidth * WWAConsts.CHIP_SIZE) + WWAConsts.CHIP_SIZE,
