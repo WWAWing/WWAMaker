@@ -16,21 +16,38 @@ export default function clean(wwaData: WWAData): WWAData {
      */
     const objectMessageIndex = wwaData.objectAttribute.map((attribute) => attribute[WWAConsts.ATR_STRING]);
     const mapMessageIndex = wwaData.mapAttribute.map((attribute) => attribute[WWAConsts.ATR_STRING]);
+
+    let newMessageIndex = 0;
     /**
-     * lastItemIndex は最後のメッセージデータのインデックスで、計算を終えるとそのインデックス以降のメッセージデータは削除されます。
+     * 使用されていないメッセージを filter メソッドで消去します。
+     *     消去した分、メッセージのインデックスがシフトされるため、参照元のパーツ属性には新しいメッセージのインデックスを付与します。
      */
-    let lastItemIndex = 0;
-    newWWAData.message = wwaData.message.map((message, messageIndex) => {
-        if (objectMessageIndex.includes(messageIndex) || mapMessageIndex.includes(messageIndex)) {
-            lastItemIndex = messageIndex;
-            return message;
+    newWWAData.message = wwaData.message.filter((message, messageIndex) => {
+        // 2.x 以前で使用していたシステムメッセージの領域を確保
+        if (messageIndex < WWAConsts.MESSAGE_FIRST_CHARA) {
+            newMessageIndex++;
+            return true;
         }
-        return "";
+
+        const usedObjectPartsNumber = objectMessageIndex.findIndex(index => index === messageIndex);
+        if (usedObjectPartsNumber !== -1) {
+            newWWAData.objectAttribute[usedObjectPartsNumber][WWAConsts.ATR_STRING] = newMessageIndex;
+        }
+
+        const usedMapPartsNumber = mapMessageIndex.findIndex(index => index === messageIndex);
+        if (usedMapPartsNumber !== -1) {
+            newWWAData.mapAttribute[usedMapPartsNumber][WWAConsts.ATR_STRING] = newMessageIndex;
+        }
+
+        if (usedObjectPartsNumber !== -1 || usedMapPartsNumber !== -1) {
+            newMessageIndex++;
+            return true;
+        }
+
+        return false;
     });
 
-    // message は message[0] が空文字列のため、1つ分余裕を持たせる
-    newWWAData.messageNum = lastItemIndex + 1;
-    newWWAData.message.splice(newWWAData.messageNum);
+    newWWAData.messageNum = newWWAData.message.length;
 
 
     /**
