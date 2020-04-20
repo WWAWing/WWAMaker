@@ -33,5 +33,6 @@ export class WWAConsts {
     static FILE_DATA_MAX: number = (4000 + 1000 + 1000) * 1024;
 
     // 作成ツールのソースコードには無い、データ場所の定数一覧です。
+    static MESSAGE_FIRST_CHARA: number = 10;
     static DATA_MAP: number = 90;
 }
