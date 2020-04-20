@@ -10,6 +10,7 @@ import { setCurrentPos, EditMode } from './MapStates';
 import { putParts } from '../wwadata/WWADataState';
 import getRect from '../common/getRect';
 import getPosEachChip from '../common/getPosEachChip';
+import { showPartsEdit } from '../info/InfoPanelState';
 
 interface StateProps {
     wwaData: WWAData|null;
@@ -42,7 +43,8 @@ const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = stat
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return bindActionCreators({
         setCurrentPos: setCurrentPos,
-        putParts: putParts
+        putParts: putParts,
+        showPartsEdit: showPartsEdit
     }, dispatch);
 }
 
@@ -89,16 +91,36 @@ class MapView extends React.Component<Props, State> {
         };
     }
 
+    private handleMouseDown(x: number, y: number) {
+        switch (this.props.editParts.editMode) {
+            case EditMode.PUT_MAP:
+            case EditMode.PUT_OBJECT:
+            case EditMode.DELETE_OBJECT: {
+                const partsType = getEditPartsType(this.props.editParts.editMode);
+                if (partsType === null) {
+                    return;
+                }
+                this.startMapEdit(x, y, partsType);
+                break;
+            }
+            case EditMode.EDIT_MAP:
+            case EditMode.EDIT_OBJECT: {
+                const targetParts = this.getTargetParts();
+                if (targetParts === null) {
+                    return;
+                }
+                this.props.showPartsEdit(targetParts);
+            }
+        }
+    }
+
     /**
      * パーツの矩形配置を開始します。
      */
-    private startMapEdit(x: number, y: number) {
-        const partsType = getEditPartsType(this.props.editParts.editMode);
-        if (partsType === null) {
-            return;
-        }
+    private startMapEdit(x: number, y: number, partsType: PartsType) {
 
         const [chipX, chipY] = getPosEachChip(x, y);
+
         this.setState({
             editPartsType: partsType,
             startEditMapPos: {
@@ -171,6 +193,31 @@ class MapView extends React.Component<Props, State> {
         return 0;
     }
 
+    /**
+     * 現在の座標と編集状態からパーツの情報を取得します。
+     */
+    private getTargetParts(): { type: PartsType, number: number } | null {
+        if (this.props.wwaData === null) {
+            return null;
+        }
+
+        const { currentPos } = this.props;
+        switch (this.props.editParts.editMode) {
+            case EditMode.EDIT_MAP:
+                return {
+                    type: PartsType.MAP,
+                    number: this.props.wwaData.map[currentPos.chipY][currentPos.chipX]
+                }
+            case EditMode.EDIT_OBJECT:
+                return {
+                    type: PartsType.OBJECT,
+                    number: this.props.wwaData.mapObject[currentPos.chipY][currentPos.chipX]
+                }
+        }
+
+        return null;
+    }
+
     public render() {
         return (
             <div className={styles.mapView}>
@@ -184,7 +231,7 @@ class MapView extends React.Component<Props, State> {
                                 image={this.props.image}
                                 currentPos={this.props.currentPos}
                                 startEditMapPos={this.state.startEditMapPos}
-                                onMouseDown={this.startMapEdit.bind(this)}
+                                onMouseDown={this.handleMouseDown.bind(this)}
                                 onMouseMove={this.setCurrentPos.bind(this)}
                                 onMouseDrag={this.setCurrentPos.bind(this)}
                                 onMouseUp={this.endMapEdit.bind(this)}

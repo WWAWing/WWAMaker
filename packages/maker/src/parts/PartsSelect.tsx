@@ -55,19 +55,10 @@ class PartsSelect extends React.Component<Props, {}> {
     private handlePartsEdit(partsType: PartsType) {
         switch (partsType) {
             case PartsType.OBJECT:
-                if (this.props.objParts.number === 0) {
-                    alert("パーツ番号０の物体は編集できません。\nこのパーツはマップの物体を消去するときに指定してください。");
-                    return;
-                }
                 this.props.showPartsEdit({ type: partsType, number: this.props.objParts.number });
                 break;
-                case PartsType.MAP:
-                if (this.props.mapParts.number === 0) {
-                    alert("パーツ番号０の背景は編集できません。\nこのパーツはマップの背景を消去するときに指定してください。");
-                    return;
-                }
+            case PartsType.MAP:
                 this.props.showPartsEdit({ type: partsType, number: this.props.mapParts.number });
-                break;
         }
     }
 
