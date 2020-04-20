@@ -76,7 +76,7 @@ export const defaultWWAData: WWAData = {
     objectAttribute: [],
 
     worldPassword: '',
-    message: [],
+    message: createEmptyMessages(WWAConsts.MESSAGE_FIRST_CHARA),
     worldName: '',
     worldPassNumber: 0,
     charCGName: '',
@@ -159,6 +159,15 @@ export function createEmptyPartsAttribute(type: PartsType): number[] {
         case PartsType.MAP:
             return new Array<number>(WWAConsts.MAP_ATR_MAX).fill(0);
     }
+}
+
+function createEmptyMessages(count: number): string[] {
+    let emptyString = [];
+    for (let index = 0; index < count; index++) {
+        emptyString.push("");
+    }
+
+    return emptyString;
 }
 
 export enum ObjectPartsType {
