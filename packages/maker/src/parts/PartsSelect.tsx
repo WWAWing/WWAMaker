@@ -9,6 +9,7 @@ import { Dispatch, bindActionCreators } from 'redux';
 import { PartsType } from '../classes/WWAData';
 import { showPartsEdit } from '../info/InfoPanelState';
 import { Button, Segment, Label, Header } from 'semantic-ui-react';
+import { deleteParts } from '../wwadata/WWADataState';
 
 interface StateProps {
     wwaData: WWAData|null;
@@ -21,7 +22,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     return bindActionCreators({
         selectObjParts: selectObjParts,
         selectMapParts: selectMapParts,
-        showPartsEdit: showPartsEdit
+        showPartsEdit: showPartsEdit,
+        deleteParts: deleteParts
     }, dispatch);
 };
 
@@ -72,7 +74,15 @@ class PartsSelect extends React.Component<Props, {}> {
     }
 
     private handlePartsDelete(partsType: PartsType) {
+        const partsNumber = {
+            [PartsType.OBJECT]: this.props.objParts.number,
+            [PartsType.MAP]: this.props.mapParts.number
+        };
 
+        this.props.deleteParts({
+            type: partsType,
+            number: partsNumber[partsType]
+        });
     }
 
     private renderPartsList(partsType: PartsType) {

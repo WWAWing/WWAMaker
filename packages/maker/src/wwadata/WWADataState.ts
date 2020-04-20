@@ -1,5 +1,5 @@
 import { reducerWithInitialState } from "typescript-fsa-reducers";
-import { PartsType } from "../classes/WWAData";
+import { PartsType, createEmptyPartsAttribute } from "../classes/WWAData";
 import actionCreatorFactory from "typescript-fsa";
 import { WWAData } from "@wwawing/common-interface";
 import { MapFoundationField } from "../info/MapFoundation";
@@ -36,6 +36,13 @@ export const editParts = actionCreator<{
     attributes: number[],
     message: string
 }>("EDIT_PARTS");
+/**
+ * パーツを削除します。
+ */
+export const deleteParts = actionCreator<{
+    type: PartsType,
+    number: number
+}>("DELETE_PARTS");
 
 /**
  * 配列 target から指定した場所に番号を敷き詰めます。
@@ -164,6 +171,25 @@ export const WWADataReducer = reducerWithInitialState<WWAData | null>(null)
             newState.objectAttribute[payload.number] = payload.attributes;
             newState.objectAttribute[payload.number][WWAConsts.ATR_0] = payload.number;
             newState.objectAttribute[payload.number][WWAConsts.ATR_STRING] = newMessageIndex;
+        }
+
+        return newState;
+    })
+    .case(deleteParts, (state, payload) => {
+        if (state === null) {
+            return null;
+        }
+
+        const newState = Object.assign({}, state);
+        const emptyAttribute = createEmptyPartsAttribute(payload.type);
+        switch (payload.type) {
+            case PartsType.OBJECT:
+                newState.objectAttribute[payload.number] = emptyAttribute;
+                newState.message[state.objectAttribute[payload.number][WWAConsts.ATR_STRING]] = "";
+                break;
+            case PartsType.MAP:
+                newState.mapAttribute[payload.number] = emptyAttribute;
+                newState.message[state.mapAttribute[payload.number][WWAConsts.ATR_STRING]] = "";
         }
 
         return newState;
