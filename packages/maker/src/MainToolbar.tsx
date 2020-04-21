@@ -12,6 +12,7 @@ import saveMapdata from './common/saveMapdata';
 const mapStateToProps = (state: StoreType) => {
     return {
         currentPos: state.map.currentPos,
+        editMode: state.map.editMode,
         isInfoPanelOpened: state.info.isOpened
     };
 };
@@ -33,16 +34,14 @@ type DispatchProps = ReturnType<typeof mapDispatchToProps>;
 type Props = StateProps & DispatchProps;
 
 type State = {
-    mapdataFileName: string,
-    editMode: EditMode
+    mapdataFileName: string
 }
 
 class MainToolbar extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            mapdataFileName: 'wwamap.dat',
-            editMode: EditMode.PUT_MAP
+            mapdataFileName: 'wwamap.dat'
         };
     }
 
@@ -56,9 +55,6 @@ class MainToolbar extends React.Component<Props, State> {
      */
     private selectEditMode(editMode: EditMode) {
         this.props.setEditMode({ editMode: editMode });
-        this.setState({
-            editMode: editMode
-        });
     }
 
     /**
@@ -125,7 +121,7 @@ class MainToolbar extends React.Component<Props, State> {
 
     private editModeButton(editMode: EditMode, labelName: string) {
         return (
-            <Button active={this.state.editMode === editMode} onClick={() => this.selectEditMode(editMode)}>
+            <Button active={this.props.editMode === editMode} onClick={() => this.selectEditMode(editMode)}>
                 {labelName}
             </Button>
         );

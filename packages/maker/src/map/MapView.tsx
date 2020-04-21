@@ -6,7 +6,7 @@ import MapCanvas from '../common/MapCanvas';
 import { PartsType } from '../classes/WWAData';
 import { WWAData } from "@wwawing/common-interface";
 import { Dispatch, bindActionCreators } from 'redux';
-import { setCurrentPos, EditMode } from './MapStates';
+import { setCurrentPos, EditMode, setEditMode } from './MapStates';
 import { putParts } from '../wwadata/WWADataState';
 import getRect from '../common/getRect';
 import getPosEachChip from '../common/getPosEachChip';
@@ -47,7 +47,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
         putParts: putParts,
         showPartsEdit: showPartsEdit,
         selectObjParts: selectObjParts,
-        selectMapParts: selectMapParts
+        selectMapParts: selectMapParts,
+        setEditMode: setEditMode
     }, dispatch);
 }
 
@@ -210,14 +211,17 @@ class MapView extends React.Component<Props, State> {
         let targetPartsType: PartsType;
         let targetPartsNumber: number;
 
+        // 右クリックといった、パーツ種類が明示されていない場合
         if (type === undefined) {
             const objectPartsNumber = this.props.wwaData.mapObject[currentPos.chipY][currentPos.chipX];
             if (objectPartsNumber !== 0) {
                 targetPartsType = PartsType.OBJECT;
                 targetPartsNumber = objectPartsNumber;
+                this.props.setEditMode({ editMode: EditMode.PUT_OBJECT });
             } else {
                 targetPartsType = PartsType.MAP;
                 targetPartsNumber = this.props.wwaData.map[currentPos.chipY][currentPos.chipX];
+                this.props.setEditMode({ editMode: EditMode.PUT_MAP });
             }
         } else {
             targetPartsType = type;
@@ -243,6 +247,7 @@ class MapView extends React.Component<Props, State> {
                 this.props.selectObjParts({
                     number: targetPartsNumber
                 });
+                break;
             case PartsType.MAP:
                 this.props.selectMapParts({
                     number: targetPartsNumber

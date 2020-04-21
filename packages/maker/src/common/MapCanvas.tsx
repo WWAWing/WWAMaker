@@ -80,9 +80,6 @@ export default class MapCanvas extends React.Component<Props, State> {
     }
 
     private handleMouseDown(event: React.MouseEvent) {
-        // FIXME: 右クリックの動作をキャンセルしたはずなのにコンテキストメニューが表示されてしまう
-        event.preventDefault();
-
         this.setState({
             hasClick: true
         });
@@ -198,6 +195,7 @@ export default class MapCanvas extends React.Component<Props, State> {
                 onMouseDown={this.handleMouseDown.bind(this)}
                 onMouseMove={this.handleMouseMove.bind(this)}
                 onMouseUp={this.handleMouseUp.bind(this)}
+                onContextMenu={event => event.preventDefault()}
                 width={elementSize}
                 height={elementSize}
             ></canvas>
