@@ -11,6 +11,7 @@ import { putParts } from '../wwadata/WWADataState';
 import getRect from '../common/getRect';
 import getPosEachChip from '../common/getPosEachChip';
 import { showPartsEdit } from '../info/InfoPanelState';
+import { selectObjParts, selectMapParts } from '../parts/PartsState';
 
 interface StateProps {
     wwaData: WWAData|null;
@@ -44,7 +45,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     return bindActionCreators({
         setCurrentPos: setCurrentPos,
         putParts: putParts,
-        showPartsEdit: showPartsEdit
+        showPartsEdit: showPartsEdit,
+        selectObjParts: selectObjParts,
+        selectMapParts: selectMapParts
     }, dispatch);
 }
 
@@ -91,7 +94,12 @@ class MapView extends React.Component<Props, State> {
         };
     }
 
-    private handleMouseDown(x: number, y: number) {
+    private handleMouseDown(x: number, y: number, isRightClick: boolean) {
+        if (isRightClick) {
+            this.openEdit();
+            return;
+        }
+
         switch (this.props.editParts.editMode) {
             case EditMode.PUT_MAP:
             case EditMode.PUT_OBJECT:
@@ -104,13 +112,10 @@ class MapView extends React.Component<Props, State> {
                 break;
             }
             case EditMode.EDIT_MAP:
-            case EditMode.EDIT_OBJECT: {
-                const targetParts = this.getTargetParts();
-                if (targetParts === null) {
-                    return;
-                }
-                this.props.showPartsEdit(targetParts);
-            }
+                this.openEdit(PartsType.MAP);
+                break;
+            case EditMode.EDIT_OBJECT:
+                this.openEdit(PartsType.OBJECT);
         }
     }
 
@@ -194,28 +199,55 @@ class MapView extends React.Component<Props, State> {
     }
 
     /**
-     * 現在の座標と編集状態からパーツの情報を取得します。
+     * 現在の座標からパーツの情報を取得し、パーツの編集画面を開きます。
+     * @param type 編集中に選択しているパーツ種類 (指定がなければ物体パーツ→背景パーツ)
      */
-    private getTargetParts(): { type: PartsType, number: number } | null {
+    private openEdit(type?: PartsType) {
         if (this.props.wwaData === null) {
             return null;
         }
-
         const { currentPos } = this.props;
-        switch (this.props.editParts.editMode) {
-            case EditMode.EDIT_MAP:
-                return {
-                    type: PartsType.MAP,
-                    number: this.props.wwaData.map[currentPos.chipY][currentPos.chipX]
-                }
-            case EditMode.EDIT_OBJECT:
-                return {
-                    type: PartsType.OBJECT,
-                    number: this.props.wwaData.mapObject[currentPos.chipY][currentPos.chipX]
-                }
+        let targetPartsType: PartsType;
+        let targetPartsNumber: number;
+
+        if (type === undefined) {
+            const objectPartsNumber = this.props.wwaData.mapObject[currentPos.chipY][currentPos.chipX];
+            if (objectPartsNumber !== 0) {
+                targetPartsType = PartsType.OBJECT;
+                targetPartsNumber = objectPartsNumber;
+            } else {
+                targetPartsType = PartsType.MAP;
+                targetPartsNumber = this.props.wwaData.map[currentPos.chipY][currentPos.chipX];
+            }
+        } else {
+            targetPartsType = type;
+            switch (this.props.editParts.editMode) {
+                case EditMode.EDIT_MAP:
+                    targetPartsNumber = this.props.wwaData.map[currentPos.chipY][currentPos.chipX];
+                    break;
+                case EditMode.EDIT_OBJECT:
+                    targetPartsNumber = this.props.wwaData.mapObject[currentPos.chipY][currentPos.chipX];
+                    break;
+                default:
+                    return;
+            }
         }
 
-        return null;
+        this.props.showPartsEdit({
+            type: targetPartsType,
+            number: targetPartsNumber
+        });
+
+        switch (targetPartsType) {
+            case PartsType.OBJECT:
+                this.props.selectObjParts({
+                    number: targetPartsNumber
+                });
+            case PartsType.MAP:
+                this.props.selectMapParts({
+                    number: targetPartsNumber
+                });
+        }
     }
 
     public render() {

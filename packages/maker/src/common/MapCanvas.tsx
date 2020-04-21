@@ -20,7 +20,7 @@ interface Props {
         chipX: number,
         chipY: number
     } | null,
-    onMouseDown: (x: number, y: number) => void;
+    onMouseDown: (x: number, y: number, isRightClick: boolean) => void;
     onMouseMove: (x: number, y: number) => void;
     onMouseDrag: (x: number, y:number) => void;
     onMouseUp: (x: number, y: number) => void;
@@ -80,6 +80,9 @@ export default class MapCanvas extends React.Component<Props, State> {
     }
 
     private handleMouseDown(event: React.MouseEvent) {
+        // FIXME: 右クリックの動作をキャンセルしたはずなのにコンテキストメニューが表示されてしまう
+        event.preventDefault();
+
         this.setState({
             hasClick: true
         });
@@ -89,7 +92,7 @@ export default class MapCanvas extends React.Component<Props, State> {
             return;
         }
 
-        this.props.onMouseDown(mousePos.mouseX, mousePos.mouseY);
+        this.props.onMouseDown(mousePos.mouseX, mousePos.mouseY, event.button === 2);
     }
 
     /**
