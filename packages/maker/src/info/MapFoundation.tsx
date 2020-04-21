@@ -1,26 +1,26 @@
 import React from "react";
-import { MapStateToProps, connect } from "react-redux";
+import { connect } from "react-redux";
 import { StoreType } from "../State";
-import { WWAData } from "@wwawing/common-interface";
 import getPartsCountPerIncreaseUnit from "../common/getPartsCountPerIncreaseUnit";
 import { bindActionCreators, Dispatch } from "redux";
 import { setMapFoundation } from "../wwadata/WWADataState";
 import { Form, Button, Input, Icon } from "semantic-ui-react";
 import WWAConsts from "../classes/WWAConsts";
+import { thunkToAction } from "typescript-fsa-redux-thunk";
+import { loadImage } from "../load/LoadStates";
 
-interface StateProps {
-    wwaData: WWAData | null
-}
-
-const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = state => ({
+const mapStateToProps = (state: StoreType) => ({
     wwaData: state.wwaData
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return bindActionCreators({
+        reloadImage: thunkToAction(loadImage.action),
         setMapFoundation: setMapFoundation
     }, dispatch);
-}
+};
+
+type StateProps = ReturnType<typeof mapStateToProps>;
 
 type DispatchProps = ReturnType<typeof mapDispatchToProps>;
 
@@ -46,7 +46,7 @@ export interface MapFoundationField {
     mapPartsMax: number
 }
 
-export type State = {
+type State = {
     field?: MapFoundationField
 };
 
@@ -54,10 +54,6 @@ export type State = {
  * 基本設定の編集
  */
 class MapFoundation extends React.Component<Props, State> {
-
-    public static defaultProps: StateProps = {
-        wwaData: null
-    }
 
     constructor(props: Props) {
         super(props);
@@ -110,6 +106,10 @@ class MapFoundation extends React.Component<Props, State> {
     private send() {
         if (this.state.field === undefined) {
             return;
+        }
+
+        if (this.state.field.mapCGName !== this.props.wwaData?.mapCGName) {
+            this.props.reloadImage({ imagePath: this.state.field.mapCGName });
         }
 
         this.props.setMapFoundation(this.state.field);
