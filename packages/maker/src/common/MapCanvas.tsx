@@ -7,6 +7,10 @@ import styles from './MapCanvas.module.scss';
  * 一番下に敷かれる背景色です。
  */
 const MAP_CANVAS_BASE_COLOR = '#000';
+/**
+ * MapChunk のサイズです。一番左のチャンクは横幅1マス、一番上のチャンクは縦幅1マス増えます。
+ */
+const CHUNK_SIZE = 20;
 
 interface Props {
     map: number[][][];
@@ -119,18 +123,18 @@ export default class MapCanvas extends React.Component<Props, State> {
         this.props.map.forEach((layer, layerIndex) => {
 
             let screenY = 0;
-            for (let y = 1; y < layer.length; y += 10) {
+            for (let y = 1; y < layer.length; y += CHUNK_SIZE) {
 
                 map[screenY] = layerIndex === 0 ? [] : map[screenY];
                 const startSliceY = y === 1 ? 0 : y;
-                const endSliceY = y + 10;
+                const endSliceY = y + CHUNK_SIZE;
 
                 let screenX = 0;
-                for (let x = 1; x < layer[y].length; x += 10) {
+                for (let x = 1; x < layer[y].length; x += CHUNK_SIZE) {
 
                     map[screenY][screenX] = layerIndex === 0 ? [] : map[screenY][screenX];
                     const startSliceX = x === 1 ? 0 : x;
-                    const endSliceX = x + 10;
+                    const endSliceX = x + CHUNK_SIZE;
 
                     const targetMap = layer.slice(startSliceY, endSliceY).map(chunkLine => {
                         return chunkLine.slice(startSliceX, endSliceX).map(partsNumber => {
