@@ -2,6 +2,8 @@ import React, { RefObject } from 'react';
 import WWAConsts from '../classes/WWAConsts';
 import getRect from './getRect';
 import drawRedRect from './drawRedRect';
+import { Coord } from '@wwawing/common-interface';
+import styles from './MapCanvas.module.scss';
 
 /**
  * 一番下に敷かれる背景色です。
@@ -185,16 +187,134 @@ export default class MapCanvas extends React.Component<Props, State> {
     }
 
     public render() {
-        const elementSize = this.props.mapSize * WWAConsts.CHIP_SIZE;
+        /**
+         * 1つの Canvas 要素だけでは描画しきれないため、複数のチャンクに分割し、1チャンクに MapChunk コンポーネントを渡します。
+         */
+        let map: Coord[][][][][] = []; // チャンクY, チャンクX, レイヤー, マスY, マスX
+        this.props.map.forEach((layer, layerIndex) => {
+
+            let screenY = 0;
+            for (let y = 1; y < layer.length; y += 10) {
+
+                map[screenY] = layerIndex === 0 ? [] : map[screenY];
+                const startSliceY = y === 1 ? 0 : y;
+                const endSliceY = y + 10;
+
+                let screenX = 0;
+                for (let x = 1; x < layer[y].length; x += 10) {
+
+                    map[screenY][screenX] = layerIndex === 0 ? [] : map[screenY][screenX];
+                    const startSliceX = x === 1 ? 0 : x;
+                    const endSliceX = x + 10;
+
+                    const targetMap = layer.slice(startSliceY, endSliceY).map(chunkLine => {
+                        return chunkLine.slice(startSliceX, endSliceX).map(partsNumber => {
+                            return {
+                                x: this.props.attribute[layerIndex][partsNumber][WWAConsts.ATR_X],
+                                y: this.props.attribute[layerIndex][partsNumber][WWAConsts.ATR_Y]
+                            };
+                        });
+                    });
+
+                    map[screenY][screenX].push(targetMap);
+                    screenX++;
+                }
+
+                screenY++;
+            }
+        });
+
+        return (
+            <div className={styles.mapCanvasWrapper}>
+                <div className={styles.mapCanvas}>
+                    {map.map((chunkLine, chunkLineIndex) => (
+                        <div className={styles.mapCanvasLine} key={chunkLineIndex}>
+                            {chunkLine.map((chunk, chunkColumnIndex) => {
+                                return (
+                                    <MapChunk
+                                        key={chunkColumnIndex}
+                                        map={chunk}
+                                        image={this.props.image}
+                                    />
+                                )
+                            })}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+}
+
+/**
+ * 1画面程度の画面を描画する Canvas 要素です。
+ *     プロパティ map はイメージ画像で参照される場所の座標を記載した配列になっています。
+ */
+class MapChunk extends React.Component<{
+    map: Coord[][][],
+    image: CanvasImageSource
+}> {
+    private canvasRef: React.RefObject<HTMLCanvasElement>;
+
+    constructor(props: MapChunk["props"]) {
+        super(props);
+        this.canvasRef = React.createRef();
+    }
+
+    componentDidUpdate() {
+        this.draw();
+    }
+
+    private draw() {
+        if (this.canvasRef.current === null) {
+            return;
+        }
+        const context = this.canvasRef.current.getContext('2d');
+        if (context === null) {
+            return;
+        }
+
+        const elementSize = this.getElementSize();
+        context.fillStyle = MAP_CANVAS_BASE_COLOR;
+        context.fillRect(0, 0, elementSize.x, elementSize.y);
+
+        this.props.map.forEach((layer, index) => {
+            layer.forEach((line, y) => {
+                line.forEach((imageCropCoord, x) => {
+                    if (imageCropCoord.x === 0 && imageCropCoord.y === 0) {
+                        return;
+                    }
+                    context.drawImage(
+                        this.props.image,
+                        imageCropCoord.x,
+                        imageCropCoord.y,
+                        WWAConsts.CHIP_SIZE,
+                        WWAConsts.CHIP_SIZE,
+                        x * WWAConsts.CHIP_SIZE,
+                        y * WWAConsts.CHIP_SIZE,
+                        WWAConsts.CHIP_SIZE,
+                        WWAConsts.CHIP_SIZE
+                    );
+                });
+            });
+        });
+    }
+
+    private getElementSize(): Coord {
+        return {
+            x: this.props.map[0][0].length * WWAConsts.CHIP_SIZE,
+            y: this.props.map[0].length * WWAConsts.CHIP_SIZE
+        };
+    }
+
+    public render() {
+        const elementSize = this.getElementSize();
         return (
             <canvas
                 ref={this.canvasRef}
-                onMouseDown={this.handleMouseDown.bind(this)}
-                onMouseMove={this.handleMouseMove.bind(this)}
-                onMouseUp={this.handleMouseUp.bind(this)}
-                width={elementSize}
-                height={elementSize}
-            ></canvas>
-        )
+                width={elementSize.x}
+                height={elementSize.y}
+            />
+        );
     }
-}
+};

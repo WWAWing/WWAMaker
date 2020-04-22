@@ -1,0 +1,17 @@
+.mapCanvasWrapper {
+    overflow: auto;
+    position: relative;
+    line-height: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.mapCanvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.mapCanvasLine {
+    white-space: nowrap;
+}

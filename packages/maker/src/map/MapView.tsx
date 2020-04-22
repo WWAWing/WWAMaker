@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect, MapStateToProps } from 'react-redux';
 import { StoreType } from '../State';
-import styles from './MapView.module.scss';
 import MapCanvas from '../common/MapCanvas';
 import { PartsType } from '../classes/WWAData';
 import { WWAData } from "@wwawing/common-interface";
@@ -172,27 +171,23 @@ class MapView extends React.Component<Props, State> {
     }
 
     public render() {
+        if (this.props.wwaData === null || this.props.image === null) {
+            return null;
+        }
+
         return (
-            <div className={styles.mapView}>
-                {(this.props.wwaData !== null && this.props.image !== null) &&
-                    <>
-                        <div className={styles.mapCanvas}>
-                            <MapCanvas
-                                map={[this.props.wwaData.map, this.props.wwaData.mapObject]}
-                                attribute={[this.props.wwaData.mapAttribute, this.props.wwaData.objectAttribute]}
-                                mapSize={this.props.wwaData.mapWidth}
-                                image={this.props.image}
-                                currentPos={this.props.currentPos}
-                                startEditMapPos={this.state.startEditMapPos}
-                                onMouseDown={this.startMapEdit.bind(this)}
-                                onMouseMove={this.setCurrentPos.bind(this)}
-                                onMouseDrag={this.setCurrentPos.bind(this)}
-                                onMouseUp={this.endMapEdit.bind(this)}
-                            ></MapCanvas>
-                        </div>
-                    </>
-                }
-            </div>
+            <MapCanvas
+                map={[this.props.wwaData.map, this.props.wwaData.mapObject]}
+                attribute={[this.props.wwaData.mapAttribute, this.props.wwaData.objectAttribute]}
+                mapSize={this.props.wwaData.mapWidth}
+                image={this.props.image}
+                currentPos={this.props.currentPos}
+                startEditMapPos={this.state.startEditMapPos}
+                onMouseDown={this.startMapEdit.bind(this)}
+                onMouseMove={this.setCurrentPos.bind(this)}
+                onMouseDrag={this.setCurrentPos.bind(this)}
+                onMouseUp={this.endMapEdit.bind(this)}
+            />
         );
     }
 }
