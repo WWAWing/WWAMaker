@@ -1,6 +1,5 @@
 import React, { RefObject } from 'react';
 import WWAConsts from '../classes/WWAConsts';
-import drawRedRect from './drawRedRect';
 import { Coord } from '@wwawing/common-interface';
 import styles from './MapCanvas.module.scss';
 
@@ -14,10 +13,6 @@ interface Props {
     attribute: number[][][];
     mapSize: number;
     image: CanvasImageSource;
-    currentPos: {
-        chipX: number,
-        chipY: number
-    },
     selectRect?: {
         chipX: number,
         chipY: number,
@@ -39,16 +34,11 @@ interface State {
  */
 export default class MapCanvas extends React.Component<Props, State> {
     private elementRef: RefObject<HTMLDivElement>;
-    private selectRectRef: RefObject<HTMLCanvasElement>;
     public static defaultProps: Props = {
         map: [],
         attribute: [],
         mapSize: WWAConsts.MAP_SIZE_DEFAULT,
         image: new Image(),
-        currentPos: {
-            chipX: 0,
-            chipY: 0
-        },
         onMouseDown: () => {},
         onMouseMove: () => {},
         onMouseDrag: () => {},
@@ -61,18 +51,6 @@ export default class MapCanvas extends React.Component<Props, State> {
             hasClick: false
         };
         this.elementRef = React.createRef();
-        this.selectRectRef = React.createRef();
-    }
-
-    public componentDidMount() {
-        this.drawSelectRect();
-    }
-
-    public componentDidUpdate(prevProps: Props) {
-        if (this.props.selectRect?.chipWidth !== prevProps.selectRect?.chipWidth ||
-            this.props.selectRect?.chipHeight !== prevProps.selectRect?.chipHeight) {
-            this.drawSelectRect();
-        }
     }
 
     private handleMouseDown(event: React.MouseEvent) {
@@ -131,25 +109,6 @@ export default class MapCanvas extends React.Component<Props, State> {
             mouseX: clientX - rect.left,
             mouseY: clientY - rect.top
         }
-    }
-
-    private drawSelectRect() {
-        if (this.selectRectRef.current === null || this.props.selectRect === undefined) {
-            return;
-        }
-
-        const canvasContext = this.selectRectRef.current.getContext('2d');
-        if (canvasContext === null) {
-            return;
-        }
-
-        drawRedRect(
-            canvasContext,
-            0,
-            0,
-            this.selectRectRef.current.width,
-            this.selectRectRef.current.height
-        );
     }
 
     public render() {
@@ -214,14 +173,12 @@ export default class MapCanvas extends React.Component<Props, State> {
                     ))}
                 </div>
                 {this.props.selectRect !== undefined &&
-                    <canvas
+                    <div
                         className={styles.selectRect}
-                        ref={this.selectRectRef}
-                        width={this.props.selectRect.chipWidth * WWAConsts.CHIP_SIZE}
-                        height={this.props.selectRect.chipHeight * WWAConsts.CHIP_SIZE}
                         style={{
-                            left: this.props.selectRect.chipX * WWAConsts.CHIP_SIZE,
-                            top: this.props.selectRect.chipY * WWAConsts.CHIP_SIZE
+                            transform: `translate(${this.props.selectRect.chipX * WWAConsts.CHIP_SIZE}px, ${this.props.selectRect.chipY * WWAConsts.CHIP_SIZE}px)`,
+                            width: this.props.selectRect.chipWidth * WWAConsts.CHIP_SIZE,
+                            height: this.props.selectRect.chipHeight * WWAConsts.CHIP_SIZE
                         }}
                     />
                 }
