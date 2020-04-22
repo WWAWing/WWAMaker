@@ -10,6 +10,13 @@
     position: absolute;
     left: 0;
     top: 0;
+    z-index: 0;
+}
+
+.selectRect {
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .mapCanvasLine {

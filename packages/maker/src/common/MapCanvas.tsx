@@ -1,6 +1,5 @@
 import React, { RefObject } from 'react';
 import WWAConsts from '../classes/WWAConsts';
-import getRect from './getRect';
 import drawRedRect from './drawRedRect';
 import { Coord } from '@wwawing/common-interface';
 import styles from './MapCanvas.module.scss';
@@ -19,10 +18,12 @@ interface Props {
         chipX: number,
         chipY: number
     },
-    startEditMapPos: {
+    selectRect?: {
         chipX: number,
-        chipY: number
-    } | null,
+        chipY: number,
+        chipWidth: number,
+        chipHeight: number
+    },
     onMouseDown: (x: number, y: number) => void;
     onMouseMove: (x: number, y: number) => void;
     onMouseDrag: (x: number, y:number) => void;
@@ -37,8 +38,8 @@ interface State {
  * マップを表示する Canvas です。
  */
 export default class MapCanvas extends React.Component<Props, State> {
-    private canvasRef: RefObject<HTMLCanvasElement>;
-    private canvasContext: CanvasRenderingContext2D | null;
+    private elementRef: RefObject<HTMLDivElement>;
+    private selectRectRef: RefObject<HTMLCanvasElement>;
     public static defaultProps: Props = {
         map: [],
         attribute: [],
@@ -48,7 +49,6 @@ export default class MapCanvas extends React.Component<Props, State> {
             chipX: 0,
             chipY: 0
         },
-        startEditMapPos: null,
         onMouseDown: () => {},
         onMouseMove: () => {},
         onMouseDrag: () => {},
@@ -60,26 +60,19 @@ export default class MapCanvas extends React.Component<Props, State> {
         this.state = {
             hasClick: false
         };
-        this.canvasRef = React.createRef();
-        this.canvasContext = null;
+        this.elementRef = React.createRef();
+        this.selectRectRef = React.createRef();
     }
 
     public componentDidMount() {
-        if (this.canvasRef.current !== null) {
-            this.canvasContext = this.canvasRef.current.getContext('2d');
-            this.drawMap();
+        this.drawSelectRect();
+    }
+
+    public componentDidUpdate(prevProps: Props) {
+        if (this.props.selectRect?.chipWidth !== prevProps.selectRect?.chipWidth ||
+            this.props.selectRect?.chipHeight !== prevProps.selectRect?.chipHeight) {
+            this.drawSelectRect();
         }
-    }
-
-    public componentDidUpdate() {
-        /**
-         * @todo 遠くないうちに、マップまたはパーツ画像が変更されたことを検出するようにしたい。
-         */
-        this.drawMap();
-    }
-
-    private getElementSize() {
-        return this.props.mapSize * WWAConsts.CHIP_SIZE;
     }
 
     private handleMouseDown(event: React.MouseEvent) {
@@ -129,60 +122,33 @@ export default class MapCanvas extends React.Component<Props, State> {
      * @returns 要素内の現在位置 (px単位) Canvas の要素が取得できなければ null
      */
     private getMousePos(clientX: number, clientY: number): { mouseX: number, mouseY: number } | null {
-        const canvasRect = this.canvasRef.current?.getBoundingClientRect();
-        if (!canvasRect) {
+        const rect = this.elementRef.current?.getBoundingClientRect();
+        if (!rect) {
             return null;
         }
 
         return {
-            mouseX: clientX - canvasRect.left,
-            mouseY: clientY - canvasRect.top
+            mouseX: clientX - rect.left,
+            mouseY: clientY - rect.top
         }
     }
 
-    private drawMap() {
-        if (this.canvasContext === null) {
+    private drawSelectRect() {
+        if (this.selectRectRef.current === null || this.props.selectRect === undefined) {
             return;
         }
 
-        this.canvasContext.fillStyle = MAP_CANVAS_BASE_COLOR;
-        this.canvasContext.fillRect(0, 0, this.getElementSize(), this.getElementSize());
-
-        this.props.map.forEach((layer, index) => {
-            layer.forEach((line, y) => {
-                line.forEach((partsNumber, x) => {
-                    if (partsNumber === 0) {
-                        return;
-                    }
-                    this.canvasContext?.drawImage(
-                        this.props.image,
-                        this.props.attribute[index][partsNumber][WWAConsts.ATR_X],
-                        this.props.attribute[index][partsNumber][WWAConsts.ATR_Y],
-                        WWAConsts.CHIP_SIZE,
-                        WWAConsts.CHIP_SIZE,
-                        x * WWAConsts.CHIP_SIZE,
-                        y * WWAConsts.CHIP_SIZE,
-                        WWAConsts.CHIP_SIZE,
-                        WWAConsts.CHIP_SIZE
-                    );
-                });
-            });
-        });
-
-        // 選択部分の描画
-        const [chipX, chipY, chipWidth, chipHeight] = getRect(
-            this.props.currentPos.chipX,
-            this.props.currentPos.chipY,
-            this.props.startEditMapPos?.chipX,
-            this.props.startEditMapPos?.chipY
-        );
+        const canvasContext = this.selectRectRef.current.getContext('2d');
+        if (canvasContext === null) {
+            return;
+        }
 
         drawRedRect(
-            this.canvasContext,
-            chipX * WWAConsts.CHIP_SIZE,
-            chipY * WWAConsts.CHIP_SIZE,
-            (chipWidth * WWAConsts.CHIP_SIZE) + WWAConsts.CHIP_SIZE,
-            (chipHeight * WWAConsts.CHIP_SIZE) + WWAConsts.CHIP_SIZE
+            canvasContext,
+            0,
+            0,
+            this.selectRectRef.current.width,
+            this.selectRectRef.current.height
         );
     }
 
@@ -226,7 +192,13 @@ export default class MapCanvas extends React.Component<Props, State> {
 
         return (
             <div className={styles.mapCanvasWrapper}>
-                <div className={styles.mapCanvas}>
+                <div
+                    className={styles.mapCanvas}
+                    ref={this.elementRef}
+                    onMouseDown={this.handleMouseDown.bind(this)}
+                    onMouseUp={this.handleMouseUp.bind(this)}
+                    onMouseMove={this.handleMouseMove.bind(this)}
+                >
                     {map.map((chunkLine, chunkLineIndex) => (
                         <div className={styles.mapCanvasLine} key={chunkLineIndex}>
                             {chunkLine.map((chunk, chunkColumnIndex) => {
@@ -241,6 +213,18 @@ export default class MapCanvas extends React.Component<Props, State> {
                         </div>
                     ))}
                 </div>
+                {this.props.selectRect !== undefined &&
+                    <canvas
+                        className={styles.selectRect}
+                        ref={this.selectRectRef}
+                        width={this.props.selectRect.chipWidth * WWAConsts.CHIP_SIZE}
+                        height={this.props.selectRect.chipHeight * WWAConsts.CHIP_SIZE}
+                        style={{
+                            left: this.props.selectRect.chipX * WWAConsts.CHIP_SIZE,
+                            top: this.props.selectRect.chipY * WWAConsts.CHIP_SIZE
+                        }}
+                    />
+                }
             </div>
         );
     }

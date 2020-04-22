@@ -126,8 +126,8 @@ class MapView extends React.Component<Props, State> {
         this.props.putParts({
             x: chipX,
             y: chipY,
-            width: chipWidth + 1,
-            height: chipHeight + 1,
+            width: chipWidth,
+            height: chipHeight,
             partsType: this.state.editPartsType,
             partsNumber: this.getEditPartsNumber()
         });
@@ -170,6 +170,17 @@ class MapView extends React.Component<Props, State> {
         return 0;
     }
 
+    private getSelectRect(): MapCanvas["props"]["selectRect"] {
+        const [chipX, chipY, chipWidth, chipHeight] = getRect(
+            this.props.currentPos.chipX,
+            this.props.currentPos.chipY,
+            this.state.startEditMapPos?.chipX,
+            this.state.startEditMapPos?.chipY
+        );
+
+        return { chipX, chipY, chipWidth, chipHeight };
+    }
+
     public render() {
         if (this.props.wwaData === null || this.props.image === null) {
             return null;
@@ -182,7 +193,7 @@ class MapView extends React.Component<Props, State> {
                 mapSize={this.props.wwaData.mapWidth}
                 image={this.props.image}
                 currentPos={this.props.currentPos}
-                startEditMapPos={this.state.startEditMapPos}
+                selectRect={this.getSelectRect()}
                 onMouseDown={this.startMapEdit.bind(this)}
                 onMouseMove={this.setCurrentPos.bind(this)}
                 onMouseDrag={this.setCurrentPos.bind(this)}
