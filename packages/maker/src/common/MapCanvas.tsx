@@ -206,8 +206,26 @@ class MapChunk extends React.Component<{
         this.canvasRef = React.createRef();
     }
 
+    componentDidMount() {
+        this.draw();
+    }
+
     componentDidUpdate() {
         this.draw();
+    }
+
+    /**
+     * 各マスの変更を確認し、変更が見つかった場合にだけ componentDidUpdate を実行させます。
+     */
+    shouldComponentUpdate(prevProps: MapChunk["props"]) {
+        return prevProps.map.some((line, lineIndex) =>
+            line.some((layer, layerIndex) =>
+                layer.some((imageCoord, index) =>
+                    imageCoord.x !== this.props.map[lineIndex][layerIndex][index].x ||
+                    imageCoord.y !== this.props.map[lineIndex][layerIndex][index].y
+                )
+            )
+        );
     }
 
     private draw() {
