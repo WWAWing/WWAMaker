@@ -6,7 +6,8 @@ interface Props {
     cropY: number,
     image: CanvasImageSource,
     isSelected: boolean,
-    onClick?: () => void
+    onClick?: () => void,
+    onDoubleClick?: () => void
 }
 
 export default class PartsChip extends React.Component<Props, {}> {
@@ -55,7 +56,13 @@ export default class PartsChip extends React.Component<Props, {}> {
     public render() {
         // 原作の作成ツールではマウスボタンを押したタイミングで反応するため、その形に従うようにしている
         return (
-            <canvas ref={this.canvasRef} width={WWAConsts.CHIP_SIZE} height={WWAConsts.CHIP_SIZE} onMouseDown={this.props.onClick}></canvas>
+            <canvas
+                ref={this.canvasRef}
+                width={WWAConsts.CHIP_SIZE}
+                height={WWAConsts.CHIP_SIZE}
+                onMouseDown={this.props.onClick}
+                onDoubleClick={this.props.onDoubleClick}
+            />
         )
     }
 }

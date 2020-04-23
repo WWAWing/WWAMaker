@@ -110,6 +110,7 @@ class PartsSelect extends React.Component<Props, {}> {
                     attribute={partsAttribute}
                     selectPartsNumber={partsNumber}
                     onPartsSelect={this.handlePartsSelect.bind(this)}
+                    onPartsEdit={this.handlePartsEdit.bind(this)}
                     image={this.props.image}
                 />
 
