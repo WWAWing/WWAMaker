@@ -38,6 +38,9 @@ export enum SystemMessage2 {
 // ここまで WWA Wing の wwa_data.ts と一緒
 // ここからは WWA Maker 独自
 
+/**
+ * 新規作成時のWWAデータです。
+ */
 export const defaultWWAData: WWAData = {
     version: WWAConsts.CURRENT_VERSION,
 
@@ -73,7 +76,7 @@ export const defaultWWAData: WWAData = {
     objectAttribute: [],
 
     worldPassword: '',
-    message: [],
+    message: createEmptyMessages(WWAConsts.MESSAGE_FIRST_CHARA),
     worldName: '',
     worldPassNumber: 0,
     charCGName: '',
@@ -130,9 +133,15 @@ export const defaultWWAData: WWAData = {
  * @return 
  */
 function createEmptyMap(size: number): number[][] {
-    return new Array<Array<number>>(size).fill(
-        new Array<number>(size).fill(0)
-    );
+    let emptyMap = [];
+    for (let y = 0; y < size; y++) {
+        let line = [];
+        for (let x = 0; x < size; x++) {
+            line.push(0);
+        }
+        emptyMap.push(line);
+    }
+    return emptyMap;
 }
 
 export type SystemMessageType = SystemMessage1 | SystemMessage2;
@@ -150,6 +159,15 @@ export function createEmptyPartsAttribute(type: PartsType): number[] {
         case PartsType.MAP:
             return new Array<number>(WWAConsts.MAP_ATR_MAX).fill(0);
     }
+}
+
+function createEmptyMessages(count: number): string[] {
+    let emptyString = [];
+    for (let index = 0; index < count; index++) {
+        emptyString.push("");
+    }
+
+    return emptyString;
 }
 
 export enum ObjectPartsType {

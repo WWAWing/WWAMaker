@@ -23,6 +23,13 @@ interface LoadWWADataState {
     mapdataFileName: string
 }
 
+/**
+ * 画像読み込み操作を行う際に指定が必要な interface です。
+ */
+interface LoadImageState {
+    imagePath: string
+}
+
 const actionCreator = actionCreatorFactory();
 const actionCreatorAsync = asyncFactory<LoadWWADataState>(actionCreator);
 
@@ -122,6 +129,19 @@ export const loadMapdata = actionCreatorAsync<LoadWWADataState, void, LoaderErro
 );
 
 /**
+ * イメージを読み込むアクションです。
+ *     基本設定の編集のような、画像だけの再読み込みを必要とする場合に使用します。
+ */
+export const loadImage = actionCreatorAsync<LoadImageState, void, LoaderError>(
+    'LOAD_IMAGE',
+    async (params, dispatch) => {
+        // イメージ画像の読み込み
+        const imageData = await loadImagePromise(params.imagePath);
+        dispatch(setImage({ imageSource: imageData }));
+    }
+);
+
+/**
  * ローディング状態を記録します。
  *     typescript-fsa-redux-thunk では、 開始→エラー/完了 しかアクションを起こすことができません。
  *     このメソッドは、その「開始」と「エラー/完了」の間で発生する途中経過に対応したアクションになります。
@@ -145,4 +165,8 @@ export const LoadReducer = reducerWithInitialState(INITIAL_STATE)
     .case(loadMapdata.async.done, (state) => ({
         ...state,
         progress: null
+    }))
+    .case(loadImage.async.failed, (state, params) => ({
+        ...state,
+        error: params.error
     }))

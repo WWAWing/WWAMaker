@@ -94,4 +94,6 @@ export default class WWAConsts {
 
     // 相対座標の最大値
     static RELATIVE_COORD_MAX: number = 100;
+
+    static MESSAGE_FIRST_CHARA: number = 10;
 }

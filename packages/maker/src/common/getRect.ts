@@ -12,7 +12,11 @@ type RectType = [number, number, number, number];
  * @param secondaryY
  * @returns RectType を参照のこと。
  */
-export default function getRect(primaryX: number, primaryY: number, secondaryX: number, secondaryY: number): RectType {
+export default function getRect(primaryX: number, primaryY: number, secondaryX?: number, secondaryY?: number): RectType {
+    if (secondaryX === undefined || secondaryY === undefined) {
+        return [primaryX, primaryY, 0, 0];
+    }
+
     const x = Math.min(primaryX, secondaryX);
     const y = Math.min(primaryY, secondaryY);
     const width = Math.abs(primaryX - secondaryX);
