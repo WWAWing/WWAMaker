@@ -54,13 +54,18 @@ class PartsSelect extends React.Component<Props, {}> {
         }
     }
 
-    private handlePartsEdit(partsType: PartsType) {
+    /**
+     * パーツ編集イベントが発生した際に実行するメソッドです。
+     * @param partsNumber 編集したいパーツ番号 (子コンポーネントの PartsChip 側で呼び出す際に必要)
+     * @param partsType 対象のパーツ種類
+     */
+    private handlePartsEdit(partsNumber: number, partsType: PartsType) {
         switch (partsType) {
             case PartsType.OBJECT:
-                this.props.showPartsEdit({ type: partsType, number: this.props.objParts.number });
+                this.props.showPartsEdit({ type: partsType, number: partsNumber });
                 break;
             case PartsType.MAP:
-                this.props.showPartsEdit({ type: partsType, number: this.props.mapParts.number });
+                this.props.showPartsEdit({ type: partsType, number: partsNumber });
         }
     }
 
@@ -81,7 +86,7 @@ class PartsSelect extends React.Component<Props, {}> {
     }
 
     private renderPartsList(partsType: PartsType) {
-        let partsAttribute, partsNumber, title;
+        let partsAttribute, partsNumber: number, title;
         switch (partsType) {
             case PartsType.OBJECT:
                 partsAttribute = this.props.wwaData?.objectAttribute;
@@ -120,7 +125,7 @@ class PartsSelect extends React.Component<Props, {}> {
                         <Label.Detail>{partsNumber}</Label.Detail>
                     </Label>
                     <Button.Group floated="right">
-                        <Button onClick={() => this.handlePartsEdit(partsType)}>選択パーツ編集</Button>
+                        <Button onClick={() => this.handlePartsEdit(partsNumber, partsType)}>選択パーツ編集</Button>
                         <Button onClick={() => this.handlePartsDelete(partsType)}>選択パーツ削除</Button>
                     </Button.Group>
                 </Segment>

@@ -6,8 +6,9 @@ interface Props {
     cropY: number,
     image: CanvasImageSource,
     isSelected: boolean,
-    onClick?: () => void,
-    onDoubleClick?: () => void
+    onClick?: (event: React.MouseEvent<HTMLCanvasElement>) => void,
+    onDoubleClick?: (event: React.MouseEvent<HTMLCanvasElement>) => void,
+    onContextMenu?: (event: React.MouseEvent<HTMLCanvasElement>) => void
 }
 
 export default class PartsChip extends React.Component<Props, {}> {
@@ -37,6 +38,13 @@ export default class PartsChip extends React.Component<Props, {}> {
             || prevProps.isSelected !== this.props.isSelected;
     }
 
+    private handleContextMenu(event: React.MouseEvent<HTMLCanvasElement>) {
+        if (this.props.onContextMenu !== undefined) {
+            event.preventDefault();
+            this.props.onContextMenu(event);
+        }
+    }
+
     private draw() {
         if (this.canvasContext === null) {
             return;
@@ -62,6 +70,7 @@ export default class PartsChip extends React.Component<Props, {}> {
                 height={WWAConsts.CHIP_SIZE}
                 onMouseDown={this.props.onClick}
                 onDoubleClick={this.props.onDoubleClick}
+                onContextMenu={this.handleContextMenu.bind(this)}
             />
         )
     }
