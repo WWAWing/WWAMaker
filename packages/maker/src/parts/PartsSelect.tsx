@@ -74,14 +74,18 @@ class PartsSelect extends React.Component<Props, {}> {
     }
 
     private handlePartsDelete(partsType: PartsType) {
-        const partsNumber = {
-            [PartsType.OBJECT]: this.props.objParts.number,
-            [PartsType.MAP]: this.props.mapParts.number
-        };
+        const partsNumber = (() => {
+            switch (partsType) {
+                case PartsType.OBJECT:
+                    return this.props.objParts.number;
+                case PartsType.MAP:
+                    return this.props.mapParts.number;
+            }
+        })();
 
         this.props.deleteParts({
             type: partsType,
-            number: partsNumber[partsType]
+            number: partsNumber
         });
     }
 
