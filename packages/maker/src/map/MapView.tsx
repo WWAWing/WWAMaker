@@ -95,12 +95,7 @@ class MapView extends React.Component<Props, State> {
         };
     }
 
-    private handleMouseDown(x: number, y: number, isRightClick: boolean) {
-        if (isRightClick) {
-            this.openEdit();
-            return;
-        }
-
+    private handleMouseDown(x: number, y: number) {
         switch (this.props.editParts.editMode) {
             case EditMode.PUT_MAP:
             case EditMode.PUT_OBJECT:
@@ -272,6 +267,7 @@ class MapView extends React.Component<Props, State> {
                                 onMouseMove={this.setCurrentPos.bind(this)}
                                 onMouseDrag={this.setCurrentPos.bind(this)}
                                 onMouseUp={this.endMapEdit.bind(this)}
+                                onContextMenu={() => this.openEdit()}
                             ></MapCanvas>
                         </div>
                     </>

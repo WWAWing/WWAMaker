@@ -21,10 +21,11 @@ interface Props {
         chipX: number,
         chipY: number
     } | null,
-    onMouseDown: (x: number, y: number, isRightClick: boolean) => void;
+    onMouseDown: (x: number, y: number) => void;
     onMouseMove: (x: number, y: number) => void;
     onMouseDrag: (x: number, y:number) => void;
     onMouseUp: (x: number, y: number) => void;
+    onContextMenu?: (x: number, y: number) => void;
 }
 
 interface State {
@@ -81,6 +82,11 @@ export default class MapCanvas extends React.Component<Props, State> {
     }
 
     private handleMouseDown(event: React.MouseEvent) {
+        // 右クリックによるコンテキストメニューの表示では、クリックイベントも同時に行われるので、その場合は処置をキャンセルします。
+        if (event.button === 2 && this.props.onContextMenu !== undefined) {
+            return;
+        }
+
         this.setState({
             hasClick: true
         });
@@ -90,7 +96,7 @@ export default class MapCanvas extends React.Component<Props, State> {
             return;
         }
 
-        this.props.onMouseDown(mousePos.mouseX, mousePos.mouseY, event.button === 2);
+        this.props.onMouseDown(mousePos.mouseX, mousePos.mouseY);
     }
 
     /**
@@ -120,6 +126,20 @@ export default class MapCanvas extends React.Component<Props, State> {
         }
 
         return this.props.onMouseUp(mousePos.mouseX, mousePos.mouseY);
+    }
+
+    private handleContextMenu(event: React.MouseEvent) {
+        if (this.props.onContextMenu === undefined) {
+            return;
+        }
+        event.preventDefault();
+
+        const mousePos = this.getMousePos(event.clientX, event.clientY);
+        if (!mousePos) {
+            return;
+        }
+
+        this.props.onContextMenu(mousePos.mouseX, mousePos.mouseY);
     }
 
     /**
@@ -192,7 +212,7 @@ export default class MapCanvas extends React.Component<Props, State> {
                 onMouseDown={this.handleMouseDown.bind(this)}
                 onMouseMove={this.handleMouseMove.bind(this)}
                 onMouseUp={this.handleMouseUp.bind(this)}
-                onContextMenu={event => event.preventDefault()}
+                onContextMenu={this.handleContextMenu.bind(this)}
                 width={elementSize}
                 height={elementSize}
             ></canvas>
