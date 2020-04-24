@@ -36,7 +36,7 @@ type Props = StateProps & DispatchProps;
 
 type State = {
     mapdataFileName: string
-}
+};
 
 class MainToolbar extends React.Component<Props, State> {
 
@@ -67,7 +67,7 @@ class MainToolbar extends React.Component<Props, State> {
     private changeMapdataFileName(event: React.ChangeEvent<HTMLInputElement>) {
         this.setState({
             mapdataFileName: event.target.value
-        })
+        });
     }
 
     public render() {
