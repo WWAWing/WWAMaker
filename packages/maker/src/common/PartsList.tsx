@@ -11,6 +11,7 @@ interface Props {
     selectPartsNumber: number;
     image: CanvasImageSource;
     onPartsSelect: (partsNumber: number, partsType: PartsType) => void;
+    onPartsEdit: (partsNumber: number, partsType: PartsType) => void;
 }
 
 export default class PartsList extends React.Component<Props> {
@@ -39,6 +40,8 @@ export default class PartsList extends React.Component<Props> {
                         cropY={partsAttribute[WWAConsts.ATR_Y]}
                         isSelected={partsNumber === this.props.selectPartsNumber}
                         onClick={() => this.props.onPartsSelect(partsNumber, this.props.type)}
+                        onDoubleClick={() => this.props.onPartsEdit(partsNumber, this.props.type)}
+                        onContextMenu={() => this.props.onPartsEdit(partsNumber, this.props.type)}
                     />
                 )}
             </div>
