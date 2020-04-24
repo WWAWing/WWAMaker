@@ -12,6 +12,8 @@ const MAP_CANVAS_BASE_COLOR = '#000';
  */
 const CHUNK_SIZE = 20;
 
+type MouseEventFunc = (x: number, y: number) => void;
+
 interface Props {
     map: number[][][];
     attribute: number[][][];
@@ -27,6 +29,7 @@ interface Props {
     onMouseMove: (x: number, y: number) => void;
     onMouseDrag: (x: number, y:number) => void;
     onMouseUp: (x: number, y: number) => void;
+    onContextMenu?: MouseEventFunc;
 }
 
 interface State {
@@ -58,61 +61,62 @@ export default class MapCanvas extends React.Component<Props, State> {
     }
 
     private handleMouseDown(event: React.MouseEvent) {
+        // 右クリックによるコンテキストメニューの表示では、クリックイベントも同時に行われるので、その場合は処置をキャンセルします。
+        if (event.button === 2 && this.props.onContextMenu !== undefined) {
+            return;
+        }
+
         this.setState({
             hasClick: true
         });
 
-        const mousePos = this.getMousePos(event.clientX, event.clientY);
-        if (!mousePos) {
-            return;
-        }
-
-        this.props.onMouseDown(mousePos.mouseX, mousePos.mouseY);
+        this.callByMousePos(event, this.props.onMouseDown);
     }
 
     /**
      * マウスの現在位置とクリック状態を出力し、プロパティに記載された処理を実行させます。
      */
     private handleMouseMove(event: React.MouseEvent) {
-        const mousePos = this.getMousePos(event.clientX, event.clientY);
-        if (!mousePos) {
-            return;
-        }
-        
         if (this.state.hasClick) {
-            this.props.onMouseDrag(mousePos.mouseX, mousePos.mouseY);
+            this.callByMousePos(event, this.props.onMouseDrag);
         } else {
-            this.props.onMouseMove(mousePos.mouseX, mousePos.mouseY);
+            this.callByMousePos(event, this.props.onMouseMove);
         }
     }
 
     private handleMouseUp(event: React.MouseEvent) {
+        if (!this.state.hasClick) {
+            return;
+        }
+
         this.setState({
             hasClick: false
         });
 
-        const mousePos = this.getMousePos(event.clientX, event.clientY);
-        if (!mousePos) {
+        this.callByMousePos(event, this.props.onMouseUp);
+    }
+
+    private handleContextMenu(event: React.MouseEvent) {
+        if (this.props.onContextMenu === undefined) {
             return;
         }
+        event.preventDefault();
 
-        return this.props.onMouseUp(mousePos.mouseX, mousePos.mouseY);
+        this.callByMousePos(event, this.props.onContextMenu);
     }
 
     /**
-     * マウスの座標から要素内の現在位置を取得します。
-     * @returns 要素内の現在位置 (px単位) Canvas の要素が取得できなければ null
+     * マウスイベントから指定したメソッドを呼び出します。
+     * @param event マウスイベントのメソッド
+     * @param func 実行したいメソッド (主にプロパティの onMouseXX メソッドを割り当てる際に使用)
      */
-    private getMousePos(clientX: number, clientY: number): { mouseX: number, mouseY: number } | null {
-        const rect = this.elementRef.current?.getBoundingClientRect();
-        if (!rect) {
-            return null;
+    private callByMousePos(event: React.MouseEvent, func: MouseEventFunc) {
+        const canvasRect = this.elementRef.current?.getBoundingClientRect();
+        if (!canvasRect) {
+            return;
         }
 
-        return {
-            mouseX: clientX - rect.left,
-            mouseY: clientY - rect.top
-        }
+        func(event.clientX - canvasRect.left, event.clientY - canvasRect.top);
     }
 
     public render() {
@@ -161,6 +165,7 @@ export default class MapCanvas extends React.Component<Props, State> {
                     onMouseDown={this.handleMouseDown.bind(this)}
                     onMouseUp={this.handleMouseUp.bind(this)}
                     onMouseMove={this.handleMouseMove.bind(this)}
+                    onContextMenu={this.handleContextMenu.bind(this)}
                 >
                     {map.map((chunkLine, chunkLineIndex) => (
                         <div className={styles.mapCanvasLine} key={chunkLineIndex}>

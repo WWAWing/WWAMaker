@@ -9,6 +9,7 @@ import { Dispatch, bindActionCreators } from 'redux';
 import { PartsType } from '../classes/WWAData';
 import { showPartsEdit } from '../info/InfoPanelState';
 import { Button, Segment, Label, Header } from 'semantic-ui-react';
+import { deleteParts } from '../wwadata/WWADataState';
 
 interface StateProps {
     wwaData: WWAData|null;
@@ -21,7 +22,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     return bindActionCreators({
         selectObjParts: selectObjParts,
         selectMapParts: selectMapParts,
-        showPartsEdit: showPartsEdit
+        showPartsEdit: showPartsEdit,
+        deleteParts: deleteParts
     }, dispatch);
 };
 
@@ -52,31 +54,39 @@ class PartsSelect extends React.Component<Props, {}> {
         }
     }
 
-    private handlePartsEdit(partsType: PartsType) {
+    /**
+     * パーツ編集イベントが発生した際に実行するメソッドです。
+     * @param partsNumber 編集したいパーツ番号 (子コンポーネントの PartsChip 側で呼び出す際に必要)
+     * @param partsType 対象のパーツ種類
+     */
+    private handlePartsEdit(partsNumber: number, partsType: PartsType) {
         switch (partsType) {
             case PartsType.OBJECT:
-                if (this.props.objParts.number === 0) {
-                    alert("パーツ番号０の物体は編集できません。\nこのパーツはマップの物体を消去するときに指定してください。");
-                    return;
-                }
-                this.props.showPartsEdit({ type: partsType, number: this.props.objParts.number });
+                this.props.showPartsEdit({ type: partsType, number: partsNumber });
                 break;
-                case PartsType.MAP:
-                if (this.props.mapParts.number === 0) {
-                    alert("パーツ番号０の背景は編集できません。\nこのパーツはマップの背景を消去するときに指定してください。");
-                    return;
-                }
-                this.props.showPartsEdit({ type: partsType, number: this.props.mapParts.number });
-                break;
+            case PartsType.MAP:
+                this.props.showPartsEdit({ type: partsType, number: partsNumber });
         }
     }
 
     private handlePartsDelete(partsType: PartsType) {
+        const partsNumber = (() => {
+            switch (partsType) {
+                case PartsType.OBJECT:
+                    return this.props.objParts.number;
+                case PartsType.MAP:
+                    return this.props.mapParts.number;
+            }
+        })();
 
+        this.props.deleteParts({
+            type: partsType,
+            number: partsNumber
+        });
     }
 
     private renderPartsList(partsType: PartsType) {
-        let partsAttribute, partsNumber, title;
+        let partsAttribute, partsNumber: number, title;
         switch (partsType) {
             case PartsType.OBJECT:
                 partsAttribute = this.props.wwaData?.objectAttribute;
@@ -105,6 +115,7 @@ class PartsSelect extends React.Component<Props, {}> {
                     attribute={partsAttribute}
                     selectPartsNumber={partsNumber}
                     onPartsSelect={this.handlePartsSelect.bind(this)}
+                    onPartsEdit={this.handlePartsEdit.bind(this)}
                     image={this.props.image}
                 />
 
@@ -114,7 +125,7 @@ class PartsSelect extends React.Component<Props, {}> {
                         <Label.Detail>{partsNumber}</Label.Detail>
                     </Label>
                     <Button.Group floated="right">
-                        <Button onClick={() => this.handlePartsEdit(partsType)}>選択パーツ編集</Button>
+                        <Button onClick={() => this.handlePartsEdit(partsNumber, partsType)}>選択パーツ編集</Button>
                         <Button onClick={() => this.handlePartsDelete(partsType)}>選択パーツ削除</Button>
                     </Button.Group>
                 </Segment>

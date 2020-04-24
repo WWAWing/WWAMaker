@@ -1,12 +1,15 @@
 import React, { RefObject } from 'react';
 import WWAConsts from '../classes/WWAConsts';
+import drawRedRect from './drawRedRect';
 
 interface Props {
     cropX: number,
     cropY: number,
     image: CanvasImageSource,
     isSelected: boolean,
-    onClick: () => void
+    onClick?: (event: React.MouseEvent<HTMLCanvasElement>) => void,
+    onDoubleClick?: (event: React.MouseEvent<HTMLCanvasElement>) => void,
+    onContextMenu?: (event: React.MouseEvent<HTMLCanvasElement>) => void
 }
 
 export default class PartsChip extends React.Component<Props, {}> {
@@ -30,6 +33,20 @@ export default class PartsChip extends React.Component<Props, {}> {
         this.draw();
     }
 
+    public shouldComponentUpdate(prevProps: Props) {
+        return prevProps.cropX !== this.props.cropX
+            || prevProps.cropY !== this.props.cropY
+            || prevProps.isSelected !== this.props.isSelected;
+    }
+
+    private handleContextMenu(event: React.MouseEvent<HTMLCanvasElement>) {
+        if (this.props.onContextMenu === undefined) {
+            return;
+        }
+        event.preventDefault();
+        this.props.onContextMenu(event);
+    }
+
     private draw() {
         if (this.canvasContext === null) {
             return;
@@ -37,18 +54,21 @@ export default class PartsChip extends React.Component<Props, {}> {
         this.canvasContext.clearRect(0, 0, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE);
         this.canvasContext.drawImage(this.props.image, this.props.cropX, this.props.cropY, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE, 0, 0, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE);
         if (this.props.isSelected) {
-            /**
-             * @todo 定数にしたい
-             */
-            this.canvasContext.strokeStyle = 'rgb(255, 0, 0)';
-            this.canvasContext.lineWidth = 2;
-            this.canvasContext.strokeRect(1, 1, WWAConsts.CHIP_SIZE - 2, WWAConsts.CHIP_SIZE - 2);
+            drawRedRect(this.canvasContext, 0, 0, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE);
         }
     }
 
     public render() {
+        // 原作の作成ツールではマウスボタンを押したタイミングで反応するため、その形に従うようにしている
         return (
-            <canvas ref={this.canvasRef} width={WWAConsts.CHIP_SIZE} height={WWAConsts.CHIP_SIZE} onClick={this.props.onClick}></canvas>
+            <canvas
+                ref={this.canvasRef}
+                width={WWAConsts.CHIP_SIZE}
+                height={WWAConsts.CHIP_SIZE}
+                onMouseDown={this.props.onClick}
+                onDoubleClick={this.props.onDoubleClick}
+                onContextMenu={this.handleContextMenu.bind(this)}
+            />
         )
     }
 }
