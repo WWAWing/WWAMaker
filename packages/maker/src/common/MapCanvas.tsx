@@ -169,15 +169,13 @@ export default class MapCanvas extends React.Component<Props, State> {
                 >
                     {map.map((chunkLine, chunkLineIndex) => (
                         <div className={styles.mapCanvasLine} key={chunkLineIndex}>
-                            {chunkLine.map((chunk, chunkColumnIndex) => {
-                                return (
-                                    <MapChunk
-                                        key={chunkColumnIndex}
-                                        map={chunk}
-                                        image={this.props.image}
-                                    />
-                                )
-                            })}
+                            {chunkLine.map((chunk, chunkColumnIndex) => (
+                                <MapChunk
+                                    key={chunkColumnIndex}
+                                    map={chunk}
+                                    image={this.props.image}
+                                />
+                            ))}
                         </div>
                     ))}
                 </div>
