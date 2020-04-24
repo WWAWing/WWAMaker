@@ -1,5 +1,6 @@
 import React, { RefObject } from 'react';
 import WWAConsts from '../classes/WWAConsts';
+import drawRedRect from './drawRedRect';
 
 interface Props {
     cropX: number,
@@ -39,10 +40,11 @@ export default class PartsChip extends React.Component<Props, {}> {
     }
 
     private handleContextMenu(event: React.MouseEvent<HTMLCanvasElement>) {
-        if (this.props.onContextMenu !== undefined) {
-            event.preventDefault();
-            this.props.onContextMenu(event);
+        if (this.props.onContextMenu === undefined) {
+            return;
         }
+        event.preventDefault();
+        this.props.onContextMenu(event);
     }
 
     private draw() {
@@ -52,12 +54,7 @@ export default class PartsChip extends React.Component<Props, {}> {
         this.canvasContext.clearRect(0, 0, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE);
         this.canvasContext.drawImage(this.props.image, this.props.cropX, this.props.cropY, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE, 0, 0, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE);
         if (this.props.isSelected) {
-            /**
-             * @todo 定数にしたい
-             */
-            this.canvasContext.strokeStyle = 'rgb(255, 0, 0)';
-            this.canvasContext.lineWidth = 2;
-            this.canvasContext.strokeRect(1, 1, WWAConsts.CHIP_SIZE - 2, WWAConsts.CHIP_SIZE - 2);
+            drawRedRect(this.canvasContext, 0, 0, WWAConsts.CHIP_SIZE, WWAConsts.CHIP_SIZE);
         }
     }
 
