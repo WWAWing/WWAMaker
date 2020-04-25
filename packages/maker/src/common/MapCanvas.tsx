@@ -58,6 +58,10 @@ export default class MapCanvas extends React.Component<Props, State> {
             hasClick: false
         };
         this.elementRef = React.createRef();
+        this.handleMouseDown = this.handleMouseDown.bind(this);
+        this.handleMouseMove = this.handleMouseMove.bind(this);
+        this.handleMouseUp = this.handleMouseUp.bind(this);
+        this.handleContextMenu = this.handleContextMenu.bind(this);
     }
 
     private handleMouseDown(event: React.MouseEvent) {
@@ -162,10 +166,10 @@ export default class MapCanvas extends React.Component<Props, State> {
                 <div
                     className={styles.mapCanvas}
                     ref={this.elementRef}
-                    onMouseDown={this.handleMouseDown.bind(this)}
-                    onMouseUp={this.handleMouseUp.bind(this)}
-                    onMouseMove={this.handleMouseMove.bind(this)}
-                    onContextMenu={this.handleContextMenu.bind(this)}
+                    onMouseDown={this.handleMouseDown}
+                    onMouseUp={this.handleMouseUp}
+                    onMouseMove={this.handleMouseMove}
+                    onContextMenu={this.handleContextMenu}
                 >
                     {map.map((chunkLine, chunkLineIndex) => (
                         <div className={styles.mapCanvasLine} key={chunkLineIndex}>
