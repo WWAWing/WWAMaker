@@ -92,6 +92,9 @@ class MapView extends React.Component<Props, State> {
             editPartsType: null,
             startEditMapPos: null
         };
+        this.handleMouseDown = this.handleMouseDown.bind(this);
+        this.setCurrentPos = this.setCurrentPos.bind(this);
+        this.endMapEdit = this.endMapEdit.bind(this);
     }
 
     private handleMouseDown(x: number, y: number) {
@@ -272,10 +275,10 @@ class MapView extends React.Component<Props, State> {
                 mapSize={this.props.wwaData.mapWidth}
                 image={this.props.image}
                 selectRect={this.getSelectRect()}
-                onMouseDown={this.handleMouseDown.bind(this)}
-                onMouseMove={this.setCurrentPos.bind(this)}
-                onMouseDrag={this.setCurrentPos.bind(this)}
-                onMouseUp={this.endMapEdit.bind(this)}
+                onMouseDown={this.handleMouseDown}
+                onMouseMove={this.setCurrentPos}
+                onMouseDrag={this.setCurrentPos}
+                onMouseUp={this.endMapEdit}
                 onContextMenu={() => this.openEdit()}
             />
         );
