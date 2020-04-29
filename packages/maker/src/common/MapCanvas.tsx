@@ -1,7 +1,9 @@
-import React, { RefObject } from 'react';
+import React, { RefObject, memo } from 'react';
+import { useSelector } from 'react-redux';
 import WWAConsts from '../classes/WWAConsts';
 import { Coord } from '@wwawing/common-interface';
 import styles from './MapCanvas.module.scss';
+import { StoreType } from '../State';
 
 /**
  * 一番下に敷かれる背景色です。
@@ -15,10 +17,6 @@ const CHUNK_SIZE = 20;
 type MouseEventFunc = (x: number, y: number) => void;
 
 interface Props {
-    map: number[][][];
-    attribute: number[][][];
-    mapSize: number;
-    image: CanvasImageSource;
     selectRect?: {
         chipX: number,
         chipY: number,
@@ -42,10 +40,6 @@ interface State {
 export default class MapCanvas extends React.Component<Props, State> {
     private elementRef: RefObject<HTMLDivElement>;
     public static defaultProps: Props = {
-        map: [],
-        attribute: [],
-        mapSize: WWAConsts.MAP_SIZE_DEFAULT,
-        image: new Image(),
         onMouseDown: () => {},
         onMouseMove: () => {},
         onMouseDrag: () => {},
@@ -124,42 +118,7 @@ export default class MapCanvas extends React.Component<Props, State> {
     }
 
     public render() {
-        /**
-         * 1つの Canvas 要素だけでは描画しきれないため、複数のチャンクに分割し、1チャンクに MapChunk コンポーネントを渡します。
-         */
-        let map: Coord[][][][][] = []; // チャンクY, チャンクX, レイヤー, マスY, マスX
-        this.props.map.forEach((layer, layerIndex) => {
-
-            let screenY = 0;
-            for (let y = 1; y < layer.length; y += CHUNK_SIZE) {
-
-                map[screenY] = layerIndex === 0 ? [] : map[screenY];
-                const startSliceY = y === 1 ? 0 : y;
-                const endSliceY = y + CHUNK_SIZE;
-
-                let screenX = 0;
-                for (let x = 1; x < layer[y].length; x += CHUNK_SIZE) {
-
-                    map[screenY][screenX] = layerIndex === 0 ? [] : map[screenY][screenX];
-                    const startSliceX = x === 1 ? 0 : x;
-                    const endSliceX = x + CHUNK_SIZE;
-
-                    const targetMap = layer.slice(startSliceY, endSliceY).map(chunkLine => {
-                        return chunkLine.slice(startSliceX, endSliceX).map(partsNumber => {
-                            return {
-                                x: this.props.attribute[layerIndex][partsNumber][WWAConsts.ATR_X],
-                                y: this.props.attribute[layerIndex][partsNumber][WWAConsts.ATR_Y]
-                            };
-                        });
-                    });
-
-                    map[screenY][screenX].push(targetMap);
-                    screenX++;
-                }
-
-                screenY++;
-            }
-        });
+        const MapCanvasMapMemo = memo(MapCanvasMap);
 
         return (
             <div className={styles.mapCanvasWrapper}>
@@ -171,17 +130,7 @@ export default class MapCanvas extends React.Component<Props, State> {
                     onMouseMove={this.handleMouseMove}
                     onContextMenu={this.handleContextMenu}
                 >
-                    {map.map((chunkLine, chunkLineIndex) => (
-                        <div className={styles.mapCanvasLine} key={chunkLineIndex}>
-                            {chunkLine.map((chunk, chunkColumnIndex) => (
-                                <MapChunk
-                                    key={chunkColumnIndex}
-                                    map={chunk}
-                                    image={this.props.image}
-                                />
-                            ))}
-                        </div>
-                    ))}
+                    <MapCanvasMapMemo />
                 </div>
                 {this.props.selectRect !== undefined &&
                     <div
@@ -196,6 +145,83 @@ export default class MapCanvas extends React.Component<Props, State> {
             </div>
         );
     }
+}
+
+const MapCanvasMap: React.FC<{}> = () => {
+    const fieldMap = useSelector((state: StoreType) => {
+        if (state.wwaData === null) {
+            return [];
+        }
+
+        return [
+            {
+                map: state.wwaData.map,
+                attribute: state.wwaData.mapAttribute
+            }, {
+                map: state.wwaData.mapObject,
+                attribute: state.wwaData.objectAttribute
+            }
+        ];
+    });
+
+    const mapWidth = useSelector((state: StoreType) => state.wwaData?.mapWidth);
+    const image = useSelector((state: StoreType) => state.image);
+    if (mapWidth === undefined || image === null) {
+        return null;
+    }
+
+    /**
+     * 1つの Canvas 要素だけでは描画しきれないため、複数のチャンクに分割し、1チャンクに MapChunk コンポーネントを渡します。
+     */
+    let map: Coord[][][][][] = []; // チャンクY, チャンクX, レイヤー, マスY, マスX
+    fieldMap.forEach((layer, layerIndex) => {
+
+        let screenY = 0;
+        for (let y = 1; y < mapWidth; y += CHUNK_SIZE) {
+
+            map[screenY] = layerIndex === 0 ? [] : map[screenY];
+            const startSliceY = y === 1 ? 0 : y;
+            const endSliceY = y + CHUNK_SIZE;
+
+            let screenX = 0;
+            for (let x = 1; x < mapWidth; x += CHUNK_SIZE) {
+
+                map[screenY][screenX] = layerIndex === 0 ? [] : map[screenY][screenX];
+                const startSliceX = x === 1 ? 0 : x;
+                const endSliceX = x + CHUNK_SIZE;
+
+                const targetMap = layer.map.slice(startSliceY, endSliceY).map(chunkLine => {
+                    return chunkLine.slice(startSliceX, endSliceX).map(partsNumber => {
+                        return {
+                            x: layer.attribute[partsNumber][WWAConsts.ATR_X],
+                            y: layer.attribute[partsNumber][WWAConsts.ATR_Y]
+                        };
+                    });
+                });
+
+                map[screenY][screenX].push(targetMap);
+                screenX++;
+            }
+
+            screenY++;
+        }
+    });
+
+    return (
+        <>
+            {map.map((chunkLine, chunkLineIndex) => (
+                <div className={styles.mapCanvasLine} key={chunkLineIndex}>
+                    {chunkLine.map((chunk, chunkColumnIndex) => (
+                        <MapChunk
+                            key={chunkColumnIndex}
+                            map={chunk}
+                            image={image}
+                        />
+                    ))}
+                </div>
+            ))}
+        </>
+    );
 }
 
 /**

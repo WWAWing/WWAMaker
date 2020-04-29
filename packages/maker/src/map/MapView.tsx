@@ -270,10 +270,6 @@ class MapView extends React.Component<Props, State> {
 
         return (
             <MapCanvas
-                map={[this.props.wwaData.map, this.props.wwaData.mapObject]}
-                attribute={[this.props.wwaData.mapAttribute, this.props.wwaData.objectAttribute]}
-                mapSize={this.props.wwaData.mapWidth}
-                image={this.props.image}
                 selectRect={this.getSelectRect()}
                 onMouseDown={this.handleMouseDown}
                 onMouseMove={this.setCurrentPos}
