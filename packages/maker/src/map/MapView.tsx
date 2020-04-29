@@ -271,6 +271,7 @@ class MapView extends React.Component<Props, State> {
         return (
             <MapCanvas
                 selectRect={this.getSelectRect()}
+                image={this.props.image}
                 onMouseDown={this.handleMouseDown}
                 onMouseMove={this.setCurrentPos}
                 onMouseDrag={this.setCurrentPos}
