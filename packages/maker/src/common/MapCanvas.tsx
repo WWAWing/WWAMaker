@@ -1,4 +1,4 @@
-import React, { RefObject, useMemo } from 'react';
+import React, { RefObject, useMemo, ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 import WWAConsts from '../classes/WWAConsts';
 import { Coord } from '@wwawing/common-interface';
@@ -17,18 +17,13 @@ const CHUNK_SIZE = 20;
 type MouseEventFunc = (x: number, y: number) => void;
 
 interface Props {
-    selectRect?: {
-        chipX: number,
-        chipY: number,
-        chipWidth: number,
-        chipHeight: number
-    },
     image?: CanvasImageSource,
     onMouseDown: (x: number, y: number) => void;
     onMouseMove: (x: number, y: number) => void;
     onMouseDrag: (x: number, y:number) => void;
     onMouseUp: (x: number, y: number) => void;
     onContextMenu?: MouseEventFunc;
+    children: ReactNode;
 }
 
 interface State {
@@ -38,14 +33,15 @@ interface State {
 /**
  * マップを表示する Canvas です。
  */
-export default class MapCanvas extends React.Component<Props, State> {
+export class MapCanvas extends React.Component<Props, State> {
     private elementRef: RefObject<HTMLDivElement>;
     public static defaultProps: Props = {
         onMouseDown: () => {},
         onMouseMove: () => {},
         onMouseDrag: () => {},
-        onMouseUp: () => {}
-    }
+        onMouseUp: () => {},
+        children: null
+    };
 
     constructor(props: Props) {
         super(props);
@@ -133,26 +129,15 @@ export default class MapCanvas extends React.Component<Props, State> {
                     onMouseMove={this.handleMouseMove}
                     onContextMenu={this.handleContextMenu}
                 >
-                    <MapCanvasMap image={this.props.image} />
+                    <MapCanvasMap />
                 </div>
-                {this.props.selectRect !== undefined &&
-                    <div
-                        className={styles.selectRect}
-                        style={{
-                            transform: `translate(${this.props.selectRect.chipX * WWAConsts.CHIP_SIZE}px, ${this.props.selectRect.chipY * WWAConsts.CHIP_SIZE}px)`,
-                            width: this.props.selectRect.chipWidth * WWAConsts.CHIP_SIZE,
-                            height: this.props.selectRect.chipHeight * WWAConsts.CHIP_SIZE
-                        }}
-                    />
-                }
+                {this.props.children}
             </div>
         );
     }
 }
 
-const MapCanvasMap: React.FC<{
-    image: CanvasImageSource
-}> = props => {
+const MapCanvasMap: React.FC = () => {
     const fieldMap = useSelector((state: StoreType) => {
         if (state.wwaData === null) {
             return [];
@@ -168,6 +153,7 @@ const MapCanvasMap: React.FC<{
             }
         ];
     });
+    const image = useSelector((state: StoreType) => state.image) || new Image();
     const mapWidth = useSelector((state: StoreType) => state.wwaData?.mapWidth);
 
     const chunks = useMemo(() => {
@@ -223,7 +209,7 @@ const MapCanvasMap: React.FC<{
                         <MapChunk
                             key={chunkColumnIndex}
                             map={chunk}
-                            image={props.image}
+                            image={image}
                         />
                     ))}
                 </div>
@@ -231,6 +217,8 @@ const MapCanvasMap: React.FC<{
         </>
     );
 }
+
+MapCanvasMap.whyDidYouRender = true;
 
 /**
  * 1画面程度の画面を描画する Canvas 要素です。
@@ -321,4 +309,24 @@ class MapChunk extends React.Component<{
             />
         );
     }
+};
+
+export interface SelectRectProps {
+    chipX: number;
+    chipY: number;
+    chipWidth: number;
+    chipHeight: number;
+};
+
+export const SelectRect: React.FC<SelectRectProps> = props => {
+    return (
+        <div
+            className={styles.selectRect}
+            style={{
+                transform: `translate(${props.chipX * WWAConsts.CHIP_SIZE}px, ${props.chipY * WWAConsts.CHIP_SIZE}px)`,
+                width: props.chipWidth * WWAConsts.CHIP_SIZE,
+                height: props.chipHeight * WWAConsts.CHIP_SIZE
+            }}
+        />
+    )
 };

@@ -7,6 +7,7 @@ import "semantic-ui-css/semantic.min.css";
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import WhyDidYouRender from "@welldone-software/why-did-you-render";
 
 ReactDOM.render(
     <Provider store={Store}>
@@ -14,6 +15,12 @@ ReactDOM.render(
     </Provider>,
     document.getElementById('root')
 );
+
+if (process.env.NODE_ENV === "development") {
+    WhyDidYouRender(React, {
+        trackHooks: false
+    });
+}
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

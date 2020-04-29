@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect, MapStateToProps } from 'react-redux';
 import { StoreType } from '../State';
-import MapCanvas from '../common/MapCanvas';
+import { MapCanvas, SelectRectProps, SelectRect } from '../common/MapCanvas';
 import { PartsType } from '../classes/WWAData';
 import { WWAData } from "@wwawing/common-interface";
 import { Dispatch, bindActionCreators } from 'redux';
@@ -196,7 +196,7 @@ class MapView extends React.Component<Props, State> {
         return 0;
     }
 
-    private getSelectRect(): MapCanvas["props"]["selectRect"] {
+    private getSelectRect(): SelectRectProps {
         const [chipX, chipY, chipWidth, chipHeight] = getRect(
             this.props.currentPos.chipX,
             this.props.currentPos.chipY,
@@ -270,14 +270,15 @@ class MapView extends React.Component<Props, State> {
 
         return (
             <MapCanvas
-                selectRect={this.getSelectRect()}
                 image={this.props.image}
                 onMouseDown={this.handleMouseDown}
                 onMouseMove={this.setCurrentPos}
                 onMouseDrag={this.setCurrentPos}
                 onMouseUp={this.endMapEdit}
                 onContextMenu={() => this.openEdit()}
-            />
+            >
+                <SelectRect {...this.getSelectRect()} />
+            </MapCanvas>
         );
     }
 }
