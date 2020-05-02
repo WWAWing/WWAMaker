@@ -1,10 +1,8 @@
 import React from "react";
-import { StoreType } from "../State";
 import { Coord } from "@wwawing/common-interface";
 import WWAConsts from "../classes/WWAConsts";
-import { connect } from "react-redux";
-import { PartsType } from "../classes/WWAData";
 import styles from './MapCanvas.module.scss';
+import { PartsType } from "../classes/WWAData";
 
 /**
  * MapChunk のサイズです。一番左のチャンクは横幅1マス、一番上のチャンクは縦幅1マス増えます。
@@ -16,54 +14,40 @@ const CHUNK_SIZE = 20;
  */
 const MAP_CANVAS_BASE_COLOR = '#000';
 
-const mapStateToProps = (state: StoreType) => {
-    const getCrops = (attribute: number[]): Coord => {
-        return {
-            x: attribute[WWAConsts.ATR_X],
-            y: attribute[WWAConsts.ATR_Y]
-        };
-    };
-
-    const mapCrops = state.wwaData?.mapAttribute.map(getCrops);
-    const objectCrops = state.wwaData?.objectAttribute.map(getCrops);
-    return {
-        fieldMap: [
-            {
-                type: PartsType.MAP,
-                map: state.wwaData?.map,
-                crops: mapCrops
-            }, {
-                type: PartsType.OBJECT,
-                map: state.wwaData?.mapObject,
-                crops: objectCrops
-            }
-        ],
-        mapWidth: state.wwaData?.mapWidth,
-        image: state.image
-    };
+/**
+ * マップのレイヤー部分です。
+ */
+export type MapLayer = {
+    type: PartsType,
+    fieldMap: number[][],
+    imageCrops: Coord[]
 };
 
-type Props = ReturnType<typeof mapStateToProps>;
+interface Props {
+    fieldMap: MapLayer[],
+    mapWidth: number,
+    image: CanvasImageSource
+}
 
-class MapCanvasMap extends React.Component<Props> {
+export default class MapCanvasMap extends React.Component<Props> {
     public static whyDidYouRender = true;
     public shouldComponentUpdate(prevProps: Props) {
         return this.props.fieldMap.some((mapLayer, layerNumber) => {
             const prevMapLayer = prevProps.fieldMap[layerNumber];
-            const prevMap = prevMapLayer.map;
-            const prevCrops = prevMapLayer.crops;
+            const prevMap = prevMapLayer.fieldMap;
+            const prevCrops = prevMapLayer.imageCrops;
             // TODO: この場合だとマップが何も描画されていない状態は描画されっぱなしになるので描画されないように調整する
             if (prevMap === undefined || prevCrops === undefined) {
                 return true;
             }
 
-            const fieldMapChanged = mapLayer.map?.some((line, y) => {
+            const fieldMapChanged = mapLayer.fieldMap?.some((line, y) => {
                 return line.some((partsNumber, x) => {
                     return partsNumber !== prevMap[y][x];
                 });
             }) ?? false;
 
-            const partsCropChanged = mapLayer.crops?.some((crop, partsNumber) => {
+            const partsCropChanged = mapLayer.imageCrops?.some((crop, partsNumber) => {
                 return crop.x !== prevCrops[partsNumber].x
                     || crop.y !== prevCrops[partsNumber].y;
             }) ?? false;
@@ -81,8 +65,8 @@ class MapCanvasMap extends React.Component<Props> {
 
         let chunks: Coord[][][][][] = []; // チャンクY, チャンクX, レイヤー, マスY, マスX
         this.props.fieldMap.forEach((layer, layerIndex) => {
-            const layerCrops = layer.crops;
-            if (layer.map === undefined || layerCrops === undefined) {
+            const layerCrops = layer.imageCrops;
+            if (layer.fieldMap === undefined || layerCrops === undefined) {
                 return;
             }
 
@@ -100,7 +84,7 @@ class MapCanvasMap extends React.Component<Props> {
                     const startSliceX = x === 1 ? 0 : x;
                     const endSliceX = x + CHUNK_SIZE;
 
-                    const targetMap = layer.map.slice(startSliceY, endSliceY).map(chunkLine => {
+                    const targetMap = layer.fieldMap.slice(startSliceY, endSliceY).map(chunkLine => {
                         return chunkLine.slice(startSliceX, endSliceX).map(partsNumber => {
                             return layerCrops[partsNumber];
                         });
@@ -131,8 +115,6 @@ class MapCanvasMap extends React.Component<Props> {
         );
     }
 }
-
-export default connect(mapStateToProps)(MapCanvasMap);
 
 
 /**

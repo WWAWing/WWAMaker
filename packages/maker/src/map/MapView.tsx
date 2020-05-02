@@ -1,21 +1,16 @@
 import React from 'react';
 import { connect, MapStateToProps } from 'react-redux';
 import { StoreType } from '../State';
-import { MapCanvas, SelectRectProps, SelectRect } from '../common/MapCanvas';
+import MapCanvas, { TargetParts, SelectRectProps } from '../common/MapCanvas';
 import { PartsType } from '../classes/WWAData';
-import { WWAData } from "@wwawing/common-interface";
 import { Dispatch, bindActionCreators } from 'redux';
 import { setCurrentPos, EditMode, setEditMode } from './MapStates';
 import { putParts } from '../wwadata/WWADataState';
 import getRect from '../common/getRect';
-import getPosEachChip from '../common/getPosEachChip';
 import { showPartsEdit } from '../info/InfoPanelState';
 import { selectObjParts, selectMapParts } from '../parts/PartsState';
 
 interface StateProps {
-    wwaData: WWAData|null;
-    image: CanvasImageSource|null;
-    
     editParts: {
         editMode: EditMode,
         objNumber: number,
@@ -29,8 +24,6 @@ interface StateProps {
 
 const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = state => {
     return {
-        wwaData: state.wwaData,
-        image: state.image,
         editParts: {
             editMode: state.map.editMode,
             objNumber: state.objParts.number,
@@ -38,7 +31,7 @@ const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = stat
         },
         currentPos: state.map.currentPos
     };
-}
+};
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return bindActionCreators({
@@ -73,8 +66,6 @@ interface State {
 
 class MapView extends React.Component<Props, State> {
     public static defaultProps: StateProps = {
-        wwaData: null,
-        image: null,
         editParts: {
             editMode: EditMode.PUT_MAP,
             objNumber: 0,
@@ -95,9 +86,10 @@ class MapView extends React.Component<Props, State> {
         this.handleMouseDown = this.handleMouseDown.bind(this);
         this.setCurrentPos = this.setCurrentPos.bind(this);
         this.endMapEdit = this.endMapEdit.bind(this);
+        this.openEdit = this.openEdit.bind(this);
     }
 
-    private handleMouseDown(x: number, y: number) {
+    private handleMouseDown(chipX: number, chipY: number, targetParts: TargetParts) {
         switch (this.props.editParts.editMode) {
             case EditMode.PUT_MAP:
             case EditMode.PUT_OBJECT:
@@ -106,24 +98,21 @@ class MapView extends React.Component<Props, State> {
                 if (partsType === null) {
                     return;
                 }
-                this.startMapEdit(x, y, partsType);
+                this.startMapEdit(chipX, chipY, partsType);
                 break;
             }
             case EditMode.EDIT_MAP:
-                this.openEdit(PartsType.MAP);
+                this.openEdit(chipX, chipY, targetParts, PartsType.MAP);
                 break;
             case EditMode.EDIT_OBJECT:
-                this.openEdit(PartsType.OBJECT);
+                this.openEdit(chipX, chipY, targetParts, PartsType.OBJECT);
         }
     }
 
     /**
      * パーツの矩形配置を開始します。
      */
-    private startMapEdit(x: number, y: number, partsType: PartsType) {
-
-        const [chipX, chipY] = getPosEachChip(x, y);
-
+    private startMapEdit(chipX: number, chipY: number, partsType: PartsType) {
         this.setState({
             editPartsType: partsType,
             startEditMapPos: {
@@ -136,12 +125,11 @@ class MapView extends React.Component<Props, State> {
     /**
      * パーツの矩形配置を終了します。
      */
-    private endMapEdit(x: number, y: number) {
+    private endMapEdit(mouseChipX: number, mouseChipY: number) {
         if (this.state.editPartsType === null) {
             return;
         }
 
-        const [mouseChipX, mouseChipY] = getPosEachChip(x, y);
         const [chipX, chipY, chipWidth, chipHeight] = getRect(
             mouseChipX,
             mouseChipY,
@@ -168,8 +156,7 @@ class MapView extends React.Component<Props, State> {
      * @param y MapCanvas の Y座標 (px単位)
      * @param hasClick
      */
-    private setCurrentPos(x: number, y: number) {
-        const [chipX, chipY] = getPosEachChip(x, y);
+    private setCurrentPos(chipX: number, chipY: number) {
         if (chipX === this.props.currentPos.chipX && chipY === this.props.currentPos.chipY) {
             return;
         }
@@ -211,34 +198,30 @@ class MapView extends React.Component<Props, State> {
      * 現在の座標からパーツの情報を取得し、パーツの編集画面を開きます。
      * @param type 編集中に選択しているパーツ種類 (指定がなければ物体パーツ→背景パーツ)
      */
-    private openEdit(type?: PartsType) {
-        if (this.props.wwaData === null) {
-            return null;
-        }
-        const { currentPos } = this.props;
+    private openEdit(chipX: number, chipY: number, targetParts: TargetParts, type?: PartsType) {
         let targetPartsType: PartsType;
         let targetPartsNumber: number;
 
         // 右クリックといった、パーツ種類が明示されていない場合
         if (type === undefined) {
-            const objectPartsNumber = this.props.wwaData.mapObject[currentPos.chipY][currentPos.chipX];
-            if (objectPartsNumber !== 0) {
+            
+            if (targetParts[PartsType.OBJECT] !== 0) {
                 targetPartsType = PartsType.OBJECT;
-                targetPartsNumber = objectPartsNumber;
+                targetPartsNumber = targetParts[PartsType.OBJECT];
                 this.props.setEditMode({ editMode: EditMode.PUT_OBJECT });
             } else {
                 targetPartsType = PartsType.MAP;
-                targetPartsNumber = this.props.wwaData.map[currentPos.chipY][currentPos.chipX];
+                targetPartsNumber = targetParts[PartsType.MAP];
                 this.props.setEditMode({ editMode: EditMode.PUT_MAP });
             }
         } else {
             targetPartsType = type;
             switch (this.props.editParts.editMode) {
                 case EditMode.EDIT_MAP:
-                    targetPartsNumber = this.props.wwaData.map[currentPos.chipY][currentPos.chipX];
+                    targetPartsNumber = targetParts[PartsType.MAP];
                     break;
                 case EditMode.EDIT_OBJECT:
-                    targetPartsNumber = this.props.wwaData.mapObject[currentPos.chipY][currentPos.chipX];
+                    targetPartsNumber = targetParts[PartsType.OBJECT];
                     break;
                 default:
                     return;
@@ -264,21 +247,15 @@ class MapView extends React.Component<Props, State> {
     }
 
     public render() {
-        if (this.props.wwaData === null || this.props.image === null) {
-            return null;
-        }
-
         return (
             <MapCanvas
-                image={this.props.image}
                 onMouseDown={this.handleMouseDown}
                 onMouseMove={this.setCurrentPos}
                 onMouseDrag={this.setCurrentPos}
                 onMouseUp={this.endMapEdit}
-                onContextMenu={() => this.openEdit()}
-            >
-                <SelectRect {...this.getSelectRect()} />
-            </MapCanvas>
+                onContextMenu={this.openEdit}
+                selectRect={this.getSelectRect()}
+            />
         );
     }
 }

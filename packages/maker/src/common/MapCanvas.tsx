@@ -1,35 +1,89 @@
-import React, { RefObject, ReactNode } from 'react';
+import React, { RefObject } from 'react';
 import WWAConsts from '../classes/WWAConsts';
 import styles from './MapCanvas.module.scss';
-import MapCanvasMap from './MapCanvasMap';
+import MapCanvasMap, { MapLayer } from './MapChunk';
+import { PartsType } from '../classes/WWAData';
+import getPosEachChip from './getPosEachChip';
+import { connect, MapStateToProps } from 'react-redux';
+import { StoreType } from '../State';
+import { Coord } from '@wwawing/common-interface';
 
-type MouseEventFunc = (x: number, y: number) => void;
+/**
+ * クリックした先のパーツ情報の1レイヤー分です。
+ *     後述の MouseEventFunc で使用します。
+ */
+export type TargetParts = {[key in PartsType]: number};
 
-interface Props {
-    image?: CanvasImageSource,
-    onMouseDown: (x: number, y: number) => void;
-    onMouseMove: (x: number, y: number) => void;
-    onMouseDrag: (x: number, y:number) => void;
-    onMouseUp: (x: number, y: number) => void;
+/**
+ * マウス操作を行った場合に親コンポーネントに実行されるメソッドの型です。
+ *     chipX と chipY はクリックした先の座標 (マス単位) です。
+ *     parts はマウス操作を行った先にあるパーツの種類とパーツ番号です。
+ *     編集モードの際に対象のパーツ情報を取得する場合に使用します。
+ */
+export type MouseEventFunc = (chipX: number, chipY: number, parts: TargetParts) => void;
+
+interface UserProps {
+    onMouseDown: MouseEventFunc;
+    onMouseMove: MouseEventFunc;
+    onMouseDrag: MouseEventFunc;
+    onMouseUp: MouseEventFunc;
     onContextMenu?: MouseEventFunc;
-    children: ReactNode;
+    selectRect?: SelectRectProps;
 }
 
 interface State {
     hasClick: boolean
 }
 
+interface StateProps {
+    mapLayers: MapLayer[],
+    mapWidth: number,
+    image?: CanvasImageSource
+}
+
+const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = state => {
+    if (state.wwaData === null || state.image === null) {
+        return {
+            mapLayers: [],
+            mapWidth: 0
+        };
+    }
+
+    const getCrops = (attribute: number[]): Coord => {
+        return {
+            x: attribute[WWAConsts.ATR_X],
+            y: attribute[WWAConsts.ATR_Y]
+        };
+    };
+
+    return {
+        mapLayers: [
+            {
+                type: PartsType.MAP,
+                fieldMap: state.wwaData.map,
+                imageCrops: state.wwaData.mapAttribute.map(getCrops)
+            }, {
+                type: PartsType.OBJECT,
+                fieldMap: state.wwaData.mapObject,
+                imageCrops: state.wwaData.objectAttribute.map(getCrops)
+            }
+        ],
+        mapWidth: state.wwaData.mapWidth,
+        image: state.image
+    };
+};
+
+type Props = UserProps & StateProps;
+
 /**
  * マップを表示する Canvas です。
  */
-export class MapCanvas extends React.Component<Props, State> {
+class MapCanvas extends React.Component<Props, State> {
     private elementRef: RefObject<HTMLDivElement>;
-    public static defaultProps: Props = {
-        onMouseDown: () => {},
-        onMouseMove: () => {},
-        onMouseDrag: () => {},
-        onMouseUp: () => {},
-        children: null
+    public static defaultProps: StateProps = {
+        mapLayers: [],
+        mapWidth: 0,
+        image: undefined
     };
 
     constructor(props: Props) {
@@ -95,19 +149,33 @@ export class MapCanvas extends React.Component<Props, State> {
      * @param func 実行したいメソッド (主にプロパティの onMouseXX メソッドを割り当てる際に使用)
      */
     private callByMousePos(event: React.MouseEvent, func: MouseEventFunc) {
-        const canvasRect = this.elementRef.current?.getBoundingClientRect();
-        if (!canvasRect) {
+        const clientRect = this.elementRef.current?.getBoundingClientRect();
+        if (!clientRect) {
             return;
         }
 
-        func(event.clientX - canvasRect.left, event.clientY - canvasRect.top);
+        const [chipX, chipY] = getPosEachChip(event.clientX - clientRect.left, event.clientY - clientRect.top);
+        func(chipX, chipY, {
+            [PartsType.MAP]: this.getPartsNumberOnTarget(chipX, chipY, PartsType.MAP),
+            [PartsType.OBJECT]: this.getPartsNumberOnTarget(chipX, chipY, PartsType.OBJECT)
+        });
+    }
+
+    /**
+     * 指定した座標から各パーツ種類のパーツ番号を取得します
+     * @param chipX 
+     * @param chipY 
+     */
+    private getPartsNumberOnTarget(chipX: number, chipY: number, type: PartsType): number {
+        const targetLayer = this.props.mapLayers.find(layer => layer.type === type);
+        if (targetLayer === undefined) {
+            return 0;
+        }
+
+        return targetLayer.fieldMap[chipY][chipX];
     }
 
     public render() {
-        if (this.props.image === undefined) {
-            return;
-        }
-
         return (
             <div className={styles.mapCanvasWrapper}>
                 <div
@@ -118,13 +186,23 @@ export class MapCanvas extends React.Component<Props, State> {
                     onMouseMove={this.handleMouseMove}
                     onContextMenu={this.handleContextMenu}
                 >
-                    <MapCanvasMap />
+                    {this.props.image !== undefined &&
+                        <MapCanvasMap
+                            fieldMap={this.props.mapLayers}
+                            image={this.props.image}
+                            mapWidth={this.props.mapWidth}
+                        />
+                    }
                 </div>
-                {this.props.children}
+                {this.props.selectRect !== undefined &&
+                    <SelectRect {...this.props.selectRect} />
+                }
             </div>
         );
     }
 }
+
+export default connect(mapStateToProps)(MapCanvas);
 
 export interface SelectRectProps {
     chipX: number;
@@ -133,7 +211,7 @@ export interface SelectRectProps {
     chipHeight: number;
 };
 
-export const SelectRect: React.FC<SelectRectProps> = props => {
+const SelectRect: React.FC<SelectRectProps> = props => {
     return (
         <div
             className={styles.selectRect}
