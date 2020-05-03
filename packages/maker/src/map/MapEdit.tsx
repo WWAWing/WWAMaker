@@ -16,7 +16,7 @@ interface StateProps {
         objNumber: number,
         mapNumber: number
     },
-    currentPos: {
+    currentPos?: {
         chipX: number,
         chipY: number
     }
@@ -71,10 +71,7 @@ class MapEdit extends React.Component<Props, State> {
             objNumber: 0,
             mapNumber: 0
         },
-        currentPos: {
-            chipX: 0,
-            chipY: 0
-        }
+        currentPos: undefined
     }
 
     constructor(props: Props) {
@@ -157,7 +154,7 @@ class MapEdit extends React.Component<Props, State> {
      * @param hasClick
      */
     private setCurrentPos(chipX: number, chipY: number) {
-        if (chipX === this.props.currentPos.chipX && chipY === this.props.currentPos.chipY) {
+        if (chipX === this.props.currentPos?.chipX && chipY === this.props.currentPos?.chipY) {
             return;
         }
 
@@ -183,7 +180,11 @@ class MapEdit extends React.Component<Props, State> {
         return 0;
     }
 
-    private getSelectRect(): SelectRectProps {
+    private getSelectRect(): SelectRectProps | undefined {
+        if (this.props.currentPos === undefined) {
+            return undefined;
+        }
+
         const [chipX, chipY, chipWidth, chipHeight] = getRect(
             this.props.currentPos.chipX,
             this.props.currentPos.chipY,

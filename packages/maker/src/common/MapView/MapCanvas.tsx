@@ -200,9 +200,9 @@ class MapCanvas extends React.Component<Props, State> {
             const nextMapLayer = nextProps.fieldMap[layerNumber];
             const nextMap = nextMapLayer.fieldMap;
 
-            for (let chipY = 0; chipY < nextProps.mapWidth; chipY++) {
-                for (let chipX = 0; chipX < nextProps.mapWidth; chipX++) {
-                    if (nextMap[chipY][chipX] !== mapLayer.fieldMap[chipY][chipX]) {
+            for (let chipY = 0; chipY < this.props.mapWidth; chipY++) {
+                for (let chipX = 0; chipX < this.props.mapWidth; chipX++) {
+                    if (mapLayer.fieldMap[chipY][chipX] !== nextMap[chipY][chipX]) {
                         return true;
                     }
                 }
