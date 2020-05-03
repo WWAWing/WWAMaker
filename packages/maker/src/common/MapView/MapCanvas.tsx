@@ -9,9 +9,9 @@ import { StoreType } from '../../State';
 import { Coord } from '@wwawing/common-interface';
 
 /**
- * MapChunk のサイズです。一番左のチャンクは横幅1マス、一番上のチャンクは縦幅1マス増えます。
+ * MapChunk のサイズです。超えた分は切り捨てます。
  */
-const CHUNK_SIZE = 20;
+const CHUNK_SIZE = 10;
 
 /**
  * クリックした先のパーツ情報の1レイヤー分です。
@@ -226,7 +226,7 @@ class MapCanvas extends React.Component<Props, State> {
             return null;
         }
 
-        const chunkCount = Math.floor(this.props.mapWidth / CHUNK_SIZE);
+        const chunkCount = Math.ceil(this.props.mapWidth / CHUNK_SIZE);
         /**
          * チャンクY, チャンクX, レイヤー, マスY, マスX
          */
@@ -245,19 +245,13 @@ class MapCanvas extends React.Component<Props, State> {
             }
 
             let screenY = 0;
-            for (let y = 1; y < this.props.mapWidth; y += CHUNK_SIZE) {
-
-                const startSliceY = y === 1 ? 0 : y;
-                const endSliceY = y + CHUNK_SIZE;
+            for (let y = 0; y < this.props.mapWidth; y += CHUNK_SIZE) {
 
                 let screenX = 0;
-                for (let x = 1; x < this.props.mapWidth; x += CHUNK_SIZE) {
+                for (let x = 0; x < this.props.mapWidth; x += CHUNK_SIZE) {
 
-                    const startSliceX = x === 1 ? 0 : x;
-                    const endSliceX = x + CHUNK_SIZE;
-
-                    const targetMap = layer.fieldMap.slice(startSliceY, endSliceY).map(chunkLine => {
-                        return chunkLine.slice(startSliceX, endSliceX).map(partsNumber => {
+                    const targetMap = layer.fieldMap.slice(y, y + CHUNK_SIZE).map(chunkLine => {
+                        return chunkLine.slice(x, x + CHUNK_SIZE).map(partsNumber => {
                             return layerCrops[partsNumber];
                         });
                     });
