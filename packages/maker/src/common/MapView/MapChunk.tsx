@@ -6,6 +6,11 @@ import WWAConsts from "../../classes/WWAConsts";
  * 一番下に敷かれる背景色です。
  */
 const MAP_CANVAS_BASE_COLOR = '#000';
+/**
+ * 画面境界線のグリッド色です。
+ */
+const MAP_BORDER_GRID_COLOR = "#f00";
+const MAP_BORDER_GRID_WIDTH = 2;
 
 /**
  * 1画面程度の画面を描画する Canvas 要素です。
@@ -13,6 +18,7 @@ const MAP_CANVAS_BASE_COLOR = '#000';
  */
 export default class MapChunk extends React.Component<{
     map: Coord[][][],
+    showGrid?: boolean,
     image: CanvasImageSource
 }> {
     private canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -33,8 +39,11 @@ export default class MapChunk extends React.Component<{
     /**
      * 各マスの変更を確認し、変更が見つかった場合にだけ componentDidUpdate を実行させます。
      */
-    shouldComponentUpdate(prevProps: MapChunk["props"]) {
-        return prevProps.map.some((line, lineIndex) =>
+    shouldComponentUpdate(nextProps: MapChunk["props"]) {
+        if (nextProps.showGrid !== this.props.showGrid) {
+            return true;
+        }
+        return nextProps.map.some((line, lineIndex) =>
             line.some((layer, layerIndex) =>
                 layer.some((imageCoord, index) =>
                     imageCoord.x !== this.props.map[lineIndex][layerIndex][index].x ||
@@ -77,6 +86,20 @@ export default class MapChunk extends React.Component<{
                 });
             });
         });
+
+        if (!this.props.showGrid) {
+            return;
+        }
+        context.strokeStyle = MAP_BORDER_GRID_COLOR;
+        context.lineWidth = MAP_BORDER_GRID_WIDTH;
+
+        context.beginPath();
+        context.moveTo(WWAConsts.CHIP_SIZE / 2, 0);
+        context.lineTo(WWAConsts.CHIP_SIZE / 2, elementSize.y);
+        context.moveTo(0, WWAConsts.CHIP_SIZE / 2);
+        context.lineTo(elementSize.x, WWAConsts.CHIP_SIZE / 2);
+        context.stroke();
+        context.closePath();
     }
 
     private getElementSize(): Coord {

@@ -51,6 +51,7 @@ export type MapLayer = {
 interface StateProps {
     fieldMap: MapLayer[],
     mapWidth: number,
+    showGrid: boolean,
     image?: CanvasImageSource
 }
 
@@ -58,7 +59,8 @@ const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = stat
     if (state.wwaData === null || state.image === null) {
         return {
             fieldMap: [],
-            mapWidth: 0
+            mapWidth: 0,
+            showGrid: false
         };
     }
 
@@ -82,6 +84,7 @@ const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = stat
             }
         ],
         mapWidth: state.wwaData.mapWidth,
+        showGrid: state.map.showGrid,
         image: state.image
     };
 };
@@ -96,6 +99,7 @@ class MapCanvas extends React.Component<Props, State> {
     public static defaultProps: StateProps = {
         fieldMap: [],
         mapWidth: 0,
+        showGrid: false,
         image: undefined
     };
 
@@ -190,9 +194,10 @@ class MapCanvas extends React.Component<Props, State> {
     }
 
     public shouldComponentUpdate(nextProps: Props) {
-        if (this.props.image !== nextProps.image ||
-            this.props.mapWidth !== nextProps.mapWidth ||
-            this.props.fieldMap.length !== nextProps.fieldMap.length) {
+        if (this.props.mapWidth !== nextProps.mapWidth ||
+            this.props.fieldMap.length !== nextProps.fieldMap.length ||
+            this.props.showGrid !== nextProps.showGrid ||
+            this.props.image !== nextProps.image) {
             return true;
         }
 
@@ -279,6 +284,7 @@ class MapCanvas extends React.Component<Props, State> {
                             <MapChunk
                                 key={chunkColumnIndex}
                                 map={chunk}
+                                showGrid={this.props.showGrid}
                                 image={image}
                             />
                         ))}

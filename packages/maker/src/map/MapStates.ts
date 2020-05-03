@@ -23,12 +23,14 @@ export interface MapState {
     currentPos?: {
         chipX: number,
         chipY: number
-    }
+    };
+    showGrid: boolean;
 }
 
 export const INITIAL_STATE: MapState = {
     editMode: EditMode.PUT_MAP,
-    currentPos: undefined
+    currentPos: undefined,
+    showGrid: true
 };
 
 const actionCreator = actionCreatorFactory();
@@ -40,6 +42,10 @@ export const setEditMode = actionCreator<{ editMode: EditMode }>("SET_EDIT_MODE"
  * 現在のマウス位置を変更します。
  */
 export const setCurrentPos = actionCreator<{ chipX: number, chipY: number }>("SET_CURRENT_POS");
+/**
+ * グリッドの表示を切り替えます。
+ */
+export const toggleGrid = actionCreator("TOGGLE_GRID");
 
 export const MapReducer = reducerWithInitialState(INITIAL_STATE)
     .case(setEditMode, (state, payload) => ({
@@ -52,4 +58,8 @@ export const MapReducer = reducerWithInitialState(INITIAL_STATE)
             chipX: payload.chipX,
             chipY: payload.chipY
         }
-    }));
+    }))
+    .case(toggleGrid, state => ({
+        ...state,
+        showGrid: !state.showGrid
+    }))
