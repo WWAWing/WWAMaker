@@ -190,20 +190,15 @@ class MapCanvas extends React.Component<Props, State> {
     }
 
     public shouldComponentUpdate(nextProps: Props) {
-        if (this.props.image !== nextProps.image) {
+        if (this.props.image !== nextProps.image ||
+            this.props.mapWidth !== nextProps.mapWidth ||
+            this.props.fieldMap.length !== nextProps.fieldMap.length) {
             return true;
         }
 
-        return nextProps.fieldMap.some((mapLayer, layerNumber) => {
+        return this.props.fieldMap.some((mapLayer, layerNumber) => {
             const nextMapLayer = nextProps.fieldMap[layerNumber];
             const nextMap = nextMapLayer.fieldMap;
-            const nextCrops = nextMapLayer.imageCrops;
-
-            if (nextMap === undefined || nextCrops === undefined) {
-                return false;
-            } else if (mapLayer.fieldMap === undefined || mapLayer.imageCrops === undefined) {
-                return true;
-            }
 
             for (let chipY = 0; chipY < nextProps.mapWidth; chipY++) {
                 for (let chipX = 0; chipX < nextProps.mapWidth; chipX++) {
@@ -213,6 +208,10 @@ class MapCanvas extends React.Component<Props, State> {
                 }
             }
 
+            const nextCrops = nextMapLayer.imageCrops;
+            if (nextCrops.length !== mapLayer.imageCrops.length) {
+                return true;
+            }
             return mapLayer.imageCrops.some((crop, partsNumber) => {
                 return crop.x !== nextCrops[partsNumber].x
                     || crop.y !== nextCrops[partsNumber].y;
