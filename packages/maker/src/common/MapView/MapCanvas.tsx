@@ -226,8 +226,19 @@ class MapCanvas extends React.Component<Props, State> {
             return null;
         }
 
-        let chunks: Coord[][][][][] = []; // チャンクY, チャンクX, レイヤー, マスY, マスX
-        this.props.fieldMap.forEach((layer, layerIndex) => {
+        const chunkCount = Math.floor(this.props.mapWidth / CHUNK_SIZE);
+        /**
+         * チャンクY, チャンクX, レイヤー, マスY, マスX
+         */
+        let chunks: Coord[][][][][] = new Array(chunkCount);
+        for (let chunkY = 0; chunkY < chunkCount; chunkY++) {
+            chunks[chunkY] = new Array(chunkCount);
+            for (let chunkX = 0; chunkX < chunkCount; chunkX++) {
+                chunks[chunkY][chunkX] = [];
+            }
+        }
+
+        this.props.fieldMap.forEach(layer => {
             const layerCrops = layer.imageCrops;
             if (layer.fieldMap === undefined || layerCrops === undefined) {
                 return;
@@ -236,14 +247,12 @@ class MapCanvas extends React.Component<Props, State> {
             let screenY = 0;
             for (let y = 1; y < this.props.mapWidth; y += CHUNK_SIZE) {
 
-                chunks[screenY] = layerIndex === 0 ? [] : chunks[screenY];
                 const startSliceY = y === 1 ? 0 : y;
                 const endSliceY = y + CHUNK_SIZE;
 
                 let screenX = 0;
                 for (let x = 1; x < this.props.mapWidth; x += CHUNK_SIZE) {
 
-                    chunks[screenY][screenX] = layerIndex === 0 ? [] : chunks[screenY][screenX];
                     const startSliceX = x === 1 ? 0 : x;
                     const endSliceX = x + CHUNK_SIZE;
 
