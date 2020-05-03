@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect, MapStateToProps } from 'react-redux';
 import { StoreType } from '../State';
-import MapCanvas, { TargetParts, SelectRectProps } from '../common/MapCanvas';
+import MapView, { TargetParts, SelectRectProps } from '../common/MapView';
 import { PartsType } from '../classes/WWAData';
 import { Dispatch, bindActionCreators } from 'redux';
 import { setCurrentPos, EditMode, setEditMode } from './MapStates';
@@ -64,7 +64,7 @@ interface State {
     } | null
 }
 
-class MapView extends React.Component<Props, State> {
+class MapEdit extends React.Component<Props, State> {
     public static defaultProps: StateProps = {
         editParts: {
             editMode: EditMode.PUT_MAP,
@@ -248,7 +248,7 @@ class MapView extends React.Component<Props, State> {
 
     public render() {
         return (
-            <MapCanvas
+            <MapView
                 onMouseDown={this.handleMouseDown}
                 onMouseMove={this.setCurrentPos}
                 onMouseDrag={this.setCurrentPos}
@@ -276,4 +276,4 @@ function getEditPartsType(editMode: EditMode): PartsType | null {
     return null
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MapView);
+export default connect(mapStateToProps, mapDispatchToProps)(MapEdit);

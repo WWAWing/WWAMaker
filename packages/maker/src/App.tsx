@@ -3,7 +3,7 @@ import styles from './App.module.scss';
 import MainToolbar from './MainToolbar';
 import PartsSelect from './parts/PartsSelect';
 import InfoPanel from './info/InfoPanel';
-import MapView from './map/MapView';
+import MapEdit from './map/MapEdit';
 import SplitPane from 'react-split-pane';
 import './common/SplitPane.scss';
 import { connect, MapStateToProps } from 'react-redux';
@@ -45,7 +45,7 @@ class App extends React.Component<StateProps> {
                 </div>
                 <div className={styles.editArea}>
                     <SplitPane split="horizontal" defaultSize={300} primary="second">
-                        <MapView></MapView>
+                        <MapEdit></MapEdit>
                         <PartsSelect></PartsSelect>
                     </SplitPane>
                 </div>

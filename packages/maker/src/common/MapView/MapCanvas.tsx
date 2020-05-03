@@ -1,12 +1,17 @@
 import React, { RefObject } from 'react';
-import WWAConsts from '../classes/WWAConsts';
-import styles from './MapCanvas.module.scss';
-import MapCanvasMap, { MapLayer } from './MapChunk';
-import { PartsType } from '../classes/WWAData';
-import getPosEachChip from './getPosEachChip';
+import WWAConsts from '../../classes/WWAConsts';
+import styles from './index.module.scss';
+import MapChunk from './MapChunk';
+import { PartsType } from '../../classes/WWAData';
+import getPosEachChip from '../getPosEachChip';
 import { connect, MapStateToProps } from 'react-redux';
-import { StoreType } from '../State';
+import { StoreType } from '../../State';
 import { Coord } from '@wwawing/common-interface';
+
+/**
+ * MapChunk のサイズです。一番左のチャンクは横幅1マス、一番上のチャンクは縦幅1マス増えます。
+ */
+const CHUNK_SIZE = 20;
 
 /**
  * クリックした先のパーツ情報の1レイヤー分です。
@@ -22,21 +27,29 @@ export type TargetParts = {[key in PartsType]: number};
  */
 export type MouseEventFunc = (chipX: number, chipY: number, parts: TargetParts) => void;
 
-interface UserProps {
+export interface UserProps {
     onMouseDown: MouseEventFunc;
     onMouseMove: MouseEventFunc;
     onMouseDrag: MouseEventFunc;
     onMouseUp: MouseEventFunc;
     onContextMenu?: MouseEventFunc;
-    selectRect?: SelectRectProps;
 }
 
 interface State {
     hasClick: boolean
 }
 
+/**
+ * マップのレイヤー部分です。
+ */
+export type MapLayer = {
+    type: PartsType,
+    fieldMap: number[][],
+    imageCrops: Coord[]
+};
+
 interface StateProps {
-    mapLayers: MapLayer[],
+    fieldMap: MapLayer[],
     mapWidth: number,
     image?: CanvasImageSource
 }
@@ -44,7 +57,7 @@ interface StateProps {
 const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = state => {
     if (state.wwaData === null || state.image === null) {
         return {
-            mapLayers: [],
+            fieldMap: [],
             mapWidth: 0
         };
     }
@@ -57,7 +70,7 @@ const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = stat
     };
 
     return {
-        mapLayers: [
+        fieldMap: [
             {
                 type: PartsType.MAP,
                 fieldMap: state.wwaData.map,
@@ -81,7 +94,7 @@ type Props = UserProps & StateProps;
 class MapCanvas extends React.Component<Props, State> {
     private elementRef: RefObject<HTMLDivElement>;
     public static defaultProps: StateProps = {
-        mapLayers: [],
+        fieldMap: [],
         mapWidth: 0,
         image: undefined
     };
@@ -91,6 +104,7 @@ class MapCanvas extends React.Component<Props, State> {
         this.state = {
             hasClick: false
         };
+
         this.elementRef = React.createRef();
         this.handleMouseDown = this.handleMouseDown.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
@@ -167,7 +181,7 @@ class MapCanvas extends React.Component<Props, State> {
      * @param chipY 
      */
     private getPartsNumberOnTarget(chipX: number, chipY: number, type: PartsType): number {
-        const targetLayer = this.props.mapLayers.find(layer => layer.type === type);
+        const targetLayer = this.props.fieldMap.find(layer => layer.type === type);
         if (targetLayer === undefined) {
             return 0;
         }
@@ -175,51 +189,102 @@ class MapCanvas extends React.Component<Props, State> {
         return targetLayer.fieldMap[chipY][chipX];
     }
 
-    public render() {
-        return (
-            <div className={styles.mapCanvasWrapper}>
-                <div
-                    className={styles.mapCanvas}
-                    ref={this.elementRef}
-                    onMouseDown={this.handleMouseDown}
-                    onMouseUp={this.handleMouseUp}
-                    onMouseMove={this.handleMouseMove}
-                    onContextMenu={this.handleContextMenu}
-                >
-                    {this.props.image !== undefined &&
-                        <MapCanvasMap
-                            fieldMap={this.props.mapLayers}
-                            image={this.props.image}
-                            mapWidth={this.props.mapWidth}
-                        />
+    public shouldComponentUpdate(nextProps: Props) {
+        if (this.props.image !== nextProps.image) {
+            return true;
+        }
+
+        return nextProps.fieldMap.some((mapLayer, layerNumber) => {
+            const nextMapLayer = nextProps.fieldMap[layerNumber];
+            const nextMap = nextMapLayer.fieldMap;
+            const nextCrops = nextMapLayer.imageCrops;
+
+            if (nextMap === undefined || nextCrops === undefined) {
+                return false;
+            } else if (mapLayer.fieldMap === undefined || mapLayer.imageCrops === undefined) {
+                return true;
+            }
+
+            for (let chipY = 0; chipY < nextProps.mapWidth; chipY++) {
+                for (let chipX = 0; chipX < nextProps.mapWidth; chipX++) {
+                    if (nextMap[chipY][chipX] !== mapLayer.fieldMap[chipY][chipX]) {
+                        return true;
                     }
-                </div>
-                {this.props.selectRect !== undefined &&
-                    <SelectRect {...this.props.selectRect} />
                 }
+            }
+
+            return mapLayer.imageCrops.some((crop, partsNumber) => {
+                return crop.x !== nextCrops[partsNumber].x
+                    || crop.y !== nextCrops[partsNumber].y;
+            });
+
+        });
+    }
+
+    public render() {
+        const image = this.props.image;
+        if (image === undefined) {
+            return null;
+        }
+
+        let chunks: Coord[][][][][] = []; // チャンクY, チャンクX, レイヤー, マスY, マスX
+        this.props.fieldMap.forEach((layer, layerIndex) => {
+            const layerCrops = layer.imageCrops;
+            if (layer.fieldMap === undefined || layerCrops === undefined) {
+                return;
+            }
+
+            let screenY = 0;
+            for (let y = 1; y < this.props.mapWidth; y += CHUNK_SIZE) {
+
+                chunks[screenY] = layerIndex === 0 ? [] : chunks[screenY];
+                const startSliceY = y === 1 ? 0 : y;
+                const endSliceY = y + CHUNK_SIZE;
+
+                let screenX = 0;
+                for (let x = 1; x < this.props.mapWidth; x += CHUNK_SIZE) {
+
+                    chunks[screenY][screenX] = layerIndex === 0 ? [] : chunks[screenY][screenX];
+                    const startSliceX = x === 1 ? 0 : x;
+                    const endSliceX = x + CHUNK_SIZE;
+
+                    const targetMap = layer.fieldMap.slice(startSliceY, endSliceY).map(chunkLine => {
+                        return chunkLine.slice(startSliceX, endSliceX).map(partsNumber => {
+                            return layerCrops[partsNumber];
+                        });
+                    });
+
+                    chunks[screenY][screenX].push(targetMap);
+                    screenX++;
+                }
+
+                screenY++;
+            }
+        });
+
+        return (
+            <div
+                className={styles.mapCanvas}
+                ref={this.elementRef}
+                onMouseDown={this.handleMouseDown}
+                onMouseUp={this.handleMouseUp}
+                onMouseMove={this.handleMouseMove}
+                onContextMenu={this.handleContextMenu}
+            >
+                {chunks.map((chunkLine, chunkLineIndex) => (
+                    <div className={styles.mapCanvasLine} key={chunkLineIndex}>
+                        {chunkLine.map((chunk, chunkColumnIndex) => (
+                            <MapChunk
+                                key={chunkColumnIndex}
+                                map={chunk}
+                                image={image}
+                            />
+                        ))}
+                    </div>
+                ))}
             </div>
         );
     }
 }
 
 export default connect(mapStateToProps)(MapCanvas);
-
-export interface SelectRectProps {
-    chipX: number;
-    chipY: number;
-    chipWidth: number;
-    chipHeight: number;
-};
-
-const SelectRect: React.FC<SelectRectProps> = props => {
-    return (
-        <div
-            className={styles.selectRect}
-            style={{
-                transform: `translate(${props.chipX * WWAConsts.CHIP_SIZE}px, ${props.chipY * WWAConsts.CHIP_SIZE}px)`,
-                width: props.chipWidth * WWAConsts.CHIP_SIZE,
-                height: props.chipHeight * WWAConsts.CHIP_SIZE
-            }}
-        />
-    )
-};
