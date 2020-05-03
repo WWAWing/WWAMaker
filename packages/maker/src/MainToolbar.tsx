@@ -104,18 +104,20 @@ class MainToolbar extends React.Component<Props, State> {
                             {this.editModeButton(EditMode.DELETE_OBJECT, "物体パーツ削除")}
                         </Button.Group>
                     </List.Item>
-                    <List.Item>
-                        <Label.Group>
-                            <Label>
-                                X
-                                <Label.Detail>{this.props.currentPos.chipX}</Label.Detail>
-                            </Label>
-                            <Label>
-                                Y
-                                <Label.Detail>{this.props.currentPos.chipY}</Label.Detail>
-                            </Label>
-                        </Label.Group>
-                    </List.Item>
+                    {this.props.currentPos !== undefined &&
+                        <List.Item>
+                            <Label.Group>
+                                <Label>
+                                    X
+                                    <Label.Detail>{this.props.currentPos.chipX}</Label.Detail>
+                                </Label>
+                                <Label>
+                                    Y
+                                    <Label.Detail>{this.props.currentPos.chipY}</Label.Detail>
+                                </Label>
+                            </Label.Group>
+                        </List.Item>
+                    }
                     <List.Item>
                         <Button onClick={() => this.props.toggleInfoPanel()} active={this.props.isInfoPanelOpened}>
                             <Icon name="edit" />

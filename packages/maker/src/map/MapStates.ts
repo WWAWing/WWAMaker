@@ -20,7 +20,7 @@ export interface MapState {
      * 現在のマウスの位置を表します。
      *     マス単位で表示されていて、主にツールバーの表示に使用されています。
      */
-    currentPos: {
+    currentPos?: {
         chipX: number,
         chipY: number
     }
@@ -28,10 +28,7 @@ export interface MapState {
 
 export const INITIAL_STATE: MapState = {
     editMode: EditMode.PUT_MAP,
-    currentPos: {
-        chipX: 0,
-        chipY: 0
-    }
+    currentPos: undefined
 };
 
 const actionCreator = actionCreatorFactory();
