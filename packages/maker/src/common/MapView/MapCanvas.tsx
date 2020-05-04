@@ -41,11 +41,17 @@ interface State {
 
 /**
  * マップのレイヤー部分です。
+ * @todo 近いうちに MapLayer インターフェイスにしてクラス化したい
  */
 export type MapLayer = {
-    type: PartsType,
+    type: "layer",
+    partsType?: PartsType,
     fieldMap: number[][],
     imageCrops: Coord[]
+} | {
+    type: "chip",
+    position: Coord,
+    crop: Coord
 };
 
 interface StateProps {
@@ -74,11 +80,23 @@ const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = stat
     return {
         fieldMap: [
             {
-                type: PartsType.MAP,
+                type: "layer",
+                partsType: PartsType.MAP,
                 fieldMap: state.wwaData.map,
                 imageCrops: state.wwaData.mapAttribute.map(getCrops)
             }, {
-                type: PartsType.OBJECT,
+                type: "chip",
+                position: {
+                    x: state.wwaData.playerX,
+                    y: state.wwaData.playerY
+                },
+                crop: {
+                    x: (WWAConsts.IMGPOS_DEFAULT_PLAYER_X + WWAConsts.IMGRELPOS_PLAYER_DOWN_X) * WWAConsts.CHIP_SIZE,
+                    y: WWAConsts.IMGPOS_DEFAULT_PLAYER_Y * WWAConsts.CHIP_SIZE
+                }
+            }, {
+                type: "layer",
+                partsType: PartsType.OBJECT,
                 fieldMap: state.wwaData.mapObject,
                 imageCrops: state.wwaData.objectAttribute.map(getCrops)
             }
@@ -185,8 +203,8 @@ class MapCanvas extends React.Component<Props, State> {
      * @param chipY 
      */
     private getPartsNumberOnTarget(chipX: number, chipY: number, type: PartsType): number {
-        const targetLayer = this.props.fieldMap.find(layer => layer.type === type);
-        if (targetLayer === undefined) {
+        const targetLayer = this.props.fieldMap.find(layer => layer.type === "layer" && layer.partsType === type);
+        if (targetLayer === undefined || targetLayer.type === "chip") {
             return 0;
         }
 
@@ -203,6 +221,15 @@ class MapCanvas extends React.Component<Props, State> {
 
         return this.props.fieldMap.some((mapLayer, layerNumber) => {
             const nextMapLayer = nextProps.fieldMap[layerNumber];
+
+            if (mapLayer.type === "chip" || nextMapLayer.type === "chip") {
+                if (mapLayer.type === "chip" && nextMapLayer.type === "chip") {
+                    return mapLayer.position.x !== nextMapLayer.position.x
+                        || mapLayer.position.y !== nextMapLayer.position.y;
+                }
+                return false;
+            }
+
             const nextMap = nextMapLayer.fieldMap;
 
             for (let chipY = 0; chipY < this.props.mapWidth; chipY++) {
@@ -244,6 +271,26 @@ class MapCanvas extends React.Component<Props, State> {
         }
 
         this.props.fieldMap.forEach(layer => {
+            if (layer.type === "chip") {
+                const chunkX = Math.floor(layer.position.x / CHUNK_SIZE);
+                const chunkY = Math.floor(layer.position.y / CHUNK_SIZE);
+
+                let targetMap: Coord[][] = [];
+                const endChipY = Math.min(this.props.mapWidth, (chunkY + 1) * CHUNK_SIZE);
+                for (let chipY = chunkY * CHUNK_SIZE; chipY < endChipY; chipY++) {
+                    targetMap[chipY] = [];
+                    const endChipX = Math.min(this.props.mapWidth, (chunkX + 1) * CHUNK_SIZE);
+                    for (let chipX = chunkX * CHUNK_SIZE; chipX < endChipX; chipX++) {
+                        targetMap[chipY][chipX] = chipX === layer.position.x && chipY === layer.position.y
+                            ? layer.crop
+                            : { x: 0, y: 0 };
+                    }
+                }
+
+                chunks[chunkY][chunkX].push(targetMap);
+                return;
+            }
+
             const layerCrops = layer.imageCrops;
             if (layer.fieldMap === undefined || layerCrops === undefined) {
                 return;
