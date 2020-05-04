@@ -1,18 +1,13 @@
 import React, { RefObject } from 'react';
 import WWAConsts from '../../classes/WWAConsts';
 import styles from './index.module.scss';
-import { MapLayer, FieldMapLayer, ChipLayer } from "./MapLayer";
+import { CHUNK_SIZE, MapLayer, FieldMapLayer, ChipLayer } from "./MapLayer";
 import MapChunk from './MapChunk';
 import { PartsType } from '../../classes/WWAData';
 import getPosEachChip from '../getPosEachChip';
 import { connect, MapStateToProps } from 'react-redux';
 import { StoreType } from '../../State';
 import { Coord } from '@wwawing/common-interface';
-
-/**
- * MapChunk のサイズです。超えた分は切り捨てます。
- */
-const CHUNK_SIZE = 10;
 
 /**
  * クリックした先のパーツ情報の1レイヤー分です。

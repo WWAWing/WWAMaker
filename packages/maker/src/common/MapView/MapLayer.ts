@@ -5,7 +5,7 @@ import { PartsType } from "../../classes/WWAData";
 /**
  * MapChunk のサイズです。超えた分は切り捨てます。
  */
-const CHUNK_SIZE = 10;
+export const CHUNK_SIZE = 10;
 
 /**
  * MapCanvas で管理するレイヤーのインターフェイスです。
@@ -25,9 +25,22 @@ export interface MapLayer {
     getMapChunk(chunkX: number, chunkY: number): Coord[][] | undefined;
 }
 
+/**
+ * FieldMapLayer はマップに描画するレイヤーです。
+ *     背景パーツや物体パーツで全体に敷くものになります。
+ */
 export class FieldMapLayer implements MapLayer {
+    /**
+     * 対応しているパーツ種類 (右クリックの挙動でパーツ種類を調べる目的で使用)
+     */
     private partsType: PartsType;
+    /**
+     * フィールドマップ (個々の項目はパーツ番号)
+     */
     private fieldMap: number[][];
+    /**
+     * 各パーツ番号に対応したイメージの X座標 と Y座標
+     */
     private imageCrops: Coord[];
 
     constructor(partsType: PartsType, fieldMap: number[][], attributes: number[][]) {
@@ -85,6 +98,10 @@ export class FieldMapLayer implements MapLayer {
     }
 }
 
+/**
+ * ChipLayer は1マスだけ描画するレイヤーです。
+ *     プレイヤーの位置を示す際に使用します。
+ */
 export class ChipLayer implements MapLayer {
     /**
      * マップ内に存在するチャンクの位置
