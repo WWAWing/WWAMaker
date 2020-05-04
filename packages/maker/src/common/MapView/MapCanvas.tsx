@@ -1,6 +1,7 @@
 import React, { RefObject } from 'react';
 import WWAConsts from '../../classes/WWAConsts';
 import styles from './index.module.scss';
+import { MapLayer, FieldMapLayer, ChipLayer } from "./MapLayer";
 import MapChunk from './MapChunk';
 import { PartsType } from '../../classes/WWAData';
 import getPosEachChip from '../getPosEachChip';
@@ -39,21 +40,6 @@ interface State {
     hasClick: boolean
 }
 
-/**
- * マップのレイヤー部分です。
- * @todo 近いうちに MapLayer インターフェイスにしてクラス化したい
- */
-export type MapLayer = {
-    type: "layer",
-    partsType?: PartsType,
-    fieldMap: number[][],
-    imageCrops: Coord[]
-} | {
-    type: "chip",
-    position: Coord,
-    crop: Coord
-};
-
 interface StateProps {
     fieldMap: MapLayer[],
     mapWidth: number,
@@ -70,36 +56,28 @@ const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = stat
         };
     }
 
-    const getCrops = (attribute: number[]): Coord => {
-        return {
-            x: attribute[WWAConsts.ATR_X],
-            y: attribute[WWAConsts.ATR_Y]
-        };
-    };
-
     return {
         fieldMap: [
-            {
-                type: "layer",
-                partsType: PartsType.MAP,
-                fieldMap: state.wwaData.map,
-                imageCrops: state.wwaData.mapAttribute.map(getCrops)
-            }, {
-                type: "chip",
-                position: {
+            new FieldMapLayer(
+                PartsType.MAP,
+                state.wwaData.map,
+                state.wwaData.mapAttribute
+            ),
+            new ChipLayer(
+                {
                     x: state.wwaData.playerX,
                     y: state.wwaData.playerY
-                },
-                crop: {
+                }, {
                     x: (WWAConsts.IMGPOS_DEFAULT_PLAYER_X + WWAConsts.IMGRELPOS_PLAYER_DOWN_X) * WWAConsts.CHIP_SIZE,
                     y: WWAConsts.IMGPOS_DEFAULT_PLAYER_Y * WWAConsts.CHIP_SIZE
-                }
-            }, {
-                type: "layer",
-                partsType: PartsType.OBJECT,
-                fieldMap: state.wwaData.mapObject,
-                imageCrops: state.wwaData.objectAttribute.map(getCrops)
-            }
+                },
+                state.wwaData.mapWidth
+            ),
+            new FieldMapLayer(
+                PartsType.OBJECT,
+                state.wwaData.mapObject,
+                state.wwaData.objectAttribute
+            )
         ],
         mapWidth: state.wwaData.mapWidth,
         showGrid: state.map.showGrid,
@@ -203,12 +181,14 @@ class MapCanvas extends React.Component<Props, State> {
      * @param chipY 
      */
     private getPartsNumberOnTarget(chipX: number, chipY: number, type: PartsType): number {
-        const targetLayer = this.props.fieldMap.find(layer => layer.type === "layer" && layer.partsType === type);
-        if (targetLayer === undefined || targetLayer.type === "chip") {
+        const targetLayer = this.props.fieldMap.find(layer => {
+            return layer instanceof FieldMapLayer && layer.getPartsType() === type
+        });
+        if (targetLayer === undefined) {
             return 0;
         }
 
-        return targetLayer.fieldMap[chipY][chipX];
+        return (targetLayer as FieldMapLayer).getPartsNumber(chipX, chipY);
     }
 
     public shouldComponentUpdate(nextProps: Props) {
@@ -221,34 +201,7 @@ class MapCanvas extends React.Component<Props, State> {
 
         return this.props.fieldMap.some((mapLayer, layerNumber) => {
             const nextMapLayer = nextProps.fieldMap[layerNumber];
-
-            if (mapLayer.type === "chip" || nextMapLayer.type === "chip") {
-                if (mapLayer.type === "chip" && nextMapLayer.type === "chip") {
-                    return mapLayer.position.x !== nextMapLayer.position.x
-                        || mapLayer.position.y !== nextMapLayer.position.y;
-                }
-                return false;
-            }
-
-            const nextMap = nextMapLayer.fieldMap;
-
-            for (let chipY = 0; chipY < this.props.mapWidth; chipY++) {
-                for (let chipX = 0; chipX < this.props.mapWidth; chipX++) {
-                    if (mapLayer.fieldMap[chipY][chipX] !== nextMap[chipY][chipX]) {
-                        return true;
-                    }
-                }
-            }
-
-            const nextCrops = nextMapLayer.imageCrops;
-            if (nextCrops.length !== mapLayer.imageCrops.length) {
-                return true;
-            }
-            return mapLayer.imageCrops.some((crop, partsNumber) => {
-                return crop.x !== nextCrops[partsNumber].x
-                    || crop.y !== nextCrops[partsNumber].y;
-            });
-
+            return mapLayer.isDifference(nextMapLayer);
         });
     }
 
@@ -271,43 +224,12 @@ class MapCanvas extends React.Component<Props, State> {
         }
 
         this.props.fieldMap.forEach(layer => {
-            if (layer.type === "chip") {
-                const chunkX = Math.floor(layer.position.x / CHUNK_SIZE);
-                const chunkY = Math.floor(layer.position.y / CHUNK_SIZE);
-
-                let targetMap: Coord[][] = [];
-                const endChipY = Math.min(this.props.mapWidth, (chunkY + 1) * CHUNK_SIZE);
-                for (let chipY = chunkY * CHUNK_SIZE; chipY < endChipY; chipY++) {
-                    targetMap[chipY] = [];
-                    const endChipX = Math.min(this.props.mapWidth, (chunkX + 1) * CHUNK_SIZE);
-                    for (let chipX = chunkX * CHUNK_SIZE; chipX < endChipX; chipX++) {
-                        targetMap[chipY][chipX] = chipX === layer.position.x && chipY === layer.position.y
-                            ? layer.crop
-                            : { x: 0, y: 0 };
-                    }
-                }
-
-                chunks[chunkY][chunkX].push(targetMap);
-                return;
-            }
-
-            const layerCrops = layer.imageCrops;
-            if (layer.fieldMap === undefined || layerCrops === undefined) {
-                return;
-            }
-
             for (let chunkY = 0; chunkY < chunkCount; chunkY++) {
                 for (let chunkX = 0; chunkX < chunkCount; chunkX++) {
-
-                    const startChipY = chunkY * CHUNK_SIZE;
-                    const startChipX = chunkX * CHUNK_SIZE;
-                    const targetMap = layer.fieldMap.slice(startChipY, startChipY + CHUNK_SIZE).map(chunkLine => {
-                        return chunkLine.slice(startChipX, startChipX + CHUNK_SIZE).map(partsNumber => {
-                            return layerCrops[partsNumber];
-                        });
-                    });
-
-                    chunks[chunkY][chunkX].push(targetMap);
+                    const chunk = layer.getMapChunk(chunkX, chunkY);
+                    if (chunk !== undefined) {
+                        chunks[chunkY][chunkX].push(chunk);
+                    }
                 }
             }
         });
