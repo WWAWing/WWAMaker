@@ -87,19 +87,18 @@ export default class MapChunk extends React.Component<{
             });
         });
 
-        if (!this.props.showGrid) {
-            return;
+        if (this.props.showGrid) {
+            context.strokeStyle = MAP_BORDER_GRID_COLOR;
+            context.lineWidth = MAP_BORDER_GRID_WIDTH;
+    
+            context.beginPath();
+            context.moveTo(WWAConsts.CHIP_SIZE / 2, 0);
+            context.lineTo(WWAConsts.CHIP_SIZE / 2, elementSize.y);
+            context.moveTo(0, WWAConsts.CHIP_SIZE / 2);
+            context.lineTo(elementSize.x, WWAConsts.CHIP_SIZE / 2);
+            context.stroke();
+            context.closePath();
         }
-        context.strokeStyle = MAP_BORDER_GRID_COLOR;
-        context.lineWidth = MAP_BORDER_GRID_WIDTH;
-
-        context.beginPath();
-        context.moveTo(WWAConsts.CHIP_SIZE / 2, 0);
-        context.lineTo(WWAConsts.CHIP_SIZE / 2, elementSize.y);
-        context.moveTo(0, WWAConsts.CHIP_SIZE / 2);
-        context.lineTo(elementSize.x, WWAConsts.CHIP_SIZE / 2);
-        context.stroke();
-        context.closePath();
     }
 
     private getElementSize(): Coord {
