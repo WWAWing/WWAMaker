@@ -235,9 +235,9 @@ class MapCanvas extends React.Component<Props, State> {
         /**
          * チャンクY, チャンクX, レイヤー, マスY, マスX
          */
-        let chunks: Coord[][][][][] = new Array(chunkCount);
+        let chunks: Coord[][][][][] = [];
         for (let chunkY = 0; chunkY < chunkCount; chunkY++) {
-            chunks[chunkY] = new Array(chunkCount);
+            chunks[chunkY] = [];
             for (let chunkX = 0; chunkX < chunkCount; chunkX++) {
                 chunks[chunkY][chunkX] = [];
             }
@@ -249,23 +249,19 @@ class MapCanvas extends React.Component<Props, State> {
                 return;
             }
 
-            let screenY = 0;
-            for (let y = 0; y < this.props.mapWidth; y += CHUNK_SIZE) {
+            for (let chunkY = 0; chunkY < chunkCount; chunkY++) {
+                for (let chunkX = 0; chunkX < chunkCount; chunkX++) {
 
-                let screenX = 0;
-                for (let x = 0; x < this.props.mapWidth; x += CHUNK_SIZE) {
-
-                    const targetMap = layer.fieldMap.slice(y, y + CHUNK_SIZE).map(chunkLine => {
-                        return chunkLine.slice(x, x + CHUNK_SIZE).map(partsNumber => {
+                    const startChipY = chunkY * CHUNK_SIZE;
+                    const startChipX = chunkX * CHUNK_SIZE;
+                    const targetMap = layer.fieldMap.slice(startChipY, startChipY + CHUNK_SIZE).map(chunkLine => {
+                        return chunkLine.slice(startChipX, startChipX + CHUNK_SIZE).map(partsNumber => {
                             return layerCrops[partsNumber];
                         });
                     });
 
-                    chunks[screenY][screenX].push(targetMap);
-                    screenX++;
+                    chunks[chunkY][chunkX].push(targetMap);
                 }
-
-                screenY++;
             }
         });
 
