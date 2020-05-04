@@ -65,7 +65,7 @@ const fillParts = (
         if (lineIndex < y || lineIndex >= y + height) {
             return line;
         }
-        return line.fill(value, x, x + width);
+        return line.slice().fill(value, x, x + width);
     });
 };
 

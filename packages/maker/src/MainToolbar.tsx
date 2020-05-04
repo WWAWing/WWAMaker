@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators } from 'redux';
 import { loadMapdata } from './load/LoadStates';
 import { thunkToAction } from 'typescript-fsa-redux-thunk';
-import { setEditMode, EditMode } from './map/MapStates';
+import { setEditMode, EditMode, toggleGrid } from './map/MapStates';
 import { StoreType } from './State';
 import { Input, Button, Label, Icon, List } from 'semantic-ui-react';
 import { toggleInfoPanel } from './info/InfoPanelState';
@@ -14,7 +14,8 @@ const mapStateToProps = (state: StoreType) => {
     return {
         currentPos: state.map.currentPos,
         editMode: state.map.editMode,
-        isInfoPanelOpened: state.info.isOpened
+        isInfoPanelOpened: state.info.isOpened,
+        showGrid: state.map.showGrid
     };
 };
 
@@ -24,7 +25,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
         {
             openMapdata: thunkToAction(loadMapdata.action),
             setEditMode: setEditMode,
-            toggleInfoPanel: toggleInfoPanel
+            toggleInfoPanel: toggleInfoPanel,
+            toggleGrid: toggleGrid
         },
         dispatch
     );
@@ -104,19 +106,24 @@ class MainToolbar extends React.Component<Props, State> {
                             {this.editModeButton(EditMode.DELETE_OBJECT, "物体パーツ削除")}
                         </Button.Group>
                     </List.Item>
+                    {this.props.currentPos !== undefined &&
+                        <List.Item>
+                            <Label.Group>
+                                <Label>
+                                    X
+                                    <Label.Detail>{this.props.currentPos.chipX}</Label.Detail>
+                                </Label>
+                                <Label>
+                                    Y
+                                    <Label.Detail>{this.props.currentPos.chipY}</Label.Detail>
+                                </Label>
+                            </Label.Group>
+                        </List.Item>
+                    }
                     <List.Item>
-                        <Label.Group>
-                            <Label>
-                                X
-                                <Label.Detail>{this.props.currentPos.chipX}</Label.Detail>
-                            </Label>
-                            <Label>
-                                Y
-                                <Label.Detail>{this.props.currentPos.chipY}</Label.Detail>
-                            </Label>
-                        </Label.Group>
-                    </List.Item>
-                    <List.Item>
+                        <Button onClick={() => this.props.toggleGrid()} active={this.props.showGrid}>
+                            <Icon name="grid layout" />
+                        </Button>
                         <Button onClick={() => this.props.toggleInfoPanel()} active={this.props.isInfoPanelOpened}>
                             <Icon name="edit" />
                         </Button>

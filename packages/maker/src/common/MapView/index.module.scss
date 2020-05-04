@@ -1,0 +1,27 @@
+.mapCanvasWrapper {
+    overflow: auto;
+    position: relative;
+    line-height: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.mapCanvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 0;
+}
+
+.selectRect {
+    position: absolute;
+    border: 1px solid #00f;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.mapCanvasLine {
+    white-space: nowrap;
+}
