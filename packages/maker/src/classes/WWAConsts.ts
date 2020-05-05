@@ -57,6 +57,9 @@ export default class WWAConsts {
 
     static SYSTEM_MESSAGE_NUM: number = 20;
 
+    static IMGPOS_DEFAULT_PLAYER_X: number = 2;
+    static IMGPOS_DEFAULT_PLAYER_Y: number = 0;
+
     static CHIP_SIZE = 40;
 
     static RELATIVE_COORD_BIAS: number = 10000;
@@ -96,4 +99,7 @@ export default class WWAConsts {
     static RELATIVE_COORD_MAX: number = 100;
 
     static MESSAGE_FIRST_CHARA: number = 10;
+
+    // プレイヤーのそれぞれの向きに対応した相対座標
+    static IMGRELPOS_PLAYER_DOWN_X = 2;
 }
