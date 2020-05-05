@@ -9,6 +9,8 @@ export const CHUNK_SIZE = 10;
 
 /**
  * MapCanvas で管理するレイヤーのインターフェイスです。
+ *     WWAのマップ表示は 背景パーツ → プレイヤー → 物体パーツ の順番で重ねています。
+ *     背景パーツ/物体パーツ と プレイヤー で描画の仕方は異なるため、インターフェイスで部分的に共通化しています。
  */
 export interface MapLayer {
     /**
@@ -65,7 +67,10 @@ export class FieldMapLayer implements MapLayer {
         return this.fieldMap[chipY][chipX];
     }
 
-    public isDifference(targetMapLayer: FieldMapLayer) {
+    public isDifference(targetMapLayer: MapLayer) {
+        if (!(targetMapLayer instanceof FieldMapLayer)) {
+            return true;
+        }
         const nextMap = targetMapLayer.fieldMap;
 
         const isMapChanged = this.fieldMap.some((fieldLine, chipY) => {
@@ -119,7 +124,10 @@ export class ChipLayer implements MapLayer {
         };
     }
 
-    public isDifference(targetMapLayer: ChipLayer): boolean {
+    public isDifference(targetMapLayer: MapLayer): boolean {
+        if (!(targetMapLayer instanceof ChipLayer)) {
+            return true;
+        }
         return targetMapLayer.position.x !== this.position.x
             || targetMapLayer.position.y !== this.position.y
             || targetMapLayer.crop.x !== this.crop.x
