@@ -43,13 +43,21 @@ export default class MapChunk extends React.Component<{
         if (nextProps.showGrid !== this.props.showGrid) {
             return true;
         }
-        return nextProps.map.some((line, lineIndex) =>
-            line.some((layer, layerIndex) =>
-                layer.some((imageCoord, index) =>
+        // 右端や下端のチャンクがサイズ変更した場合の措置
+        return nextProps.map.some((line, lineIndex) => {
+            if (line.length !== this.props.map[lineIndex].length) {
+                return true;
+            }
+            return line.some((layer, layerIndex) => {
+                if (layer.length !== this.props.map[lineIndex][layerIndex].length) {
+                    return true;
+                }
+                return layer.some((imageCoord, index) =>
                     imageCoord.x !== this.props.map[lineIndex][layerIndex][index].x ||
                     imageCoord.y !== this.props.map[lineIndex][layerIndex][index].y
-                )
-            )
+                );
+            });
+        }
         );
     }
 
