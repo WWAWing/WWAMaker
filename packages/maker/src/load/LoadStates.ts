@@ -102,7 +102,7 @@ const loadImagePromise = (
         image.addEventListener("load", imageLoadHandler);
         image.addEventListener("error", imageErrorHandler);
         image.src = imageFileName;
-    })
+    });
 }
 
 /**
