@@ -1,7 +1,16 @@
 import React from "react";
 
-export default function ImageDecoder() {
-    return (Component: React.Component) => {
-        
-    }
+type GetImageUrl<P> = (prps: P) => string;
+type SetImage<P> = (image: HTMLImageElement, props: P) => P;
+
+export default function imageDecorder<P>(getImageUrl: GetImageUrl<P>, setImage: SetImage<P>) {
+    return (CurrentComponent: React.Component) => {
+
+        return class extends React.Component<P> {
+            public render() {
+                return CurrentComponent;
+            }
+        };
+
+    };
 }
