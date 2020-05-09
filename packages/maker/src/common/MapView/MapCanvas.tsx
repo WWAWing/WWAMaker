@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import WWAConsts from '../../classes/WWAConsts';
 import styles from './index.module.scss';
 import { CHUNK_SIZE, MapLayer, FieldMapLayer, ChipLayer } from "./MapLayer";
@@ -6,7 +6,7 @@ import MapChunk from './MapChunk';
 import { PartsType } from '../../classes/WWAData';
 import getPosEachChip from '../getPosEachChip';
 import { useImage } from "wwamaker-image-decorder";
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import { Coord } from '@wwawing/common-interface';
 
 /**
@@ -65,15 +65,15 @@ const MapCanvas: React.FC<Props> = props => {
         ];
     }, (leftLayers, rightLayers) => {
         if (leftLayers.length !== rightLayers.length) {
-            return true;
+            return false;
         }
-        return leftLayers.some((leftLayer, layerIndex) => {
+        return leftLayers.every((leftLayer, layerIndex) => {
             const rightLayer = rightLayers[layerIndex];
-            return leftLayer.isDifference(rightLayer);
+            return !leftLayer.isDifference(rightLayer);
         });
     });
 
-    const mapWidth = useSelector(state => state.wwaData?.mapWidth) ?? 0;
+    const mapWidth = useSelector(state => state.wwaData?.mapWidth, shallowEqual) ?? 0;
     const showGrid = useSelector(state => state.map.showGrid);
     const imageUrl = useSelector(state => state.image);
     const image = useImage(imageUrl ?? "");
@@ -153,33 +153,38 @@ const MapCanvas: React.FC<Props> = props => {
         return (targetLayer as FieldMapLayer).getPartsNumber(chipX, chipY);
     }
 
+    const chunkMap = useMemo(() => {
+        const chunkCount = Math.ceil(mapWidth / CHUNK_SIZE);
+
+        /**
+         * チャンクY, チャンクX, レイヤー, マスY, マスX
+         */
+        let chunks: Coord[][][][][] = [];
+        for (let chunkY = 0; chunkY < chunkCount; chunkY++) {
+            chunks[chunkY] = [];
+            for (let chunkX = 0; chunkX < chunkCount; chunkX++) {
+                chunks[chunkY][chunkX] = [];
+            }
+        }
+
+        fieldMap.forEach(layer => {
+            for (let chunkY = 0; chunkY < chunkCount; chunkY++) {
+                for (let chunkX = 0; chunkX < chunkCount; chunkX++) {
+                    const chunk = layer.getMapChunk(chunkX, chunkY);
+                    if (chunk !== undefined) {
+                        chunks[chunkY][chunkX].push(chunk);
+                    }
+                }
+            }
+        });
+
+        return chunks;
+    }, [mapWidth, fieldMap]);
+
 
     if (image === null) {
         return null;
     }
-
-    const chunkCount = Math.ceil(mapWidth / CHUNK_SIZE);
-    /**
-     * チャンクY, チャンクX, レイヤー, マスY, マスX
-     */
-    let chunks: Coord[][][][][] = [];
-    for (let chunkY = 0; chunkY < chunkCount; chunkY++) {
-        chunks[chunkY] = [];
-        for (let chunkX = 0; chunkX < chunkCount; chunkX++) {
-            chunks[chunkY][chunkX] = [];
-        }
-    }
-
-    fieldMap.forEach(layer => {
-        for (let chunkY = 0; chunkY < chunkCount; chunkY++) {
-            for (let chunkX = 0; chunkX < chunkCount; chunkX++) {
-                const chunk = layer.getMapChunk(chunkX, chunkY);
-                if (chunk !== undefined) {
-                    chunks[chunkY][chunkX].push(chunk);
-                }
-            }
-        }
-    });
 
     return (
         <div
@@ -190,7 +195,7 @@ const MapCanvas: React.FC<Props> = props => {
             onMouseMove={handleMouseMove}
             onContextMenu={handleContextMenu}
         >
-            {chunks.map((chunkLine, chunkLineIndex) => (
+            {chunkMap.map((chunkLine, chunkLineIndex) => (
                 <div className={styles.mapCanvasLine} key={chunkLineIndex}>
                     {chunkLine.map((chunk, chunkColumnIndex) => (
                         <MapChunk
