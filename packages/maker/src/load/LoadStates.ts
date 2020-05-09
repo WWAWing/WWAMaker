@@ -83,7 +83,7 @@ const loadWWADataPromise = (
 const loadImagePromise = (
     imageFileName: string
 ) => {
-    return new Promise<CanvasImageSource>((resolve, reject) => {
+    return new Promise<HTMLImageElement>((resolve, reject) => {
 
         const imageLoadHandler = () => {
             image.removeEventListener("load", imageLoadHandler);
@@ -97,13 +97,44 @@ const loadImagePromise = (
                 message: event.message
             });
         };
-    
+
         const image = new Image();
         image.addEventListener("load", imageLoadHandler);
         image.addEventListener("error", imageErrorHandler);
         image.src = imageFileName;
     });
-}
+};
+
+/**
+ * 読み込んだイメージ画像を objectURL にエンコードする Promise です。
+ * @param imageElement 
+ */
+const encodeImagePromise = (
+    imageElement: HTMLImageElement
+) => {
+    return new Promise<string>((resolve, reject) => {
+        let canvasElement = document.createElement("canvas");
+        canvasElement.width = imageElement.width;
+        canvasElement.height = imageElement.height;
+
+        const canvasContext = canvasElement.getContext("2d");
+        if (canvasContext === null) {
+            reject({
+                title: "Image Error",
+                message: "イメージのコンテキストの取得に失敗しました。"
+            });
+        } else {
+            canvasContext.drawImage(imageElement, 0, 0);
+        }
+
+        canvasElement.toBlob((blob) => {
+            if (blob === null) {
+                return;
+            }
+            resolve(URL.createObjectURL(blob));
+        }, "image/gif");
+    });
+};
 
 /**
  * マップデータ読み込みを行うアクションです。
@@ -124,7 +155,8 @@ export const loadMapdata = actionCreatorAsync<LoadWWADataState, void, LoaderErro
 
         // イメージ画像の読み込み
         const imageData = await loadImagePromise(wwaData.mapCGName);
-        dispatch(setImage({ imageSource: imageData }));
+        const imageUrl = await encodeImagePromise(imageData);
+        dispatch(setImage({ imageUrl }));
     }
 );
 
@@ -137,7 +169,8 @@ export const loadImage = actionCreatorAsync<LoadImageState, void, LoaderError>(
     async (params, dispatch) => {
         // イメージ画像の読み込み
         const imageData = await loadImagePromise(params.imagePath);
-        dispatch(setImage({ imageSource: imageData }));
+        const imageUrl = await encodeImagePromise(imageData);
+        dispatch(setImage({ imageUrl }));
     }
 );
 

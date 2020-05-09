@@ -1,55 +1,38 @@
 import React from 'react';
 import styles from './PartsSelect.module.scss';
-import { connect, MapStateToProps } from 'react-redux';
-import { StoreType } from '../State';
-import { WWAData } from "@wwawing/common-interface";
-import { PartsState, INITIAL_STATE, selectObjParts, selectMapParts } from './PartsState';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectObjParts, selectMapParts } from './PartsState';
 import PartsList from '../common/PartsList';
-import { Dispatch, bindActionCreators } from 'redux';
 import { PartsType } from '../classes/WWAData';
 import { showPartsEdit } from '../info/InfoPanelState';
 import { Button, Segment, Label, Header } from 'semantic-ui-react';
 import { deleteParts } from '../wwadata/WWADataState';
-
-interface StateProps {
-    wwaData: WWAData|null;
-    image: CanvasImageSource|null;
-    objParts: PartsState;
-    mapParts: PartsState;
-}
-
-const mapDispatchToProps = (dispatch: Dispatch) => {
-    return bindActionCreators({
-        selectObjParts: selectObjParts,
-        selectMapParts: selectMapParts,
-        showPartsEdit: showPartsEdit,
-        deleteParts: deleteParts
-    }, dispatch);
-};
-
-type Props = StateProps & ReturnType<typeof mapDispatchToProps>;
+import { useImage } from 'wwamaker-image-decorder';
 
 /**
  * パーツ一覧の Container コンポーネントです。
  */
-class PartsSelect extends React.Component<Props, {}> {
-    public static defaultProps: StateProps = {
-        wwaData: null,
-        image: null,
-        objParts: INITIAL_STATE,
-        mapParts: INITIAL_STATE
-    }
+const PartsSelect: React.FC = () => {
+
+    const objectAttribute = useSelector(state => state.wwaData?.objectAttribute);
+    const mapAttribute = useSelector(state => state.wwaData?.mapAttribute);
+    const objParts = useSelector(state => state.objParts);
+    const mapParts = useSelector(state => state.mapParts);
+    const imageUrl = useSelector(state => state.image);
+    const image = useImage(imageUrl ?? "");
+
+    const dispatch = useDispatch();
 
     /**
      * @see PartsList
      */
-    private handlePartsSelect(partsNumber: number, partsType: PartsType) {
+    const handlePartsSelect = (partsNumber: number, partsType: PartsType) => {
         switch (partsType) {
             case PartsType.OBJECT:
-                this.props.selectObjParts({ number: partsNumber });
+                dispatch(selectObjParts({ number: partsNumber }));
                 break;
             case PartsType.MAP:
-                this.props.selectMapParts({ number: partsNumber });
+                dispatch(selectMapParts({ number: partsNumber }));
                 break;
         }
     }
@@ -59,50 +42,50 @@ class PartsSelect extends React.Component<Props, {}> {
      * @param partsNumber 編集したいパーツ番号 (子コンポーネントの PartsChip 側で呼び出す際に必要)
      * @param partsType 対象のパーツ種類
      */
-    private handlePartsEdit(partsNumber: number, partsType: PartsType) {
+    const handlePartsEdit = (partsNumber: number, partsType: PartsType) => {
         switch (partsType) {
             case PartsType.OBJECT:
-                this.props.showPartsEdit({ type: partsType, number: partsNumber });
+                dispatch(showPartsEdit({ type: partsType, number: partsNumber }));
                 break;
             case PartsType.MAP:
-                this.props.showPartsEdit({ type: partsType, number: partsNumber });
+                dispatch(showPartsEdit({ type: partsType, number: partsNumber }));
         }
     }
 
-    private handlePartsDelete(partsType: PartsType) {
+    const handlePartsDelete = (partsType: PartsType) => {
         const partsNumber = (() => {
             switch (partsType) {
                 case PartsType.OBJECT:
-                    return this.props.objParts.number;
+                    return objParts.number;
                 case PartsType.MAP:
-                    return this.props.mapParts.number;
+                    return mapParts.number;
             }
         })();
 
-        this.props.deleteParts({
+        dispatch(deleteParts({
             type: partsType,
             number: partsNumber
-        });
+        }));
     }
 
-    private renderPartsList(partsType: PartsType) {
+    const renderPartsList = (partsType: PartsType) => {
         let partsAttribute, partsNumber: number, title;
         switch (partsType) {
             case PartsType.OBJECT:
-                partsAttribute = this.props.wwaData?.objectAttribute;
-                partsNumber = this.props.objParts.number;
+                partsAttribute = objectAttribute;
+                partsNumber = objParts.number;
                 title = "物体パーツ一覧";
                 break;
             case PartsType.MAP:
-                partsAttribute = this.props.wwaData?.mapAttribute;
-                partsNumber = this.props.mapParts.number;
+                partsAttribute = mapAttribute;
+                partsNumber = mapParts.number;
                 title = "背景パーツ一覧";
                 break;
             default:
                 return null;
         }
 
-        if (partsAttribute === undefined || this.props.image === null) {
+        if (partsAttribute === undefined || image === null) {
             return null;
         }
 
@@ -114,9 +97,9 @@ class PartsSelect extends React.Component<Props, {}> {
                     type={partsType}
                     attribute={partsAttribute}
                     selectPartsNumber={partsNumber}
-                    onPartsSelect={this.handlePartsSelect.bind(this)}
-                    onPartsEdit={this.handlePartsEdit.bind(this)}
-                    image={this.props.image}
+                    onPartsSelect={handlePartsSelect}
+                    onPartsEdit={handlePartsEdit}
+                    image={image}
                 />
 
                 <Segment compact attached="bottom" className={styles.toolPanelItemFooter}>
@@ -125,34 +108,23 @@ class PartsSelect extends React.Component<Props, {}> {
                         <Label.Detail>{partsNumber}</Label.Detail>
                     </Label>
                     <Button.Group floated="right">
-                        <Button onClick={() => this.handlePartsEdit(partsNumber, partsType)}>選択パーツ編集</Button>
-                        <Button onClick={() => this.handlePartsDelete(partsType)}>選択パーツ削除</Button>
+                        <Button onClick={() => handlePartsEdit(partsNumber, partsType)}>選択パーツ編集</Button>
+                        <Button onClick={() => handlePartsDelete(partsType)}>選択パーツ削除</Button>
                     </Button.Group>
                 </Segment>
             </div>
         );
     }
 
-    public render() {
-        /**
-         * @todo toolPanel は PartsSelect が元々 ToolPanel であったな残りであるため、できれば partsSelect に直す。
-         */
-        return (
-            <div className={styles.toolPanel}>
-                {this.renderPartsList(PartsType.OBJECT)}
-                {this.renderPartsList(PartsType.MAP)}
-            </div>
-        );
-    }
-}
-
-const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = state => {
-    return {
-        wwaData: state.wwaData,
-        image: state.image,
-        objParts: state.objParts,
-        mapParts: state.mapParts
-    };
+    /**
+     * @todo toolPanel は PartsSelect が元々 ToolPanel であったな残りであるため、できれば partsSelect に直す。
+     */
+    return (
+        <div className={styles.toolPanel}>
+            {renderPartsList(PartsType.OBJECT)}
+            {renderPartsList(PartsType.MAP)}
+        </div>
+    );
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PartsSelect);
+export default PartsSelect;
