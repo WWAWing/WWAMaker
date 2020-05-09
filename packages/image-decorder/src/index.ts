@@ -1,6 +1,6 @@
 import React from "react";
 
-type GetImageUrl<P> = (prps: P) => string;
+type GetImageUrl<P> = (prps: P) => string | null;
 type SetImage<P> = (image: HTMLImageElement, props: P) => P;
 
 interface State {
@@ -31,6 +31,11 @@ export default function imageDecorder<P>(getImageUrl: GetImageUrl<P>, setImage: 
             }
 
             public createImage() {
+                const imageUrl = getImageUrl(this.props);
+                if (imageUrl === null) {
+                    return;
+                }
+
                 let image = new Image();
                 image.onload = () => {
                     this.setState({
@@ -42,7 +47,7 @@ export default function imageDecorder<P>(getImageUrl: GetImageUrl<P>, setImage: 
                         image: null
                     });
                 };
-                image.src = getImageUrl(this.props);
+                image.src = imageUrl;
             }
 
             public render() {
