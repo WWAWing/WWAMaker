@@ -1,11 +1,26 @@
 Image Decorder
 ===
-base64 や objectURL 形式のイメージデータを Canvas の描画に使用できるイメージ変数に変換する高階コンポーネントです。
+base64 や objectURL 形式のイメージデータを Canvas の描画に使用できるイメージ変数に変換する React の API です。
 
 ## 使用方法
 ```typescript
 import React from "react";
-import imageDecorder from "wwamaker-image-decorder";
+import { useImage } from "wwamaker-image-decorder";
+
+const SampleComponent: React.FC<{
+    imageUrl: string
+}> = props => {
+    const image = useImage(props.imageUrl);
+
+    return (
+        // ...
+    );
+}
+```
+
+```typescript
+import React from "react";
+import { imageDecorder } from "wwamaker-image-decorder";
 
 // プロパティは予め定義しておきましょう。
 interface Props {
@@ -26,6 +41,18 @@ export default imageDecorder(
 ```
 
 ## API仕様
+useImage は React の Hooks API で実装したメソッドです。imageDecorder は プロパティからイメージURLを取得し、イメージからプロパティに割り当てる高階コンポーネント(HOC) です。
+
+**現在 imageDecorder は使用すると defaultProps が外れてしまい、うまく動作しません。**
+
+### useImage
+```typescript
+const image = useImage(imageUrl);
+```
+
+- **引数**
+    - `imageUrl` ... イメージURL
+- **出力** ... イメージ要素
 
 ### imageDecorder
 ```typescript
