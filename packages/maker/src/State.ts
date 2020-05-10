@@ -19,7 +19,7 @@ export interface StoreType {
     map: MapState,
     objParts: PartsState,
     mapParts: PartsState,
-    image: CanvasImageSource|null,
+    image: string|null,
     info: InfoPanelState
 }
 
@@ -45,7 +45,7 @@ export const setMapdata = actionCreator<{ wwaData: WWAData }>('OPEN_MAPDATA');
 /**
  * 画像リソースを設定します。
  */
-export const setImage = actionCreator<{ imageSource: CanvasImageSource }>('OPEN_IMAGE');
+export const setImage = actionCreator<{ imageUrl: string }>('OPEN_IMAGE');
 /**
  * 開いているマップデータと画像リソースを閉じます。
  */
@@ -60,11 +60,19 @@ const reducer = reducerWithInitialState(INITIAL_STATE)
         newState.wwaData = params.wwaData;
         return newState;
     })
-    .case(setImage, (state, params) => ({
-        ...state,
-        image: params.imageSource
-    }))
+    .case(setImage, (state, params) => {
+        if (state.image !== null) {
+            URL.revokeObjectURL(state.image);
+        }
+        return {
+            ...state,
+            image: params.imageUrl
+        };
+    })
     .case(closeMapdata, (state) => {
+        if (state.image !== null) {
+            URL.revokeObjectURL(state.image);
+        }
         const newState = Object.assign({}, state);
         newState.wwaData = null;
         newState.image = null;
@@ -73,7 +81,7 @@ const reducer = reducerWithInitialState(INITIAL_STATE)
     .default((state, action) => ({
         ...state,
         load: LoadReducer(state.load, action),
-        wwaData: WWADataReducer(state.wwaData === null ? undefined : state.wwaData, action),
+        wwaData: WWADataReducer(state.wwaData, action),
         map: MapReducer(state.map, action),
         objParts: ObjectPartsReducer(state.objParts, action),
         mapParts: MapPartsReducer(state.mapParts, action),

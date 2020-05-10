@@ -1,0 +1,20 @@
+{
+    "name": "wwamaker-image-decorder",
+    "version": "0.0.1",
+    "description": "Convert image element from base64 string or object url",
+    "main": "lib/index.js",
+    "repository": "git@github.com:WWAWing/WWAMaker.git",
+    "author": "WWA Wing Team",
+    "license": "MIT",
+    "private": true,
+    "workspaces": [
+      "packages/*"
+    ],
+    "dependencies": {
+      "react": "^16.8.6",
+      "typescript": "^3.4.5"
+    },
+    "scripts": {
+      "build": "tsc -p ."
+    }
+  }

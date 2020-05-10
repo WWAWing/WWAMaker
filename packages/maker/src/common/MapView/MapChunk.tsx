@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect, useMemo } from "react";
 import { Coord } from "@wwawing/common-interface";
 import WWAConsts from "../../classes/WWAConsts";
 
@@ -13,75 +13,49 @@ const MAP_BORDER_GRID_COLOR = "#f00";
 const MAP_BORDER_GRID_WIDTH = 2;
 
 /**
+ * マップから要素のサイズを取得します。
+ * @param map 
+ */
+const getElementSize = (map: Coord[][][]) => {
+    return {
+        x: map[0][0].length * WWAConsts.CHIP_SIZE,
+        y: map[0].length * WWAConsts.CHIP_SIZE
+    };
+};
+
+/**
  * 1画面程度の画面を描画する Canvas 要素です。
  *     プロパティ map はイメージ画像で参照される場所の座標を記載した配列になっています。
  */
-export default class MapChunk extends React.Component<{
+const MapChunk: React.FC<{
     map: Coord[][][],
     showGrid?: boolean,
     image: CanvasImageSource
-}> {
-    private canvasRef: React.RefObject<HTMLCanvasElement>;
+}> = props => {
 
-    constructor(props: MapChunk["props"]) {
-        super(props);
-        this.canvasRef = React.createRef();
-    }
+    const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    componentDidMount() {
-        this.draw();
-    }
-
-    componentDidUpdate() {
-        this.draw();
-    }
-
-    /**
-     * 各マスの変更を確認し、変更が見つかった場合にだけ componentDidUpdate を実行させます。
-     */
-    shouldComponentUpdate(nextProps: MapChunk["props"]) {
-        if (nextProps.showGrid !== this.props.showGrid) {
-            return true;
-        }
-        // 右端や下端のチャンクがサイズ変更した場合の措置
-        return nextProps.map.some((line, lineIndex) => {
-            if (line.length !== this.props.map[lineIndex].length) {
-                return true;
-            }
-            return line.some((layer, layerIndex) => {
-                if (layer.length !== this.props.map[lineIndex][layerIndex].length) {
-                    return true;
-                }
-                return layer.some((imageCoord, index) =>
-                    imageCoord.x !== this.props.map[lineIndex][layerIndex][index].x ||
-                    imageCoord.y !== this.props.map[lineIndex][layerIndex][index].y
-                );
-            });
-        }
-        );
-    }
-
-    private draw() {
-        if (this.canvasRef.current === null) {
+    useEffect(() => {
+        if (canvasRef.current === null) {
             return;
         }
-        const context = this.canvasRef.current.getContext('2d');
+        const context = canvasRef.current.getContext('2d');
         if (context === null) {
             return;
         }
 
-        const elementSize = this.getElementSize();
+        const elementSize = getElementSize(props.map);
         context.fillStyle = MAP_CANVAS_BASE_COLOR;
         context.fillRect(0, 0, elementSize.x, elementSize.y);
 
-        this.props.map.forEach((layer, index) => {
+        props.map.forEach((layer, index) => {
             layer.forEach((line, y) => {
                 line.forEach((imageCropCoord, x) => {
                     if (imageCropCoord.x === 0 && imageCropCoord.y === 0) {
                         return;
                     }
                     context.drawImage(
-                        this.props.image,
+                        props.image,
                         imageCropCoord.x,
                         imageCropCoord.y,
                         WWAConsts.CHIP_SIZE,
@@ -95,7 +69,7 @@ export default class MapChunk extends React.Component<{
             });
         });
 
-        if (this.props.showGrid) {
+        if (props.showGrid) {
             context.strokeStyle = MAP_BORDER_GRID_COLOR;
             context.lineWidth = MAP_BORDER_GRID_WIDTH;
     
@@ -107,23 +81,18 @@ export default class MapChunk extends React.Component<{
             context.stroke();
             context.closePath();
         }
-    }
+    }, [props.map, props.showGrid, props.children, props.image]);
 
-    private getElementSize(): Coord {
-        return {
-            x: this.props.map[0][0].length * WWAConsts.CHIP_SIZE,
-            y: this.props.map[0].length * WWAConsts.CHIP_SIZE
-        };
-    }
 
-    public render() {
-        const elementSize = this.getElementSize();
-        return (
-            <canvas
-                ref={this.canvasRef}
-                width={elementSize.x}
-                height={elementSize.y}
-            />
-        );
-    }
+    const elementSize = useMemo(() => getElementSize(props.map), [props.map]);
+
+    return (
+        <canvas
+            ref={canvasRef}
+            width={elementSize.x}
+            height={elementSize.y}
+        />
+    );
 };
+
+export default MapChunk;

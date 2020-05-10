@@ -1,6 +1,6 @@
 import React from "react";
 import styles from './index.module.scss';
-import MapCanvas, { UserProps as MapCanvasProps, TargetParts } from "./MapCanvas";
+import MapCanvas, { Props as MapCanvasProps, TargetParts } from "./MapCanvas";
 import SelectRect, { Props as SelectRectProps } from "./SelectRect";
 
 type Props = MapCanvasProps & {
