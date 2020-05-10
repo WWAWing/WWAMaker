@@ -14,8 +14,9 @@ export const CHUNK_SIZE = 10;
  */
 export interface MapLayer {
     /**
-     * 引数の MapLayer と比較し、違いが無いか確認します。
+     * (現在未使用) 引数の MapLayer と比較し、違いが無いか確認します。
      * @param targetMapLayer 
+     * @deprecated
      */
     isDifference(targetMapLayer: MapLayer): boolean;
     /**
