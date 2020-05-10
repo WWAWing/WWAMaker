@@ -81,7 +81,7 @@ const reducer = reducerWithInitialState(INITIAL_STATE)
     .default((state, action) => ({
         ...state,
         load: LoadReducer(state.load, action),
-        wwaData: WWADataReducer(state.wwaData === null ? undefined : state.wwaData, action),
+        wwaData: WWADataReducer(state.wwaData, action),
         map: MapReducer(state.map, action),
         objParts: ObjectPartsReducer(state.objParts, action),
         mapParts: MapPartsReducer(state.mapParts, action),

@@ -1,7 +1,7 @@
 import React, { useRef, useState, useMemo } from 'react';
 import WWAConsts from '../../classes/WWAConsts';
 import styles from './index.module.scss';
-import { CHUNK_SIZE, MapLayer, FieldMapLayer, ChipLayer } from "./MapLayer";
+import { CHUNK_SIZE, FieldMapLayer, ChipLayer } from "./MapLayer";
 import MapChunk from './MapChunk';
 import { PartsType } from '../../classes/WWAData';
 import getPosEachChip from '../getPosEachChip';
@@ -36,42 +36,14 @@ export interface Props {
  */
 const MapCanvas: React.FC<Props> = props => {
 
-    const fieldMap: MapLayer[] = useSelector(state => {
-        if (state.wwaData === null || state.image === null) {
-            return [];
-        }
-
-        return [
-            new FieldMapLayer(
-                PartsType.MAP,
-                state.wwaData.map,
-                state.wwaData.mapAttribute
-            ),
-            new ChipLayer(
-                {
-                    x: state.wwaData.playerX,
-                    y: state.wwaData.playerY
-                }, {
-                    x: (WWAConsts.IMGPOS_DEFAULT_PLAYER_X + WWAConsts.IMGRELPOS_PLAYER_DOWN_X) * WWAConsts.CHIP_SIZE,
-                    y: WWAConsts.IMGPOS_DEFAULT_PLAYER_Y * WWAConsts.CHIP_SIZE
-                },
-                state.wwaData.mapWidth
-            ),
-            new FieldMapLayer(
-                PartsType.OBJECT,
-                state.wwaData.mapObject,
-                state.wwaData.objectAttribute
-            )
-        ];
-    }, (leftLayers, rightLayers) => {
-        if (leftLayers.length !== rightLayers.length) {
-            return false;
-        }
-        return leftLayers.every((leftLayer, layerIndex) => {
-            const rightLayer = rightLayers[layerIndex];
-            return !leftLayer.isDifference(rightLayer);
-        });
-    });
+    const map = useSelector(state => state.wwaData?.map) ?? [];
+    const mapObject = useSelector(state => state.wwaData?.mapObject) ?? [];
+    const mapAttribute = useSelector(state => state.wwaData?.mapAttribute) ?? [];
+    const objectAttribute = useSelector(state => state.wwaData?.objectAttribute) ?? [];
+    const playerCoord = useSelector(state => ({
+        x: state.wwaData?.playerX ?? 0,
+        y: state.wwaData?.playerY ?? 0
+    }));
 
     const mapWidth = useSelector(state => state.wwaData?.mapWidth, shallowEqual) ?? 0;
     const showGrid = useSelector(state => state.map.showGrid);
@@ -143,18 +115,36 @@ const MapCanvas: React.FC<Props> = props => {
      * @param chipY 
      */
     const getPartsNumberOnTarget = (chipX: number, chipY: number, type: PartsType) => {
-        const targetLayer = fieldMap.find(layer => {
-            return layer instanceof FieldMapLayer && layer.getPartsType() === type
-        });
-        if (targetLayer === undefined) {
-            return 0;
+        switch (type) {
+            case PartsType.MAP:
+                return map[chipY][chipX];
+            case PartsType.OBJECT:
+                return mapObject[chipY][chipX];
         }
-
-        return (targetLayer as FieldMapLayer).getPartsNumber(chipX, chipY);
     }
 
     const chunkMap = useMemo(() => {
         const chunkCount = Math.ceil(mapWidth / CHUNK_SIZE);
+        const fieldMap = [
+            new FieldMapLayer(
+                PartsType.MAP,
+                map,
+                mapAttribute
+            ),
+            new ChipLayer(
+                playerCoord,
+                {
+                    x: (WWAConsts.IMGPOS_DEFAULT_PLAYER_X + WWAConsts.IMGRELPOS_PLAYER_DOWN_X) * WWAConsts.CHIP_SIZE,
+                    y: WWAConsts.IMGPOS_DEFAULT_PLAYER_Y * WWAConsts.CHIP_SIZE
+                },
+                mapWidth
+            ),
+            new FieldMapLayer(
+                PartsType.OBJECT,
+                mapObject,
+                objectAttribute
+            )
+        ];
 
         /**
          * チャンクY, チャンクX, レイヤー, マスY, マスX
@@ -179,7 +169,7 @@ const MapCanvas: React.FC<Props> = props => {
         });
 
         return chunks;
-    }, [mapWidth, fieldMap]);
+    }, [map, mapObject, mapAttribute, objectAttribute, playerCoord, mapWidth]);
 
 
     if (image === null) {
