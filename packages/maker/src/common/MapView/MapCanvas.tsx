@@ -201,6 +201,4 @@ const MapCanvas: React.FC<Props> = props => {
     );
 };
 
-MapCanvas.whyDidYouRender = true;
-
 export default MapCanvas;
