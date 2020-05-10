@@ -14,38 +14,41 @@ interface Props {
     onPartsEdit: (partsNumber: number, partsType: PartsType) => void;
 }
 
-export default class PartsList extends React.Component<Props> {
+const PartsList: React.FC<Props> = props => {
 
     /**
      * パーツの属性を空部分を補填した形で取得します。
      */
-    private getAttributes(): PartsAttributes {
-        let partsAttribute = this.props.attribute;
-        const partsMax = getPartsCountPerIncreaseUnit(this.props.attribute.length);
+    function getEmptyPartsAttributes(): PartsAttributes {
+        let emptyAttributes = [];
+        const partsMax = getPartsCountPerIncreaseUnit(props.attribute.length);
 
-        for (let index = this.props.attribute.length; index < partsMax; index++) {
-            partsAttribute.push(createEmptyPartsAttribute(this.props.type));
+        for (let index = props.attribute.length; index < partsMax; index++) {
+            emptyAttributes.push(createEmptyPartsAttribute(props.type));
         }
-        return partsAttribute;
+        return emptyAttributes;
     }
 
-    public render() {
-        return (
-            <div className={styles.partsList}>
-                {this.getAttributes().map((partsAttribute, partsNumber) =>
-                    <PartsChip
-                        key={partsNumber.toString()}
-                        image={this.props.image}
-                        cropX={partsAttribute[WWAConsts.ATR_X]}
-                        cropY={partsAttribute[WWAConsts.ATR_Y]}
-                        isSelected={partsNumber === this.props.selectPartsNumber}
-                        onClick={() => this.props.onPartsSelect(partsNumber, this.props.type)}
-                        onDoubleClick={() => this.props.onPartsEdit(partsNumber, this.props.type)}
-                        onContextMenu={() => this.props.onPartsEdit(partsNumber, this.props.type)}
-                    />
-                )}
-            </div>
-        );
-    }
+    const renderPartsChip = (partsAttribute: number[], partsNumber: number) =>
+        <PartsChip
+            key={partsNumber.toString()}
+            image={props.image}
+            cropX={partsAttribute[WWAConsts.ATR_X]}
+            cropY={partsAttribute[WWAConsts.ATR_Y]}
+            isSelected={partsNumber === props.selectPartsNumber}
+            onClick={() => props.onPartsSelect(partsNumber, props.type)}
+            onDoubleClick={() => props.onPartsEdit(partsNumber, props.type)}
+            onContextMenu={() => props.onPartsEdit(partsNumber, props.type)}
+        />;
+
+
+    return (
+        <div className={styles.partsList}>
+            {props.attribute.map(renderPartsChip)}
+            {getEmptyPartsAttributes().map(renderPartsChip)}
+        </div>
+    );
 
 };
+
+export default PartsList;
