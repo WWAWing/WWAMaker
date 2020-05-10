@@ -2,10 +2,6 @@ import { useState, useEffect } from "react";
 
 type ImageState = HTMLImageElement | null;
 
-/**
- * 
- * @param imageUrl 
- */
 const useImage = (imageUrl: string) => {
     const [imageElement, setImageElement] = useState<ImageState>(null);
 
