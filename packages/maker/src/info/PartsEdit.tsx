@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { InfoPanelPartsEditState, switchInfoPanel } from "./InfoPanelState";
 import { editParts } from "../wwadata/WWADataState";
 import React, { useState, useRef, useEffect } from "react";
-import { PartsType } from "../classes/WWAData";
+import { PartsType, createEmptyPartsAttribute } from "../classes/WWAData";
 import WWAConsts from "../classes/WWAConsts";
 import { ObjectEditTable } from "./editforms/ObjectEditForm";
 import { MapEditTable } from "./editforms/MapEditForm";
@@ -306,7 +306,7 @@ const PartsEdit: React.FC = () => {
                 case PartsType.MAP:
                     return mapAttribute[currentPartsInfo.number];
             }
-        })();
+        })() ?? createEmptyPartsAttribute(currentPartsInfo.type);
 
         const message = messages[attribute[WWAConsts.ATR_STRING]];
 

@@ -19,14 +19,14 @@ const PartsList: React.FC<Props> = props => {
     /**
      * パーツの属性を空部分を補填した形で取得します。
      */
-    function getEmptyPartsAttributes(): PartsAttributes {
+    function getPartsAttributes(): PartsAttributes {
         let emptyAttributes = [];
         const partsMax = getPartsCountPerIncreaseUnit(props.attribute.length);
 
         for (let index = props.attribute.length; index < partsMax; index++) {
             emptyAttributes.push(createEmptyPartsAttribute(props.type));
         }
-        return emptyAttributes;
+        return props.attribute.concat(emptyAttributes);
     }
 
     const renderPartsChip = (partsAttribute: number[], partsNumber: number) =>
@@ -44,8 +44,7 @@ const PartsList: React.FC<Props> = props => {
 
     return (
         <div className={styles.partsList}>
-            {props.attribute.map(renderPartsChip)}
-            {getEmptyPartsAttributes().map(renderPartsChip)}
+            {getPartsAttributes().map(renderPartsChip)}
         </div>
     );
 
