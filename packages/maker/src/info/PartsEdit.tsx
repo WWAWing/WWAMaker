@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { InfoPanelPartsEditState, switchInfoPanel } from "./InfoPanelState";
 import { editParts } from "../wwadata/WWADataState";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { PartsType } from "../classes/WWAData";
 import WWAConsts from "../classes/WWAConsts";
 import { ObjectEditTable } from "./editforms/ObjectEditForm";
@@ -14,8 +14,8 @@ import getPartsCountPerIncreaseUnit from "../common/getPartsCountPerIncreaseUnit
 import { useImage } from "wwamaker-image-decorder";
 
 type PartsEditState = {
-    attribute: number[];
-    message: string;
+    attribute: number[],
+    message: string
 } | null;
 
 type GraphicSelectState = "NONE" | "1" | "2";
@@ -36,36 +36,9 @@ const PartsEdit: React.FC = () => {
     const [graphicSelect, setGraphicSelect] = useState<GraphicSelectState>("NONE");
 
     const currentPartsInfo: InfoPanelPartsEditState | null = useSelector(state => state.info.partsEdit ?? null);
-    /**
-     * WWAデータから取得したパーツ情報です。
-     */
-    const partsEdit: PartsEditState = useSelector(state => {
-        if (state.wwaData === null) {
-            return null;
-        }
-        
-        const partsEdit = state.info.partsEdit;
-        if (partsEdit === undefined) {
-            return null;
-        }
-
-        switch (partsEdit.type) {
-            case PartsType.OBJECT: {
-                const partsAttribute = state.wwaData.objectAttribute[partsEdit.number];
-                return {
-                    attribute: partsAttribute,
-                    message: state.wwaData.message[partsAttribute[WWAConsts.ATR_STRING]]
-                };
-            }
-            case PartsType.MAP: {
-                const partsAttribute = state.wwaData.mapAttribute[partsEdit.number];
-                return {
-                    attribute: partsAttribute,
-                    message: state.wwaData.message[partsAttribute[WWAConsts.ATR_STRING]]
-                };
-            }
-        }
-    });
+    const objectAttribute = useSelector(state => state.wwaData?.objectAttribute);
+    const mapAttribute = useSelector(state => state.wwaData?.mapAttribute);
+    const messages = useSelector(state => state.wwaData?.message);
 
     const imageUrl = useSelector(state => state.image);
     const image = useImage(imageUrl ?? "");
@@ -77,7 +50,8 @@ const PartsEdit: React.FC = () => {
     /**
      * 現在編集しているパーツ情報です。
      */
-    const [editingParts, updatePartsEdit] = useState<PartsEditState>(partsEdit);
+    const [editingParts, updatePartsEdit] = useState<PartsEditState>(null);
+
 
     const handleSubmit = () => {
         if (currentPartsInfo === null || editingParts === null) {
@@ -316,6 +290,31 @@ const PartsEdit: React.FC = () => {
         );
     }
 
+
+    useEffect(() => {
+        if (currentPartsInfo === null ||
+            objectAttribute === undefined ||
+            mapAttribute === undefined ||
+            messages === undefined) {
+            return;
+        }
+
+        const attribute = (() => {
+            switch (currentPartsInfo?.type) {
+                case PartsType.OBJECT:
+                    return objectAttribute[currentPartsInfo.number];
+                case PartsType.MAP:
+                    return mapAttribute[currentPartsInfo.number];
+            }
+        })();
+
+        const message = messages[attribute[WWAConsts.ATR_STRING]];
+
+        updatePartsEdit({
+            attribute,
+            message
+        });
+    }, [currentPartsInfo, objectAttribute, mapAttribute, messages]);
 
     return (
         <Form>
