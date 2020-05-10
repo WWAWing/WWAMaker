@@ -40,10 +40,8 @@ const MapCanvas: React.FC<Props> = props => {
     const mapObject = useSelector(state => state.wwaData?.mapObject) ?? [];
     const mapAttribute = useSelector(state => state.wwaData?.mapAttribute) ?? [];
     const objectAttribute = useSelector(state => state.wwaData?.objectAttribute) ?? [];
-    const playerCoord = useSelector(state => ({
-        x: state.wwaData?.playerX ?? 0,
-        y: state.wwaData?.playerY ?? 0
-    }));
+    const playerX = useSelector(state => state.wwaData?.playerX) ?? 0;
+    const playerY = useSelector(state => state.wwaData?.playerY) ?? 0;
 
     const mapWidth = useSelector(state => state.wwaData?.mapWidth, shallowEqual) ?? 0;
     const showGrid = useSelector(state => state.map.showGrid);
@@ -132,8 +130,10 @@ const MapCanvas: React.FC<Props> = props => {
                 mapAttribute
             ),
             new ChipLayer(
-                playerCoord,
                 {
+                    x: playerX,
+                    y: playerY
+                }, {
                     x: (WWAConsts.IMGPOS_DEFAULT_PLAYER_X + WWAConsts.IMGRELPOS_PLAYER_DOWN_X) * WWAConsts.CHIP_SIZE,
                     y: WWAConsts.IMGPOS_DEFAULT_PLAYER_Y * WWAConsts.CHIP_SIZE
                 },
@@ -169,7 +169,7 @@ const MapCanvas: React.FC<Props> = props => {
         });
 
         return chunks;
-    }, [map, mapObject, mapAttribute, objectAttribute, playerCoord, mapWidth]);
+    }, [map, mapObject, mapAttribute, objectAttribute, playerX, playerY, mapWidth]);
 
 
     if (image === null) {
@@ -200,5 +200,7 @@ const MapCanvas: React.FC<Props> = props => {
         </div>
     );
 };
+
+MapCanvas.whyDidYouRender = true;
 
 export default MapCanvas;
