@@ -12,8 +12,7 @@ interface PartsAppearEditProps {
     onChange: InputChangeFunctionWithIndex,
     partsMax: {
         [key in PartsType]: number
-    },
-    mapMax: number
+    }
 };
 
 /**
@@ -37,7 +36,6 @@ function createRenderingPartsAppearItem(props: PartsAppearEditProps, firstIndex:
                 item={item}
                 index={indexBase}
                 partsIDMax={props.partsMax[item.type]}
-                mapMax={props.mapMax}
                 onChange={props.onChange}
             />
         );

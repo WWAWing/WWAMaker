@@ -283,7 +283,6 @@ const PartsEdit: React.FC = () => {
                             [PartsType.OBJECT]: getPartsCountPerIncreaseUnit(objPartsMax),
                             [PartsType.MAP]: getPartsCountPerIncreaseUnit(mapPartsMax)
                         }}
-                        mapMax={mapWidth}
                     />
                 }
             </>

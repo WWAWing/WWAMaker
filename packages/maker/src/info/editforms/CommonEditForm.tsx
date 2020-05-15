@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { URLInput, StringInput, NumberInput } from "./EditFormUtils";
+import { URLInput, StringInput, CoordInput } from "./EditFormUtils";
 import { PartsEditComponent } from "./PartsEditComponent";
 import WWAConsts from "../../classes/WWAConsts";
+import { convertRelativeValueFromCoord } from "../../common/convertRelativeValue";
 
 // 物体パーツと背景パーツ共通で使用される編集画面のコンポーネントです。
 
@@ -45,14 +46,14 @@ export const URLGateEdit: PartsEditComponent = ({attribute, message, onAttribute
 export const LocalGateEdit: PartsEditComponent = ({attribute, message, onAttributeChange}) => {
     return (
         <>
-            <NumberInput
+            <CoordInput
                 label="ジャンプ先X座標"
-                value={attribute[WWAConsts.ATR_JUMP_X]}
+                value={convertRelativeValueFromCoord(attribute[WWAConsts.ATR_JUMP_X])}
                 onChange={value => onAttributeChange(value, WWAConsts.ATR_JUMP_X)}
             />
-            <NumberInput
+            <CoordInput
                 label="ジャンプ先Y座標"
-                value={attribute[WWAConsts.ATR_JUMP_Y]}
+                value={convertRelativeValueFromCoord(attribute[WWAConsts.ATR_JUMP_Y])}
                 onChange={value => onAttributeChange(value, WWAConsts.ATR_JUMP_Y)}
             />
         </>
