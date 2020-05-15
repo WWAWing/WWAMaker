@@ -3,6 +3,8 @@ import WWAConsts from "../../classes/WWAConsts";
 import { MoveType } from "../../classes/WWAData";
 import { Input, Dropdown, DropdownItemProps, Form, TextArea, StrictFormFieldProps, Icon, StrictIconProps } from "semantic-ui-react";
 import { RelativeValue, convertDataValueFromRelativeCoord, convertRelativeValueFromStatus, convertDataValueFromRelativeStatus } from "../../common/convertRelativeValue";
+import { useSelector } from "react-redux";
+import { StoreType } from "../../State";
 
 // このファイルはパーツ編集画面で頻繁に使用されるテキストボックスやセレクトボックスなどをまとめたコンポーネント集です。
 // 指定位置にパーツを出現 については、 PartsAppearInput からどうぞ。
@@ -298,7 +300,6 @@ export const CoordInput: React.FunctionComponent<{
     label?: string,
     width?: StrictFormFieldProps["width"],
     value: RelativeValue,
-    mapWidthMax?: number,
     onChange: InputChangeFunction
 }> = props => {
     /**
@@ -317,6 +318,11 @@ export const CoordInput: React.FunctionComponent<{
         value: "PLAYER",
         icon: "user"
     }];
+
+    /**
+     * mapWidth はマップのサイズそのままです。
+     */
+    const mapWidthMax = useSelector((state: StoreType) => state.wwaData?.mapWidth) ?? 0;
 
     /**
      * 座標の種別で表示されるラベル部分のコンポーネントです。
@@ -350,7 +356,7 @@ export const CoordInput: React.FunctionComponent<{
         if (props.value.type === "RELATIVE") {
             return WWAConsts.RELATIVE_COORD_MAX;
         } else if (props.value.type === "ABSOLUTE") {
-            return props.mapWidthMax;
+            return mapWidthMax;
         }
         return undefined;
     };

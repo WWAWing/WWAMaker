@@ -374,7 +374,6 @@ class PartsEdit extends React.Component<Props, State> {
                             [PartsType.OBJECT]: getPartsCountPerIncreaseUnit(this.props.wwaData.objPartsMax),
                             [PartsType.MAP]: getPartsCountPerIncreaseUnit(this.props.wwaData.mapPartsMax)
                         }}
-                        mapMax={this.props.wwaData.mapWidth}
                     />
                 }
             </>
