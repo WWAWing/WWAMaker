@@ -34,7 +34,6 @@ const PartsAppearInputItem: React.FC<{
     item: AppearPartsItem,
     index: number,
     partsIDMax: number,
-    mapMax: number,
     onChange: InputChangeFunctionWithIndex
 }> = props => {
 
@@ -43,7 +42,7 @@ const PartsAppearInputItem: React.FC<{
         <>
             <Form.Group>
                 <Form.Input
-                    width={6}
+                    width={8}
                     type="number"
                     min={0}
                     max={props.partsIDMax}
@@ -69,13 +68,11 @@ const PartsAppearInputItem: React.FC<{
                 <CoordInput
                     width={12}
                     value={chipX}
-                    mapWidthMax={props.mapMax}
                     onChange={(value) => props.onChange(value, props.index + WWAConsts.REL_ATR_APPERANCE_X)}
                 />
                 <CoordInput
                     width={12}
                     value={chipY}
-                    mapWidthMax={props.mapMax}
                     onChange={(value) => props.onChange(value, props.index + WWAConsts.REL_ATR_APPERANCE_Y)}
                 />
             </Form.Group>
