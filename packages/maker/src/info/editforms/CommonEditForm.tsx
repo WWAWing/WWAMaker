@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import { URLInput, StringInput, NumberInput } from "./EditFormUtils";
+import { URLInput, StringInput, CoordInput } from "./EditFormUtils";
 import { PartsEditComponent } from "./PartsEditComponent";
 import WWAConsts from "../../classes/WWAConsts";
+import { convertRelativeValueFromCoord } from "../../common/convertRelativeValue";
+import { useSelector } from "react-redux";
+import { StoreType } from "../../State";
 
 // 物体パーツと背景パーツ共通で使用される編集画面のコンポーネントです。
 
@@ -43,17 +46,21 @@ export const URLGateEdit: PartsEditComponent = ({attribute, message, onAttribute
  * ジャンプゲートの編集画面のコンポーネントです。
  */
 export const LocalGateEdit: PartsEditComponent = ({attribute, message, onAttributeChange}) => {
+    const mapWidth = useSelector((state: StoreType) => state.wwaData?.mapWidth) ?? 0;
+
     return (
         <>
-            <NumberInput
+            <CoordInput
                 label="ジャンプ先X座標"
-                value={attribute[WWAConsts.ATR_JUMP_X]}
+                value={convertRelativeValueFromCoord(attribute[WWAConsts.ATR_JUMP_X])}
                 onChange={value => onAttributeChange(value, WWAConsts.ATR_JUMP_X)}
+                mapWidthMax={mapWidth}
             />
-            <NumberInput
+            <CoordInput
                 label="ジャンプ先Y座標"
-                value={attribute[WWAConsts.ATR_JUMP_Y]}
+                value={convertRelativeValueFromCoord(attribute[WWAConsts.ATR_JUMP_Y])}
                 onChange={value => onAttributeChange(value, WWAConsts.ATR_JUMP_Y)}
+                mapWidthMax={mapWidth}
             />
         </>
     );
