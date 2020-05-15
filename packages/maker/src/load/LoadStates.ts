@@ -3,7 +3,7 @@ import actionCreatorFactory from "typescript-fsa";
 import { LoaderError, LoaderProgress, LoaderResponse } from "./Loader";
 import { asyncFactory } from "typescript-fsa-redux-thunk";
 import { WWAData } from "@wwawing/common-interface";
-import { setMapdata, setImage } from "../State";
+import { setMapdata, setImage, closeMapdata } from "../State";
 
 /**
  * Load モジュールについて
@@ -142,6 +142,9 @@ const encodeImagePromise = (
 export const loadMapdata = actionCreatorAsync<LoadWWADataState, void, LoaderError>(
     'LOAD_MAPDATA',
     async (params, dispatch) => {
+        // マップデータを閉じる
+        dispatch(closeMapdata());
+
         // マップデータの読み込み
         const wwaData = await loadWWADataPromise(
             params.mapdataFileName,

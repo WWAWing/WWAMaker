@@ -49,7 +49,7 @@ export const setImage = actionCreator<{ imageUrl: string }>('OPEN_IMAGE');
 /**
  * 開いているマップデータと画像リソースを閉じます。
  */
-const closeMapdata = actionCreator('CLOSE_MAPDATA');
+export const closeMapdata = actionCreator('CLOSE_MAPDATA');
 
 /**
  * root の Reducer です。
