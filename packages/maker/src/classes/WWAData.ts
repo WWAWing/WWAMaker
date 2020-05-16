@@ -72,8 +72,8 @@ export const defaultWWAData: WWAData = {
     mapCompressed: [],
     mapObjectCompressed: [],
 
-    mapAttribute: [],
-    objectAttribute: [],
+    mapAttribute: createEmptyPartsAttributes(100, PartsType.MAP),
+    objectAttribute: createEmptyPartsAttributes(100, PartsType.OBJECT),
 
     worldPassword: '',
     message: createEmptyMessages(WWAConsts.MESSAGE_FIRST_CHARA),
@@ -143,7 +143,7 @@ export const defaultWWAData: WWAData = {
     frameCount: 0,
 
     gamePadButtonItemTable: []
-}
+};
 
 /**
  * 空の2次元配列を作成します。WWAData.map の初期化に利用します。
@@ -179,6 +179,10 @@ export function createEmptyPartsAttribute(type: PartsType): number[] {
     }
 }
 
+function createEmptyPartsAttributes(count: number, type: PartsType): PartsAttributes {
+    return new Array<number[]>(count).fill(createEmptyPartsAttribute(type));
+}
+
 function createEmptyMessages(count: number): string[] {
     let emptyString = [];
     for (let index = 0; index < count; index++) {
@@ -186,12 +190,4 @@ function createEmptyMessages(count: number): string[] {
     }
 
     return emptyString;
-}
-
-export enum ObjectPartsType {
-    
-}
-
-export enum MapPartsType {
-
 }
