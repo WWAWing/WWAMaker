@@ -1769,10 +1769,10 @@
   resolved "https://registry.yarnpkg.com/@wwawing/event-emitter/-/event-emitter-3.4.0.tgz#cc689f194accef4aabf5c83769908dbf91ec218c"
   integrity sha512-0HXWbbTgV/XMpMqWwkH8RznsBJtUQv94E1uPEZ2F2r+BP7Xe2K7r8zCt5zsFQQgwh0++VRwt31ZqRip6xwpoHA==
 
-"@wwawing/loader@^3.4.0":
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/@wwawing/loader/-/loader-3.4.0.tgz#6522cb43d249a60033419e791d249833ac11b1dd"
-  integrity sha512-DBwf6uji2ascAacFA/ABw8lux6Ycieg76FyKFq7BIwIYjFlI0v+IJiOFWYdJnJS37nvETUt3ICOBJnI6O8qGWw==
+"@wwawing/loader@^3.4.1":
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/@wwawing/loader/-/loader-3.4.1.tgz#62852718c0f42439bf69267105842f8db392d098"
+  integrity sha512-6bsIrZwMvx2pD+3cxxsPKjuENaydNkkG8EIYWk4w0XyaP7s6QRsG0Mf0ve2WtHcaVHcn1Ffxds6SrJbL8C2YUQ==
   dependencies:
     "@wwawing/event-emitter" "^3.4.0"
 

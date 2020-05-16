@@ -3,7 +3,7 @@ import actionCreatorFactory from "typescript-fsa";
 import { loadWWADataPromise, encodeImagePromise, loadImagePromise } from "./LoadPromises";
 import { asyncFactory } from "typescript-fsa-redux-thunk";
 import { setMapdata, setImage, closeMapdata } from "../State";
-import { LoaderProgress, LoaderError } from "./LoaderResponse";
+import { Progress, LoaderError } from "@wwawing/loader";
 
 /**
  * Load モジュールについて
@@ -12,7 +12,7 @@ import { LoaderProgress, LoaderError } from "./LoaderResponse";
  * @see MapData
  */
 export interface LoadState {
-    progress: LoaderProgress|null,
+    progress: Progress|null,
     error: LoaderError|null
 }
 
@@ -46,10 +46,8 @@ export const loadMapdata = actionCreatorAsync<LoadWWADataState, void, LoaderErro
         // マップデータの読み込み
         const wwaData = await loadWWADataPromise(
             params.mapdataFileName,
-            eventData => {
-                if (eventData.progress !== null) {
-                    dispatch(setLoadingProgress(eventData.progress));
-                }
+            progress => {
+                dispatch(setLoadingProgress(progress));
             }
         );
         dispatch(setMapdata({ wwaData: wwaData }));
@@ -80,7 +78,7 @@ export const loadImage = actionCreatorAsync<LoadImageState, void, LoaderError>(
  *     typescript-fsa-redux-thunk では、 開始→エラー/完了 しかアクションを起こすことができません。
  *     このメソッドは、その「開始」と「エラー/完了」の間で発生する途中経過に対応したアクションになります。
  */
-const setLoadingProgress = actionCreator<LoaderProgress>("SET_LOADING_PROGRESS");
+const setLoadingProgress = actionCreator<Progress>("SET_LOADING_PROGRESS");
 
 export const INITIAL_STATE: LoadState = {
     progress: null,

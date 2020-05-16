@@ -1,4 +1,5 @@
-import { LoaderResponse } from "./LoaderResponse";
+import { WWALoader, WWALoaderEventEmitter, Progress } from "@wwawing/loader";
+import { BrowserEventEmitter } from "@wwawing/event-emitter";
 import { WWAData } from "@wwawing/common-interface";
 
 /**
@@ -7,40 +8,34 @@ import { WWAData } from "@wwawing/common-interface";
  *     Web Worker は Promise とはやり方が違うので、読み込み全体の Promise をこのメソッドでまかないます。
  *     Web Worker で発生する途中経過のメッセージについては、このメソッドに付いているコールバックメソッドを介して実行させます。
  * @param mapdataFileName マップデータのファイル名
- * @param messageCallbackFn message イベント発生時に呼び出すメソッド
+ * @param progressCallbackFn message イベント発生時に呼び出すメソッド
  * @param errorCallbackFn エラー発生時で呼び出すメソッド
  */
 export const loadWWADataPromise = (
     mapdataFileName: string,
-    messageCallbackFn: (loaderResponse: LoaderResponse) => void
+    progressCallbackFn: (progress: Progress) => void
 ) => {
     return new Promise<WWAData>(function (resolve, reject) {
 
-        const loaderWorker = new Worker('./wwaload.js');
-        
-        loaderWorker.postMessage({
-            fileName: mapdataFileName
+        const eventEmitter = new BrowserEventEmitter() as WWALoaderEventEmitter;
+        const loader = new WWALoader(mapdataFileName, eventEmitter);
+
+        const handleMapData = eventEmitter.addListener("mapData", wwaMap => {
+            eventEmitter.removeListener("mapData", handleMapData);
+            eventEmitter.removeListener("progress", handleProgress);
+            eventEmitter.removeListener("error", handleError);
+            resolve(wwaMap);
         });
 
-        loaderWorker.onmessage = (event: MessageEvent) => {
-            const eventData: LoaderResponse = event.data;
+        const handleProgress = eventEmitter.addListener("progress", progress => {
+            progressCallbackFn(progress);
+        });
 
-            if (eventData.error !== null) {
-                reject({
-                    title: 'MapData Error',
-                    message: event.data.error.message
-                });
-                loaderWorker.terminate();
+        const handleError = eventEmitter.addListener("error", error => {
+            reject(error);
+        });
 
-            } else if (eventData.progress !== null) {
-                messageCallbackFn(eventData);
-
-            } else if (eventData.wwaData !== null) {
-                resolve(eventData.wwaData);
-                loaderWorker.terminate();
-            }
-        };
-
+        loader.requestAndLoadMapData();
     });
 }
 
