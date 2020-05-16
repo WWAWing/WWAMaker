@@ -14,11 +14,6 @@ export const CHUNK_SIZE = 10;
  */
 export interface MapLayer {
     /**
-     * 引数の MapLayer と比較し、違いが無いか確認します。
-     * @param targetMapLayer 
-     */
-    isDifference(targetMapLayer: MapLayer): boolean;
-    /**
      * フィールドから1レイヤー分のチャンクを生成します。
      * @param chunkX 現在のチャンクのX座標
      * @param chunkY 現在のチャンクのY座標
@@ -67,31 +62,6 @@ export class FieldMapLayer implements MapLayer {
         return this.fieldMap[chipY][chipX];
     }
 
-    public isDifference(targetMapLayer: MapLayer) {
-        if (!(targetMapLayer instanceof FieldMapLayer)) {
-            return true;
-        }
-        const nextMap = targetMapLayer.fieldMap;
-
-        const isMapChanged = this.fieldMap.some((fieldLine, chipY) => {
-            return fieldLine.some((partsNumber, chipX) => {
-                return partsNumber !== nextMap[chipY][chipX];
-            })
-        });
-        if (isMapChanged) {
-            return true;
-        }
-
-        const nextCrops = this.imageCrops;
-        if (nextCrops.length !== this.imageCrops.length) {
-            return true;
-        }
-        return this.imageCrops.some((crop, partsNumber) => {
-            return crop.x !== nextCrops[partsNumber].x
-                || crop.y !== nextCrops[partsNumber].y;
-        });
-    }
-
     public getMapChunk(chunkX: number, chunkY: number) {
         const startChipX = chunkX * CHUNK_SIZE;
         const startChipY = chunkY * CHUNK_SIZE;
@@ -122,16 +92,6 @@ export class ChipLayer implements MapLayer {
             x: Math.floor(this.position.x / CHUNK_SIZE),
             y: Math.floor(this.position.y / CHUNK_SIZE)
         };
-    }
-
-    public isDifference(targetMapLayer: MapLayer): boolean {
-        if (!(targetMapLayer instanceof ChipLayer)) {
-            return true;
-        }
-        return targetMapLayer.position.x !== this.position.x
-            || targetMapLayer.position.y !== this.position.y
-            || targetMapLayer.crop.x !== this.crop.x
-            || targetMapLayer.crop.y !== this.crop.y;
     }
 
     public getMapChunk(chunkX: number, chunkY: number) {

@@ -48,18 +48,15 @@ export const setCurrentPos = actionCreator<{ chipX: number, chipY: number }>("SE
 export const toggleGrid = actionCreator("TOGGLE_GRID");
 
 export const MapReducer = reducerWithInitialState(INITIAL_STATE)
-    .case(setEditMode, (state, payload) => ({
-        ...state,
+    .case(setEditMode, (state, payload) => Object.assign(state, {
         editMode: payload.editMode
     }))
-    .case(setCurrentPos, (state, payload) => ({
-        ...state,
+    .case(setCurrentPos, (state, payload) => Object.assign(state, {
         currentPos: {
             chipX: payload.chipX,
             chipY: payload.chipY
         }
     }))
-    .case(toggleGrid, state => ({
-        ...state,
+    .case(toggleGrid, state => Object.assign(state, {
         showGrid: !state.showGrid
     }))

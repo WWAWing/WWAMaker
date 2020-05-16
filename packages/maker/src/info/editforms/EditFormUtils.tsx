@@ -4,7 +4,6 @@ import { MoveType } from "../../classes/WWAData";
 import { Input, Dropdown, DropdownItemProps, Form, TextArea, StrictFormFieldProps, Icon, StrictIconProps } from "semantic-ui-react";
 import { RelativeValue, convertDataValueFromRelativeCoord, convertRelativeValueFromStatus, convertDataValueFromRelativeStatus } from "../../common/convertRelativeValue";
 import { useSelector } from "react-redux";
-import { StoreType } from "../../State";
 
 // このファイルはパーツ編集画面で頻繁に使用されるテキストボックスやセレクトボックスなどをまとめたコンポーネント集です。
 // 指定位置にパーツを出現 については、 PartsAppearInput からどうぞ。
@@ -322,7 +321,7 @@ export const CoordInput: React.FunctionComponent<{
     /**
      * mapWidth はマップのサイズそのままです。
      */
-    const mapWidthMax = useSelector((state: StoreType) => state.wwaData?.mapWidth) ?? 0;
+    const mapWidthMax = useSelector(state => state.wwaData?.mapWidth) ?? 0;
 
     /**
      * 座標の種別で表示されるラベル部分のコンポーネントです。

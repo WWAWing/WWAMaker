@@ -1,12 +1,12 @@
-import React, { RefObject } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import WWAConsts from '../../classes/WWAConsts';
 import styles from './index.module.scss';
-import { CHUNK_SIZE, MapLayer, FieldMapLayer, ChipLayer } from "./MapLayer";
+import { CHUNK_SIZE, FieldMapLayer, ChipLayer } from "./MapLayer";
 import MapChunk from './MapChunk';
 import { PartsType } from '../../classes/WWAData';
 import getPosEachChip from '../getPosEachChip';
-import { connect, MapStateToProps } from 'react-redux';
-import { StoreType } from '../../State';
+import { useImage } from "wwamaker-image-decorder";
+import { useSelector, shallowEqual } from 'react-redux';
 import { Coord } from '@wwawing/common-interface';
 
 /**
@@ -23,7 +23,7 @@ export type TargetParts = {[key in PartsType]: number};
  */
 export type MouseEventFunc = (chipX: number, chipY: number, parts: TargetParts) => void;
 
-export interface UserProps {
+export interface Props {
     onMouseDown: MouseEventFunc;
     onMouseMove: MouseEventFunc;
     onMouseDrag: MouseEventFunc;
@@ -31,182 +31,121 @@ export interface UserProps {
     onContextMenu?: MouseEventFunc;
 }
 
-interface State {
-    hasClick: boolean
-}
-
-interface StateProps {
-    fieldMap: MapLayer[],
-    mapWidth: number,
-    showGrid: boolean,
-    image?: CanvasImageSource
-}
-
-const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = state => {
-    if (state.wwaData === null || state.image === null) {
-        return {
-            fieldMap: [],
-            mapWidth: 0,
-            showGrid: false
-        };
-    }
-
-    return {
-        fieldMap: [
-            new FieldMapLayer(
-                PartsType.MAP,
-                state.wwaData.map,
-                state.wwaData.mapAttribute
-            ),
-            new ChipLayer(
-                {
-                    x: state.wwaData.playerX,
-                    y: state.wwaData.playerY
-                }, {
-                    x: (WWAConsts.IMGPOS_DEFAULT_PLAYER_X + WWAConsts.IMGRELPOS_PLAYER_DOWN_X) * WWAConsts.CHIP_SIZE,
-                    y: WWAConsts.IMGPOS_DEFAULT_PLAYER_Y * WWAConsts.CHIP_SIZE
-                },
-                state.wwaData.mapWidth
-            ),
-            new FieldMapLayer(
-                PartsType.OBJECT,
-                state.wwaData.mapObject,
-                state.wwaData.objectAttribute
-            )
-        ],
-        mapWidth: state.wwaData.mapWidth,
-        showGrid: state.map.showGrid,
-        image: state.image
-    };
-};
-
-type Props = UserProps & StateProps;
-
 /**
  * マップを表示する Canvas です。
  */
-class MapCanvas extends React.Component<Props, State> {
-    private elementRef: RefObject<HTMLDivElement>;
-    public static defaultProps: StateProps = {
-        fieldMap: [],
-        mapWidth: 0,
-        showGrid: false,
-        image: undefined
-    };
+const MapCanvas: React.FC<Props> = props => {
 
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            hasClick: false
-        };
+    const map = useSelector(state => state.wwaData?.map) ?? [];
+    const mapObject = useSelector(state => state.wwaData?.mapObject) ?? [];
+    const mapAttribute = useSelector(state => state.wwaData?.mapAttribute) ?? [];
+    const objectAttribute = useSelector(state => state.wwaData?.objectAttribute) ?? [];
+    const playerX = useSelector(state => state.wwaData?.playerX) ?? 0;
+    const playerY = useSelector(state => state.wwaData?.playerY) ?? 0;
 
-        this.elementRef = React.createRef();
-        this.handleMouseDown = this.handleMouseDown.bind(this);
-        this.handleMouseMove = this.handleMouseMove.bind(this);
-        this.handleMouseUp = this.handleMouseUp.bind(this);
-        this.handleContextMenu = this.handleContextMenu.bind(this);
-    }
+    const mapWidth = useSelector(state => state.wwaData?.mapWidth, shallowEqual) ?? 0;
+    const showGrid = useSelector(state => state.map.showGrid);
+    const imageUrl = useSelector(state => state.imageUrl);
+    const image = useImage(imageUrl ?? "");
+    const [hasClick, setClick] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
 
-    private handleMouseDown(event: React.MouseEvent) {
+    const handleMouseDown = (event: React.MouseEvent) => {
         // 右クリックによるコンテキストメニューの表示では、クリックイベントも同時に行われるので、その場合は処置をキャンセルします。
-        if (event.button === 2 && this.props.onContextMenu !== undefined) {
+        if (event.button === 2 && props.onContextMenu !== undefined) {
             return;
         }
 
-        this.setState({
-            hasClick: true
-        });
-
-        this.callByMousePos(event, this.props.onMouseDown);
-    }
+        setClick(true);
+        callByMousePos(event, props.onMouseDown);
+    };
 
     /**
      * マウスの現在位置とクリック状態を出力し、プロパティに記載された処理を実行させます。
      */
-    private handleMouseMove(event: React.MouseEvent) {
-        if (this.state.hasClick) {
-            this.callByMousePos(event, this.props.onMouseDrag);
+    const handleMouseMove = (event: React.MouseEvent) => {
+        if (hasClick) {
+            callByMousePos(event, props.onMouseDrag);
         } else {
-            this.callByMousePos(event, this.props.onMouseMove);
+            callByMousePos(event, props.onMouseMove);
         }
-    }
+    };
 
-    private handleMouseUp(event: React.MouseEvent) {
-        if (!this.state.hasClick) {
+    const handleMouseUp = (event: React.MouseEvent) => {
+        if (!hasClick) {
             return;
         }
 
-        this.setState({
-            hasClick: false
-        });
+        setClick(false);
+        callByMousePos(event, props.onMouseUp);
+    };
 
-        this.callByMousePos(event, this.props.onMouseUp);
-    }
-
-    private handleContextMenu(event: React.MouseEvent) {
-        if (this.props.onContextMenu === undefined) {
+    const handleContextMenu = (event: React.MouseEvent) => {
+        if (props.onContextMenu === undefined) {
             return;
         }
+
         event.preventDefault();
-
-        this.callByMousePos(event, this.props.onContextMenu);
-    }
+        callByMousePos(event, props.onContextMenu);
+    };
 
     /**
      * マウスイベントから指定したメソッドを呼び出します。
      * @param event マウスイベントのメソッド
      * @param func 実行したいメソッド (主にプロパティの onMouseXX メソッドを割り当てる際に使用)
      */
-    private callByMousePos(event: React.MouseEvent, func: MouseEventFunc) {
-        const clientRect = this.elementRef.current?.getBoundingClientRect();
+    const callByMousePos = (event: React.MouseEvent, func: MouseEventFunc) => {
+        const clientRect = ref.current?.getBoundingClientRect();
         if (!clientRect) {
             return;
         }
 
         const [chipX, chipY] = getPosEachChip(event.clientX - clientRect.left, event.clientY - clientRect.top);
         func(chipX, chipY, {
-            [PartsType.MAP]: this.getPartsNumberOnTarget(chipX, chipY, PartsType.MAP),
-            [PartsType.OBJECT]: this.getPartsNumberOnTarget(chipX, chipY, PartsType.OBJECT)
+            [PartsType.MAP]: getPartsNumberOnTarget(chipX, chipY, PartsType.MAP),
+            [PartsType.OBJECT]: getPartsNumberOnTarget(chipX, chipY, PartsType.OBJECT)
         });
-    }
+    };
 
     /**
      * 指定した座標から各パーツ種類のパーツ番号を取得します
      * @param chipX 
      * @param chipY 
      */
-    private getPartsNumberOnTarget(chipX: number, chipY: number, type: PartsType): number {
-        const targetLayer = this.props.fieldMap.find(layer => {
-            return layer instanceof FieldMapLayer && layer.getPartsType() === type
-        });
-        if (targetLayer === undefined) {
-            return 0;
+    const getPartsNumberOnTarget = (chipX: number, chipY: number, type: PartsType) => {
+        switch (type) {
+            case PartsType.MAP:
+                return map[chipY][chipX];
+            case PartsType.OBJECT:
+                return mapObject[chipY][chipX];
         }
+    };
 
-        return (targetLayer as FieldMapLayer).getPartsNumber(chipX, chipY);
-    }
+    const chunkMap = useMemo(() => {
+        const chunkCount = Math.ceil(mapWidth / CHUNK_SIZE);
+        const fieldMap = [
+            new FieldMapLayer(
+                PartsType.MAP,
+                map,
+                mapAttribute
+            ),
+            new ChipLayer(
+                {
+                    x: playerX,
+                    y: playerY
+                }, {
+                    x: (WWAConsts.IMGPOS_DEFAULT_PLAYER_X + WWAConsts.IMGRELPOS_PLAYER_DOWN_X) * WWAConsts.CHIP_SIZE,
+                    y: WWAConsts.IMGPOS_DEFAULT_PLAYER_Y * WWAConsts.CHIP_SIZE
+                },
+                mapWidth
+            ),
+            new FieldMapLayer(
+                PartsType.OBJECT,
+                mapObject,
+                objectAttribute
+            )
+        ];
 
-    public shouldComponentUpdate(nextProps: Props) {
-        if (this.props.mapWidth !== nextProps.mapWidth ||
-            this.props.fieldMap.length !== nextProps.fieldMap.length ||
-            this.props.showGrid !== nextProps.showGrid ||
-            this.props.image !== nextProps.image) {
-            return true;
-        }
-
-        return this.props.fieldMap.some((mapLayer, layerNumber) => {
-            const nextMapLayer = nextProps.fieldMap[layerNumber];
-            return mapLayer.isDifference(nextMapLayer);
-        });
-    }
-
-    public render() {
-        const image = this.props.image;
-        if (image === undefined) {
-            return null;
-        }
-
-        const chunkCount = Math.ceil(this.props.mapWidth / CHUNK_SIZE);
         /**
          * チャンクY, チャンクX, レイヤー, マスY, マスX
          */
@@ -218,7 +157,7 @@ class MapCanvas extends React.Component<Props, State> {
             }
         }
 
-        this.props.fieldMap.forEach(layer => {
+        fieldMap.forEach(layer => {
             for (let chunkY = 0; chunkY < chunkCount; chunkY++) {
                 for (let chunkX = 0; chunkX < chunkCount; chunkX++) {
                     const chunk = layer.getMapChunk(chunkX, chunkY);
@@ -229,30 +168,37 @@ class MapCanvas extends React.Component<Props, State> {
             }
         });
 
-        return (
-            <div
-                className={styles.mapCanvas}
-                ref={this.elementRef}
-                onMouseDown={this.handleMouseDown}
-                onMouseUp={this.handleMouseUp}
-                onMouseMove={this.handleMouseMove}
-                onContextMenu={this.handleContextMenu}
-            >
-                {chunks.map((chunkLine, chunkLineIndex) => (
-                    <div className={styles.mapCanvasLine} key={chunkLineIndex}>
-                        {chunkLine.map((chunk, chunkColumnIndex) => (
-                            <MapChunk
-                                key={chunkColumnIndex}
-                                map={chunk}
-                                showGrid={this.props.showGrid}
-                                image={image}
-                            />
-                        ))}
-                    </div>
-                ))}
-            </div>
-        );
-    }
-}
+        return chunks;
+    }, [map, mapObject, mapAttribute, objectAttribute, playerX, playerY, mapWidth]);
 
-export default connect(mapStateToProps)(MapCanvas);
+
+    if (image === null) {
+        return null;
+    }
+
+    return (
+        <div
+            className={styles.mapCanvas}
+            ref={ref}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
+            onContextMenu={handleContextMenu}
+        >
+            {chunkMap.map((chunkLine, chunkLineIndex) => (
+                <div className={styles.mapCanvasLine} key={chunkLineIndex}>
+                    {chunkLine.map((chunk, chunkColumnIndex) => (
+                        <MapChunk
+                            key={chunkColumnIndex}
+                            map={chunk}
+                            showGrid={showGrid}
+                            image={image}
+                        />
+                    ))}
+                </div>
+            ))}
+        </div>
+    );
+};
+
+export default MapCanvas;

@@ -19,7 +19,7 @@ export interface StoreType {
     map: MapState,
     objParts: PartsState,
     mapParts: PartsState,
-    image: CanvasImageSource|null,
+    imageUrl: string|null,
     info: InfoPanelState
 }
 
@@ -33,7 +33,7 @@ const INITIAL_STATE: StoreType = {
     map: MAP_INITIAL_STATE,
     objParts: PARTS_INITIAL_STATE,
     mapParts: PARTS_INITIAL_STATE,
-    image: null,
+    imageUrl: null,
     info: INFOPANEL_INITIAL_STATE
 }
 
@@ -45,11 +45,11 @@ export const setMapdata = actionCreator<{ wwaData: WWAData }>('OPEN_MAPDATA');
 /**
  * 画像リソースを設定します。
  */
-export const setImage = actionCreator<{ imageSource: CanvasImageSource }>('OPEN_IMAGE');
+export const setImage = actionCreator<{ imageUrl: string }>('OPEN_IMAGE');
 /**
  * 開いているマップデータと画像リソースを閉じます。
  */
-const closeMapdata = actionCreator('CLOSE_MAPDATA');
+export const closeMapdata = actionCreator('CLOSE_MAPDATA');
 
 /**
  * root の Reducer です。
@@ -60,20 +60,28 @@ const reducer = reducerWithInitialState(INITIAL_STATE)
         newState.wwaData = params.wwaData;
         return newState;
     })
-    .case(setImage, (state, params) => ({
-        ...state,
-        image: params.imageSource
-    }))
+    .case(setImage, (state, params) => {
+        if (state.imageUrl !== null) {
+            URL.revokeObjectURL(state.imageUrl);
+        }
+        return {
+            ...state,
+            imageUrl: params.imageUrl
+        };
+    })
     .case(closeMapdata, (state) => {
+        if (state.imageUrl !== null) {
+            URL.revokeObjectURL(state.imageUrl);
+        }
         const newState = Object.assign({}, state);
         newState.wwaData = null;
-        newState.image = null;
+        newState.imageUrl = null;
         return newState;
     })
     .default((state, action) => ({
         ...state,
         load: LoadReducer(state.load, action),
-        wwaData: WWADataReducer(state.wwaData === null ? undefined : state.wwaData, action),
+        wwaData: WWADataReducer(state.wwaData, action),
         map: MapReducer(state.map, action),
         objParts: ObjectPartsReducer(state.objParts, action),
         mapParts: MapPartsReducer(state.mapParts, action),

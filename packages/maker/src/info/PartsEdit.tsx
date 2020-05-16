@@ -1,64 +1,28 @@
-import { MapStateToProps, connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { InfoPanelPartsEditState, switchInfoPanel } from "./InfoPanelState";
-import { StoreType } from "../State";
-import { WWAData } from "@wwawing/common-interface";
-import { Dispatch, bindActionCreators } from "redux";
 import { editParts } from "../wwadata/WWADataState";
-import React from "react";
-import { PartsType } from "../classes/WWAData";
+import React, { useState, useRef, useEffect } from "react";
+import { PartsType, createEmptyPartsAttribute } from "../classes/WWAData";
 import WWAConsts from "../classes/WWAConsts";
 import { ObjectEditTable } from "./editforms/ObjectEditForm";
 import { MapEditTable } from "./editforms/MapEditForm";
-import { PartsEditComponentTable } from "./editforms/PartsEditComponent";
+import { PartsEditAttributeChange, PartsEditMessageChange } from "./editforms/PartsEditComponent";
 import { Form, Portal, Button, Icon, Dropdown, DropdownItemProps } from "semantic-ui-react";
 import PartsChip from "../common/PartsChip";
 import { GraphicSelect } from "../common/GraphicSelect";
 import getPartsCountPerIncreaseUnit from "../common/getPartsCountPerIncreaseUnit";
+import { useImage } from "wwamaker-image-decorder";
 
-interface StateProps {
+type PartsEditState = {
     /**
-     * 開いているパーツの種類と番号です。
+     * partsEdit は Redux の info.partsEdit と同じ内容が含まれています。
+     *     ステートに含ませているのは、編集しているパーツの情報とそのパーツの属性やメッセージの不一致による副作用を防ぐためです。
+     * @see InfoPanelPartsEditState
      */
-    state?: InfoPanelPartsEditState,
-    /**
-     * WWAデータ本体です。上記の state の値から必要な情報をこの wwaData の中から探します。
-     */
-    wwaData?: WWAData,
-    image?: CanvasImageSource
-}
-
-const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = state => {
-    return {
-        state: state.info.partsEdit,
-        wwaData: state.wwaData || undefined,
-        image: state.image || undefined
-    }
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => {
-    return bindActionCreators({
-        editParts: editParts,
-        switchInfoPanel: switchInfoPanel
-    }, dispatch);
-};
-
-type Props = StateProps & ReturnType<typeof mapDispatchToProps>;
-
-/**
- * パーツ編集画面のステートです。
- *     attribute はパーツの属性そのままです。
- *     message はパーツのメッセージです。
- *     graphicSelect はパーツのグラフィックの選択状態を示すステートです。
- */
-interface State {
-    parts?: PartsEditState;
-    graphicSelect: GraphicSelectState;
-}
-
-interface PartsEditState {
-    attribute: number[];
-    message: string;
-}
+    partsEdit: InfoPanelPartsEditState,
+    attribute: number[],
+    message: string
+} | null;
 
 type GraphicSelectState = "NONE" | "1" | "2";
 
@@ -66,109 +30,66 @@ type GraphicSelectState = "NONE" | "1" | "2";
  * パーツ編集の管理を行う Container コンポーネントです。
  *     編集フォームは、パーツ種別毎に用意した専用のコンポーネントを取り出して表示されます。
  */
-class PartsEdit extends React.Component<Props, State> {
+const PartsEdit: React.FC = () => {
+    const dispatch = useDispatch();
 
     /**
      * パーツCGの選択画面を表示する場所を決める要素の Ref です。
      *     Semantic UI React の Portal では、切り替えで表示される要素は原則HTMLのルートに配置されます。
      *     ルートで配置された場合、 WWA Maker としては都合が良くないため、編集画面の決まった位置で表示されるように Ref を設けて、その Ref に対してマウントするようにしています。
      */
-    private graphicSelectMountRef: React.RefObject<HTMLDivElement>;
+    const graphicSelectMount = useRef<HTMLDivElement>(null);
+    const [graphicSelect, setGraphicSelect] = useState<GraphicSelectState>("NONE");
 
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            parts: this.receive(),
-            graphicSelect: "NONE"
-        };
-        this.graphicSelectMountRef = React.createRef();
+    const currentPartsInfo: InfoPanelPartsEditState | null = useSelector(state => state.info.partsEdit) ?? null;
+    const objectAttribute = useSelector(state => state.wwaData?.objectAttribute);
+    const mapAttribute = useSelector(state => state.wwaData?.mapAttribute);
+    const messages = useSelector(state => state.wwaData?.message);
 
-        /**
-         * 予め子コンポーネントに渡すメソッドに対して this を bind します。
-         */
-        this.handleAttributeChange = this.handleAttributeChange.bind(this);
-        this.handleMessageChange = this.handleMessageChange.bind(this);
-    }
+    const imageUrl = useSelector(state => state.imageUrl);
+    const image = useImage(imageUrl ?? "");
+    const objPartsMax = useSelector(state => state.wwaData?.objPartsMax) ?? 0;
+    const mapPartsMax = useSelector(state => state.wwaData?.mapPartsMax) ?? 0;
 
-    public componentDidUpdate(prevProps: Props) {
-        if (this.props.state?.number !== prevProps.state?.number || this.props.state?.type !== prevProps.state?.type) {
-            this.setState({
-                parts: this.receive()
-            });
-        }
-    }
 
     /**
-     * Redux のステートからパーツ情報を出力します。
+     * 現在編集しているパーツ情報です。
      */
-    private receive(): PartsEditState | undefined {
-        if (this.props.state === undefined || this.props.wwaData === undefined) {
-            return undefined;
-        }
+    const [editingParts, updatePartsEdit] = useState<PartsEditState>(null);
 
-        if (this.props.state.type === PartsType.MAP) {
-            const attribute = this.props.wwaData.mapAttribute[this.props.state.number].slice();
-            const message = this.props.wwaData.message[attribute[WWAConsts.ATR_STRING]] || '';
-            return {
-                attribute: attribute,
-                message: message
-            };
-        } else if (this.props.state.type === PartsType.OBJECT) {
-            const attribute = this.props.wwaData.objectAttribute[this.props.state.number].slice();
-            const message = this.props.wwaData.message[attribute[WWAConsts.ATR_STRING]] || '';
-            return {
-                attribute: attribute,
-                message: message
-            };
-        }
 
-        return undefined;
-    }
-
-    /**
-     * 入力画面のステートを Redux のステートにも反映させます。
-     */
-    private send() {
-        if (this.props.state === undefined || this.state.parts === undefined) {
+    const handleSubmit = () => {
+        if (editingParts === null) {
             return;
         }
-        
-        this.props.editParts({
-            type: this.props.state.type,
-            number: this.props.state.number,
-            attributes: this.state.parts.attribute,
-            message: this.state.parts.message
-        });
-    }
 
-    /**
-     * パーツCGの選択画面を開きます。
-     * @param type 開きたいパーツCG選択の種類
-     */
-    private showGraphicSelect(type: GraphicSelectState) {
-        this.setState({
-            graphicSelect: type
-        });
-    }
+        dispatch(editParts({
+            ...editingParts.partsEdit,
+            attributes: editingParts.attribute,
+            message: editingParts.message
+        }));
+    };
+
+    const showGraphicSelect = (type: GraphicSelectState) => {
+        setGraphicSelect(type);
+    };
 
     /**
      * パーツCGの選択画面を閉じます。
      */
-    private closeGraphicSelect() {
-        this.setState({
-            graphicSelect: "NONE"
-        });
-    }
+    const closeGraphicSelect = () => {
+        setGraphicSelect("NONE");
+    };
 
     /**
      * パーツのグラフィック画像を変更し、ステートに反映します。
      */
-    private setPartsGraphic(chipX: number, chipY: number, type: GraphicSelectState) {
-        if (this.state.parts === undefined || type === "NONE") {
+    const setPartsGraphic = (chipX: number, chipY: number, type: GraphicSelectState) => {
+        if (editingParts === null || type === "NONE") {
             return;
         }
 
-        let newAttribute = this.state.parts.attribute.slice();
+        let newAttribute = editingParts.attribute.slice();
         switch (type) {
             case "1":
                 newAttribute[WWAConsts.ATR_X] = chipX * WWAConsts.CHIP_SIZE;
@@ -180,87 +101,81 @@ class PartsEdit extends React.Component<Props, State> {
                 break;
         }
 
-        this.setState({
-            parts: {
-                attribute: newAttribute,
-                message: this.state.parts.message
-            }
+        updatePartsEdit({
+            ...editingParts,
+            attribute: newAttribute
         });
-
-        this.closeGraphicSelect();
-    }
+        closeGraphicSelect();
+    };
 
     /**
      * @see PartsEditAttributeChange
      */
-    private handleAttributeChange(value: string, attributeIndex: number) {
-        if (this.state.parts === undefined) {
+    const handleAttributeChange: PartsEditAttributeChange = (value, attributeIndex) => {
+        if (editingParts === null) {
             return;
         }
 
-        let newAttribute = this.state.parts.attribute.slice();
+        let newAttribute = editingParts.attribute.slice();
         const parsedValue = parseInt(value);
         newAttribute[attributeIndex] = Number.isNaN(parsedValue) ? 0 : parsedValue;
 
-        this.setState({
-            parts: {
-                attribute: newAttribute,
-                message: this.state.parts.message
-            }
+        updatePartsEdit({
+            ...editingParts,
+            attribute: newAttribute
         });
-    }
+    };
 
     /**
      * @see PartsEditMessageChange
      */
-    private handleMessageChange(value: string) {
-        if (this.state.parts === undefined) {
+    const handleMessageChange: PartsEditMessageChange = value => {
+        if (editingParts === null) {
             return;
         }
         
-        this.setState({
-            parts: {
-                attribute: this.state.parts.attribute,
-                message: value
-            }
+        updatePartsEdit({
+            ...editingParts,
+            message: value
         });
-    }
+    };
 
-    private handleEditButtonClick() {
-        this.send();
-        this.props.switchInfoPanel({ mode: "GENERAL" });
-    }
+    const handleEditButtonClick = () => {
+        handleSubmit();
+        dispatch(switchInfoPanel({ mode: "GENERAL" }));
+    };
 
-    private handleCancelButtonClick() {
-        this.props.switchInfoPanel({ mode: "GENERAL" });
-    }
+    const handleCancelButtonClick = () => {
+        dispatch(switchInfoPanel({ mode: "GENERAL" }));
+    };
 
     /**
      * パーツ種別対応表の変数を取得します。
      */
-    private getPartsEditTable(): PartsEditComponentTable | null {
-        if (this.props.state === undefined) {
+    const getPartsEditTable = () => {
+        if (editingParts === undefined) {
             return null;
         }
-        if (this.props.state.type === PartsType.MAP) {
-            return MapEditTable;
-        } else if (this.props.state.type === PartsType.OBJECT) {
-            return ObjectEditTable;
+        switch (editingParts?.partsEdit.type) {
+            case PartsType.MAP:
+                return MapEditTable;
+            case PartsType.OBJECT:
+                return ObjectEditTable;
         }
 
         return null;
-    }
+    };
 
     /**
      * パーツ種別を変更するセレクトボックスを出力します。
      */
-    private renderPartsSelectBox() {
-        const partsEditTable = this.getPartsEditTable();
-        if (!partsEditTable || this.state.parts === undefined) {
+    const renderPartsSelectBox = () => {
+        const partsEditTable = getPartsEditTable();
+        if (!partsEditTable || editingParts === null) {
             return;
         }
         
-        const partsEditType = this.state.parts.attribute[WWAConsts.ATR_TYPE];
+        const partsEditType = editingParts.attribute[WWAConsts.ATR_TYPE];
         const partsEditOptions: DropdownItemProps[] = partsEditTable.map(partsEdit => ({
             text: partsEdit.name,
             value: partsEdit.id
@@ -271,85 +186,81 @@ class PartsEdit extends React.Component<Props, State> {
                 basic
                 options={partsEditOptions}
                 onChange={(event, data) => {
-                    this.handleAttributeChange(data.value as string, WWAConsts.ATR_TYPE);
+                    handleAttributeChange(data.value as string, WWAConsts.ATR_TYPE);
                 }}
                 value={partsEditType}
             />
         );
-    }
+    };
 
     /**
      * パーツCGの選択部分を出力します。
      */
-    private renderPartsGraphic(type: GraphicSelectState, attributeIndexX: number, attributeIndexY: number) {
-        if (this.state.parts === undefined || this.props.image === undefined) {
+    const renderPartsGraphic = (type: GraphicSelectState, attributeIndexX: number, attributeIndexY: number) => {
+        if (editingParts === null || image === null) {
             return;
         }
 
-        const attribute = this.state.parts.attribute;
+        const attribute = editingParts.attribute;
         return (
             <Portal
                 trigger={
                     <PartsChip
                         cropX={attribute[attributeIndexX]}
                         cropY={attribute[attributeIndexY]}
-                        image={this.props.image}
+                        image={image}
                         isSelected={false}
                         onClick={() => {}}
                     />
                 }
-                open={this.state.graphicSelect === type}
-                onOpen={() => this.showGraphicSelect(type)}
-                onClose={() => this.closeGraphicSelect()}
-                mountNode={this.graphicSelectMountRef?.current}
+                open={graphicSelect === type}
+                onOpen={() => showGraphicSelect(type)}
+                onClose={() => closeGraphicSelect()}
+                mountNode={graphicSelectMount?.current}
             >
                 <GraphicSelect
-                    image={this.props.image}
-                    onChange={(chipX, chipY) => this.setPartsGraphic(chipX, chipY, type)}
+                    image={image}
+                    onChange={(chipX, chipY) => setPartsGraphic(chipX, chipY, type)}
                 />
             </Portal>
         );
-    }
+    };
 
-    private renderPartsGraphics() {
-        if (this.props.state === undefined) {
+    const renderPartsGraphics = () => {
+        if (editingParts === null) {
             return null;
         }
 
         return (
             <>
-                {this.renderPartsGraphic("1", WWAConsts.ATR_X, WWAConsts.ATR_Y)}
+                {renderPartsGraphic("1", WWAConsts.ATR_X, WWAConsts.ATR_Y)}
 
-                {this.props.state.type === PartsType.OBJECT &&
-                    this.renderPartsGraphic("2", WWAConsts.ATR_X2, WWAConsts.ATR_Y2)
+                {editingParts.partsEdit.type === PartsType.OBJECT &&
+                    renderPartsGraphic("2", WWAConsts.ATR_X2, WWAConsts.ATR_Y2)
                 }
 
-                <div ref={this.graphicSelectMountRef}></div>
+                <div ref={graphicSelectMount}></div>
             </>
         );
-    }
+    };
 
     /**
      * 編集フォームを出力します。
      */
-    private renderEditForm() {
-        if (
-            this.props.state === undefined ||
-            this.props.wwaData === undefined ||
-            this.state.parts === undefined
-        ) {
+    const renderEditForm = () => {
+        if (editingParts === null) {
             return <p>WWAデータがありません。マップデータを開いてください。</p>;
         }
 
-        const partsEditTable = this.getPartsEditTable();
+        const partsEditTable = getPartsEditTable();
         if (!partsEditTable) {
             return null;
         }
-        
-        const attribute = this.state.parts.attribute;
-        const message = this.state.parts.message;
+
+        const attribute = editingParts.attribute;
+        const message = editingParts.message;
         const typeNumber = attribute[WWAConsts.ATR_TYPE];
-        
+
         const partsEditItem = partsEditTable.find(item => item.id === typeNumber);
         if (partsEditItem === undefined) {
             throw new Error(`パーツ種別 ${typeNumber} 番に対応するパーツ種別が見つかりませんでした。`);
@@ -363,43 +274,67 @@ class PartsEdit extends React.Component<Props, State> {
                 <PartsEditComponent
                     attribute={attribute}
                     message={message}
-                    onAttributeChange={this.handleAttributeChange}
-                    onMessageChange={this.handleMessageChange}
+                    onAttributeChange={handleAttributeChange}
+                    onMessageChange={handleMessageChange}
                 />
                 {PartsAppearEditComponent !== undefined &&
                     <PartsAppearEditComponent
                         attribute={attribute}
-                        onChange={this.handleAttributeChange}
+                        onChange={handleAttributeChange}
                         partsMax={{
-                            [PartsType.OBJECT]: getPartsCountPerIncreaseUnit(this.props.wwaData.objPartsMax),
-                            [PartsType.MAP]: getPartsCountPerIncreaseUnit(this.props.wwaData.mapPartsMax)
+                            [PartsType.OBJECT]: getPartsCountPerIncreaseUnit(objPartsMax),
+                            [PartsType.MAP]: getPartsCountPerIncreaseUnit(mapPartsMax)
                         }}
                     />
                 }
             </>
         );
+    };
 
-    }
 
-    render() {
-        return (
-            <Form>
-                {this.renderPartsSelectBox()}
-                {this.renderPartsGraphics()}
-                {this.renderEditForm()}
-                <Form.Field>
-                    <Button primary onClick={() => this.handleEditButtonClick()}>
-                        <Icon name="check" />
-                        決定
-                    </Button>
-                    <Button onClick={() => this.handleCancelButtonClick()}>
-                        <Icon name="cancel" />
-                        取り消し
-                    </Button>
-                </Form.Field>
-            </Form>
-        )
-    }
-}
+    useEffect(() => {
+        if (currentPartsInfo === null ||
+            objectAttribute === undefined ||
+            mapAttribute === undefined ||
+            messages === undefined) {
+            return;
+        }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PartsEdit);
+        const attribute = (() => {
+            switch (currentPartsInfo?.type) {
+                case PartsType.OBJECT:
+                    return objectAttribute[currentPartsInfo.number];
+                case PartsType.MAP:
+                    return mapAttribute[currentPartsInfo.number];
+            }
+        })() ?? createEmptyPartsAttribute(currentPartsInfo.type);
+
+        const message = messages[attribute[WWAConsts.ATR_STRING]];
+
+        updatePartsEdit({
+            partsEdit: currentPartsInfo,
+            attribute,
+            message
+        });
+    }, [currentPartsInfo, objectAttribute, mapAttribute, messages]);
+
+    return (
+        <Form>
+            {renderPartsSelectBox()}
+            {renderPartsGraphics()}
+            {renderEditForm()}
+            <Form.Field>
+                <Button primary onClick={handleEditButtonClick}>
+                    <Icon name="check" />
+                    決定
+                </Button>
+                <Button onClick={handleCancelButtonClick}>
+                    <Icon name="cancel" />
+                    取り消し
+                </Button>
+            </Form.Field>
+        </Form>
+    );
+};
+
+export default PartsEdit;

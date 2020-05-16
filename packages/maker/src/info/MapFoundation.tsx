@@ -9,9 +9,33 @@ import WWAConsts from "../classes/WWAConsts";
 import { thunkToAction } from "typescript-fsa-redux-thunk";
 import { loadImage } from "../load/LoadStates";
 
-const mapStateToProps = (state: StoreType) => ({
-    wwaData: state.wwaData
-});
+const mapStateToProps = (state: StoreType) => {
+    if (state.wwaData === null) {
+        return {
+            field: undefined
+        };
+    }
+
+    // TODO: このままでは冗長すぎるので、各キーの名前を書かなくてもいいように実装したい
+    return {
+        field: {
+            worldName: state.wwaData.worldName,
+            mapCGName: state.wwaData.mapCGName,
+            playerX: state.wwaData.playerX,
+            playerY: state.wwaData.playerY,
+            gameoverX: state.wwaData.gameoverX,
+            gameoverY: state.wwaData.gameoverY,
+            statusEnergyMax: state.wwaData.statusEnergyMax,
+            statusEnergy: state.wwaData.statusEnergy,
+            statusStrength: state.wwaData.statusStrength,
+            statusDefence: state.wwaData.statusDefence,
+            statusGold: state.wwaData.statusGold,
+            mapWidth: state.wwaData.mapWidth,
+            objectPartsMax: getPartsCountPerIncreaseUnit(state.wwaData.objectAttribute.length),
+            mapPartsMax: getPartsCountPerIncreaseUnit(state.wwaData.mapAttribute.length)
+        }
+    };
+};
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return bindActionCreators({
@@ -53,50 +77,23 @@ type State = {
 /**
  * 基本設定の編集
  */
-class MapFoundation extends React.Component<Props, State> {
+class MapFoundation extends React.PureComponent<Props, State> {
 
     constructor(props: Props) {
         super(props);
         this.state = this.receive();
     }
 
-    public componentDidUpdate(prevProps: StateProps) {
-        /**
-         * @todo この比較方法は精度が低いかもしれない
-         */
-        if (this.props !== prevProps) {
-            this.setState(this.receive());
-        }
-    }
-
     /**
      * Redux ステートの更新を本コンポーネントのステートに受け取ります。
      */
     private receive(): State {
-        if (this.props.wwaData === null) {
+        if (this.props.field === undefined) {
             return {};
         }
 
-        /**
-         * @todo このままでは冗長すぎるので、各キーの名前を書かなくてもいいように実装したい
-         */
         return({
-            field: {
-                worldName: this.props.wwaData.worldName,
-                mapCGName: this.props.wwaData.mapCGName,
-                playerX: this.props.wwaData.playerX,
-                playerY: this.props.wwaData.playerY,
-                gameoverX: this.props.wwaData.gameoverX,
-                gameoverY: this.props.wwaData.gameoverY,
-                statusEnergyMax: this.props.wwaData.statusEnergyMax,
-                statusEnergy: this.props.wwaData.statusEnergy,
-                statusStrength: this.props.wwaData.statusStrength,
-                statusDefence: this.props.wwaData.statusDefence,
-                statusGold: this.props.wwaData.statusGold,
-                mapWidth: this.props.wwaData.mapWidth,
-                objectPartsMax: getPartsCountPerIncreaseUnit(this.props.wwaData.objectAttribute.length),
-                mapPartsMax: getPartsCountPerIncreaseUnit(this.props.wwaData.mapAttribute.length)
-            }
+            field: this.props.field
         });
     }
 
@@ -108,7 +105,7 @@ class MapFoundation extends React.Component<Props, State> {
             return;
         }
 
-        if (this.state.field.mapCGName !== this.props.wwaData?.mapCGName) {
+        if (this.state.field.mapCGName !== this.props.field?.mapCGName) {
             this.props.reloadImage({ imagePath: this.state.field.mapCGName });
         }
 
@@ -119,7 +116,7 @@ class MapFoundation extends React.Component<Props, State> {
      * コンポーネントのステートをリセットし、 Redux ステートの値に変更します。
      */
     private reset() {
-        this.receive();
+        this.setState(this.receive());
     }
 
     /**
