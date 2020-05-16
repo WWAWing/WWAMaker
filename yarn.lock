@@ -1698,6 +1698,18 @@
   resolved "https://registry.yarnpkg.com/@wwawing/common-interface/-/common-interface-3.3.0.tgz#f10d15673286c432945742d346bcca6bba69798a"
   integrity sha512-LbEcZhHRA6bOyZiLsa+LsBCB1LL+aFjQewPQcoOngDp0UJtoikLkqYqO8Rf/GmNQV/ReegOieEXrdyAAiQjntQ==
 
+"@wwawing/event-emitter@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@wwawing/event-emitter/-/event-emitter-3.4.0.tgz#cc689f194accef4aabf5c83769908dbf91ec218c"
+  integrity sha512-0HXWbbTgV/XMpMqWwkH8RznsBJtUQv94E1uPEZ2F2r+BP7Xe2K7r8zCt5zsFQQgwh0++VRwt31ZqRip6xwpoHA==
+
+"@wwawing/loader@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@wwawing/loader/-/loader-3.4.0.tgz#6522cb43d249a60033419e791d249833ac11b1dd"
+  integrity sha512-DBwf6uji2ascAacFA/ABw8lux6Ycieg76FyKFq7BIwIYjFlI0v+IJiOFWYdJnJS37nvETUt3ICOBJnI6O8qGWw==
+  dependencies:
+    "@wwawing/event-emitter" "^3.4.0"
+
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@xtuc/ieee754/-/ieee754-1.2.0.tgz#eef014a3145ae477a1cbc00cd1e552336dceb790"
