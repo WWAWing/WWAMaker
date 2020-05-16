@@ -1,9 +1,9 @@
+import { WWAConsts as LoaderWWAConsts } from "@wwawing/loader";
+
 /**
  * @todo 近いうちに common-interface にまとめておく
  */
-export class WWAConsts {
-    static MAP_ATR_MAX: number = 60;
-    static OBJ_ATR_MAX: number = 60;
+export class WWAConsts extends LoaderWWAConsts {
     static ATR_0: number = 0;
     static ATR_STRING: number = 5;
     static MAP_SIZE_DEFAULT: number = 101;

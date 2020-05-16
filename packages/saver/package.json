@@ -9,6 +9,7 @@
   "private": true,
   "dependencies": {
     "@wwawing/common-interface": "^3.3.0",
+    "@wwawing/loader": "^3.4.1",
     "typescript": "^3.4.5"
   },
   "scripts": {
