@@ -84,7 +84,7 @@ class MapFoundation extends React.PureComponent<Props, State> {
         this.state = this.receive();
     }
 
-    componentDidUpdate() {
+    componentDidMount() {
         this.setState(this.receive());
     }
 
