@@ -14,6 +14,12 @@ import getPartsCountPerIncreaseUnit from "../common/getPartsCountPerIncreaseUnit
 import { useImage } from "wwamaker-image-decorder";
 
 type PartsEditState = {
+    /**
+     * partsEdit は Redux の info.partsEdit と同じ内容が含まれています。
+     *     ステートに含ませているのは、編集しているパーツの情報とそのパーツの属性やメッセージの不一致による副作用を防ぐためです。
+     * @see InfoPanelPartsEditState
+     */
+    partsEdit: InfoPanelPartsEditState,
     attribute: number[],
     message: string
 } | null;
@@ -35,14 +41,13 @@ const PartsEdit: React.FC = () => {
     const graphicSelectMount = useRef<HTMLDivElement>(null);
     const [graphicSelect, setGraphicSelect] = useState<GraphicSelectState>("NONE");
 
-    const currentPartsInfo: InfoPanelPartsEditState | null = useSelector(state => state.info.partsEdit ?? null);
+    const currentPartsInfo: InfoPanelPartsEditState | null = useSelector(state => state.info.partsEdit) ?? null;
     const objectAttribute = useSelector(state => state.wwaData?.objectAttribute);
     const mapAttribute = useSelector(state => state.wwaData?.mapAttribute);
     const messages = useSelector(state => state.wwaData?.message);
 
     const imageUrl = useSelector(state => state.image);
     const image = useImage(imageUrl ?? "");
-    const mapWidth = useSelector(state => state.wwaData?.mapWidth) ?? 0;
     const objPartsMax = useSelector(state => state.wwaData?.objPartsMax) ?? 0;
     const mapPartsMax = useSelector(state => state.wwaData?.mapPartsMax) ?? 0;
 
@@ -54,12 +59,12 @@ const PartsEdit: React.FC = () => {
 
 
     const handleSubmit = () => {
-        if (currentPartsInfo === null || editingParts === null) {
+        if (editingParts === null) {
             return;
         }
 
         dispatch(editParts({
-            ...currentPartsInfo,
+            ...editingParts.partsEdit,
             attributes: editingParts.attribute,
             message: editingParts.message
         }));
@@ -97,8 +102,8 @@ const PartsEdit: React.FC = () => {
         }
 
         updatePartsEdit({
-            attribute: newAttribute,
-            message: editingParts.message
+            ...editingParts,
+            attribute: newAttribute
         });
         closeGraphicSelect();
     }
@@ -116,8 +121,8 @@ const PartsEdit: React.FC = () => {
         newAttribute[attributeIndex] = Number.isNaN(parsedValue) ? 0 : parsedValue;
 
         updatePartsEdit({
-            attribute: newAttribute,
-            message: editingParts.message
+            ...editingParts,
+            attribute: newAttribute
         });
     };
 
@@ -130,7 +135,7 @@ const PartsEdit: React.FC = () => {
         }
         
         updatePartsEdit({
-            attribute: editingParts.attribute,
+            ...editingParts,
             message: value
         });
     };
@@ -151,7 +156,7 @@ const PartsEdit: React.FC = () => {
         if (editingParts === undefined) {
             return null;
         }
-        switch (currentPartsInfo?.type) {
+        switch (editingParts?.partsEdit.type) {
             case PartsType.MAP:
                 return MapEditTable;
             case PartsType.OBJECT:
@@ -222,7 +227,7 @@ const PartsEdit: React.FC = () => {
     };
 
     const renderPartsGraphics = () => {
-        if (editingParts === null || currentPartsInfo === null) {
+        if (editingParts === null) {
             return null;
         }
 
@@ -230,7 +235,7 @@ const PartsEdit: React.FC = () => {
             <>
                 {renderPartsGraphic("1", WWAConsts.ATR_X, WWAConsts.ATR_Y)}
 
-                {currentPartsInfo.type === PartsType.OBJECT &&
+                {editingParts.partsEdit.type === PartsType.OBJECT &&
                     renderPartsGraphic("2", WWAConsts.ATR_X2, WWAConsts.ATR_Y2)
                 }
 
@@ -243,10 +248,7 @@ const PartsEdit: React.FC = () => {
      * 編集フォームを出力します。
      */
     const renderEditForm = () => {
-        if (
-            currentPartsInfo === null ||
-            editingParts === null
-        ) {
+        if (editingParts === null) {
             return <p>WWAデータがありません。マップデータを開いてください。</p>;
         }
 
@@ -254,11 +256,11 @@ const PartsEdit: React.FC = () => {
         if (!partsEditTable) {
             return null;
         }
-        
+
         const attribute = editingParts.attribute;
         const message = editingParts.message;
         const typeNumber = attribute[WWAConsts.ATR_TYPE];
-        
+
         const partsEditItem = partsEditTable.find(item => item.id === typeNumber);
         if (partsEditItem === undefined) {
             throw new Error(`パーツ種別 ${typeNumber} 番に対応するパーツ種別が見つかりませんでした。`);
@@ -310,6 +312,7 @@ const PartsEdit: React.FC = () => {
         const message = messages[attribute[WWAConsts.ATR_STRING]];
 
         updatePartsEdit({
+            partsEdit: currentPartsInfo,
             attribute,
             message
         });
