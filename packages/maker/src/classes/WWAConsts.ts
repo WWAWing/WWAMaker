@@ -57,8 +57,29 @@ export default class WWAConsts {
 
     static SYSTEM_MESSAGE_NUM: number = 20;
 
+    static IMGPOS_DEFAULT_YESNO_X: number = 3;
+    static IMGPOS_DEFAULT_YESNO_Y: number = 1;
+
     static IMGPOS_DEFAULT_PLAYER_X: number = 2;
     static IMGPOS_DEFAULT_PLAYER_Y: number = 0;
+
+    static IMGPOS_DEFAULT_STATUS_X: number = 3;
+    static IMGPOS_DEFAULT_STATUS_Y: number = 2;
+    static IMGRELPOS_ENERGY_ICON_X: number = 0;
+    static IMGRELPOS_STRENGTH_ICON_X: number = 1;
+    static IMGRELPOS_DEFENCE_ICON_X: number = 2;
+    static IMGRELPOS_GOLD_ICON_X: number = 3;
+
+    static IMGPOS_DEFAULT_WIDE_CELL_X: number = 4;
+    static IMGPOS_DEFAULT_WIDE_CELL_Y: number = 3;
+    static IMGPOS_DEFAULT_ITEMBOX_X: number = 1;
+    static IMGPOS_DEFAULT_ITEMBOX_Y: number = 2;
+
+    static IMGPOS_DEFAULT_FRAME_X: number = 0;
+    static IMGPOS_DEFAULT_FRAME_Y: number = 1;
+
+    static IMGPOS_DEFAULT_BATTLE_EFFECT_X: number = 3;
+    static IMGPOS_DEFAULT_BATTLE_EFFECT_Y: number = 3;
 
     static CHIP_SIZE = 40;
 
