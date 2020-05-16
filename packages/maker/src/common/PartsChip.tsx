@@ -38,12 +38,12 @@ const PartsChip: React.FC<Props> = props => {
     }, [props.cropX, props.cropY, props.image, props.isSelected]);
 
 
-    // 原作の作成ツールではマウスボタンを押したタイミングで反応するため、その形に従うようにしている
     return (
         <canvas
             ref={canvasRef}
             width={WWAConsts.CHIP_SIZE}
             height={WWAConsts.CHIP_SIZE}
+            // 原作の作成ツールではマウスボタンを押したタイミングで反応するため、 onClick ではなく onMouseDown で代用
             onMouseDown={props.onClick}
             onDoubleClick={props.onDoubleClick}
             onContextMenu={handleContextMenu}

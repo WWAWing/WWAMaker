@@ -84,10 +84,6 @@ class MapFoundation extends React.PureComponent<Props, State> {
         this.state = this.receive();
     }
 
-    componentDidMount() {
-        this.setState(this.receive());
-    }
-
     /**
      * Redux ステートの更新を本コンポーネントのステートに受け取ります。
      */

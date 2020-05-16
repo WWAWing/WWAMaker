@@ -35,7 +35,7 @@ const PartsSelect: React.FC = () => {
                 dispatch(selectMapParts({ number: partsNumber }));
                 break;
         }
-    }
+    };
 
     /**
      * パーツ編集イベントが発生した際に実行するメソッドです。
@@ -50,7 +50,7 @@ const PartsSelect: React.FC = () => {
             case PartsType.MAP:
                 dispatch(showPartsEdit({ type: partsType, number: partsNumber }));
         }
-    }
+    };
 
     const handlePartsDelete = (partsType: PartsType) => {
         const partsNumber = (() => {
@@ -66,7 +66,7 @@ const PartsSelect: React.FC = () => {
             type: partsType,
             number: partsNumber
         }));
-    }
+    };
 
     const renderPartsList = (partsType: PartsType) => {
         let partsAttribute, partsNumber: number, title;
@@ -114,7 +114,7 @@ const PartsSelect: React.FC = () => {
                 </Segment>
             </div>
         );
-    }
+    };
 
     /**
      * @todo toolPanel は PartsSelect が元々 ToolPanel であったな残りであるため、できれば partsSelect に直す。

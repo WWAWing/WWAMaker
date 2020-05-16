@@ -49,7 +49,6 @@ export const toggleGrid = actionCreator("TOGGLE_GRID");
 
 export const MapReducer = reducerWithInitialState(INITIAL_STATE)
     .case(setEditMode, (state, payload) => Object.assign(state, {
-        ...state,
         editMode: payload.editMode
     }))
     .case(setCurrentPos, (state, payload) => Object.assign(state, {
@@ -59,6 +58,5 @@ export const MapReducer = reducerWithInitialState(INITIAL_STATE)
         }
     }))
     .case(toggleGrid, state => Object.assign(state, {
-        ...state,
         showGrid: !state.showGrid
     }))

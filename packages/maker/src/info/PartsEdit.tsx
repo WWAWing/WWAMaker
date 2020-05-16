@@ -106,7 +106,7 @@ const PartsEdit: React.FC = () => {
             attribute: newAttribute
         });
         closeGraphicSelect();
-    }
+    };
 
     /**
      * @see PartsEditAttributeChange
@@ -144,7 +144,7 @@ const PartsEdit: React.FC = () => {
         handleSubmit();
         dispatch(switchInfoPanel({ mode: "GENERAL" }));
     };
-    
+
     const handleCancelButtonClick = () => {
         dispatch(switchInfoPanel({ mode: "GENERAL" }));
     };
@@ -289,7 +289,7 @@ const PartsEdit: React.FC = () => {
                 }
             </>
         );
-    }
+    };
 
 
     useEffect(() => {

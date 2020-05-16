@@ -105,7 +105,7 @@ const MapCanvas: React.FC<Props> = props => {
             [PartsType.MAP]: getPartsNumberOnTarget(chipX, chipY, PartsType.MAP),
             [PartsType.OBJECT]: getPartsNumberOnTarget(chipX, chipY, PartsType.OBJECT)
         });
-    }
+    };
 
     /**
      * 指定した座標から各パーツ種類のパーツ番号を取得します
@@ -119,7 +119,7 @@ const MapCanvas: React.FC<Props> = props => {
             case PartsType.OBJECT:
                 return mapObject[chipY][chipX];
         }
-    }
+    };
 
     const chunkMap = useMemo(() => {
         const chunkCount = Math.ceil(mapWidth / CHUNK_SIZE);
