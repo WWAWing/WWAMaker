@@ -45,7 +45,7 @@ const MapCanvas: React.FC<Props> = props => {
 
     const mapWidth = useSelector(state => state.wwaData?.mapWidth, shallowEqual) ?? 0;
     const showGrid = useSelector(state => state.map.showGrid);
-    const imageUrl = useSelector(state => state.image);
+    const imageUrl = useSelector(state => state.imageUrl);
     const image = useImage(imageUrl ?? "");
     const [hasClick, setClick] = useState(false);
     const ref = useRef<HTMLDivElement>(null);

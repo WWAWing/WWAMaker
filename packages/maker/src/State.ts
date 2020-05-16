@@ -19,7 +19,7 @@ export interface StoreType {
     map: MapState,
     objParts: PartsState,
     mapParts: PartsState,
-    image: string|null,
+    imageUrl: string|null,
     info: InfoPanelState
 }
 
@@ -33,7 +33,7 @@ const INITIAL_STATE: StoreType = {
     map: MAP_INITIAL_STATE,
     objParts: PARTS_INITIAL_STATE,
     mapParts: PARTS_INITIAL_STATE,
-    image: null,
+    imageUrl: null,
     info: INFOPANEL_INITIAL_STATE
 }
 
@@ -61,21 +61,21 @@ const reducer = reducerWithInitialState(INITIAL_STATE)
         return newState;
     })
     .case(setImage, (state, params) => {
-        if (state.image !== null) {
-            URL.revokeObjectURL(state.image);
+        if (state.imageUrl !== null) {
+            URL.revokeObjectURL(state.imageUrl);
         }
         return {
             ...state,
-            image: params.imageUrl
+            imageUrl: params.imageUrl
         };
     })
     .case(closeMapdata, (state) => {
-        if (state.image !== null) {
-            URL.revokeObjectURL(state.image);
+        if (state.imageUrl !== null) {
+            URL.revokeObjectURL(state.imageUrl);
         }
         const newState = Object.assign({}, state);
         newState.wwaData = null;
-        newState.image = null;
+        newState.imageUrl = null;
         return newState;
     })
     .default((state, action) => ({

@@ -18,7 +18,7 @@ const PartsSelect: React.FC = () => {
     const mapAttribute = useSelector(state => state.wwaData?.mapAttribute);
     const objParts = useSelector(state => state.objParts);
     const mapParts = useSelector(state => state.mapParts);
-    const imageUrl = useSelector(state => state.image);
+    const imageUrl = useSelector(state => state.imageUrl);
     const image = useImage(imageUrl ?? "");
 
     const dispatch = useDispatch();
