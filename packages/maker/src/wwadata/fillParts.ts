@@ -7,14 +7,14 @@
  * @param width 
  * @param height 
  */
-const fillParts = (
+export default function fillParts(
     target: number[][],
     value: number,
     x: number,
     y: number,
     width: number,
     height: number
-): number[][] => {
+): number[][] {
     return target.map((line, lineIndex) => {
         if (lineIndex < y || lineIndex >= y + height) {
             return line;
@@ -22,5 +22,3 @@ const fillParts = (
         return line.slice().fill(value, x, x + width);
     });
 };
-
-export default fillParts;
