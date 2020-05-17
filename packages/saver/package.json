@@ -7,17 +7,17 @@
   "author": "WWA Wing Team",
   "license": "MIT",
   "private": true,
-  "type": "module",
   "dependencies": {
     "@types/jest": "^25.2.2",
     "@wwawing/common-interface": "^3.3.0",
     "@wwawing/loader": "^3.4.1",
     "jest": "24.9.0",
+    "shx": "^0.3.2",
     "ts-jest": "^26.0.0",
     "typescript": "^3.4.5"
   },
   "scripts": {
-    "build": "tsc -p .",
+    "build": "shx rm -rf lib && tsc -p .",
     "test": "jest"
   }
 }
