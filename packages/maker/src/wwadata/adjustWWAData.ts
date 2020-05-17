@@ -1,7 +1,6 @@
 import { WWAData } from "@wwawing/common-interface";
 import getPartsCountPerIncreaseUnit from "../common/getPartsCountPerIncreaseUnit";
-import { PartsAttributes, createEmptyPartsAttribute } from "../classes/WWAData";
-import { PartsType } from "@wwawing/loader";
+import { PartsAttributes, createEmptyPartsAttribute, PartsType } from "../classes/WWAData";
 
 /**
  * WWA Loader で取得した WWAData を WWA Maker 向けに最適化します。
