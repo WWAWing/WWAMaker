@@ -88,6 +88,7 @@
   },
   "scripts": {
     "start": "node scripts/start.js",
+    "start:electron": "electron ./scripts/start_electron.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js"
   },
@@ -158,5 +159,8 @@
     "presets": [
       "react-app"
     ]
+  },
+  "devDependencies": {
+    "electron": "^8.3.0"
   }
 }
