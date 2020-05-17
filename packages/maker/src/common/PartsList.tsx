@@ -1,8 +1,7 @@
 import React from "react";
 import PartsChip from "./PartsChip";
 import WWAConsts from "../classes/WWAConsts";
-import { PartsType, createEmptyPartsAttribute, PartsAttributes } from "../classes/WWAData";
-import getPartsCountPerIncreaseUnit from "./getPartsCountPerIncreaseUnit";
+import { PartsType, PartsAttributes } from "../classes/WWAData";
 import styles from "./PartsList.module.scss";
 
 interface Props {
@@ -15,19 +14,6 @@ interface Props {
 }
 
 const PartsList: React.FC<Props> = props => {
-
-    /**
-     * パーツの属性を空部分を補填した形で取得します。
-     */
-    function getPartsAttributes(): PartsAttributes {
-        let emptyAttributes = [];
-        const partsMax = getPartsCountPerIncreaseUnit(props.attribute.length);
-
-        for (let index = props.attribute.length; index < partsMax; index++) {
-            emptyAttributes.push(createEmptyPartsAttribute(props.type));
-        }
-        return props.attribute.concat(emptyAttributes);
-    }
 
     const renderPartsChip = (partsAttribute: number[], partsNumber: number) =>
         <PartsChip
@@ -44,7 +30,7 @@ const PartsList: React.FC<Props> = props => {
 
     return (
         <div className={styles.partsList}>
-            {getPartsAttributes().map(renderPartsChip)}
+            {props.attribute.map(renderPartsChip)}
         </div>
     );
 

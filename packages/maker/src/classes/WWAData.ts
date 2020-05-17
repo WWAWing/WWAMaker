@@ -64,7 +64,7 @@ export const defaultWWAData: WWAData = {
     itemBox: [],
 
     mapWidth: WWAConsts.MAP_SIZE_DEFAULT,
-    messageNum: 0,
+    messageNum: WWAConsts.MESSAGE_FIRST_CHARA,
 
     map: createEmptyMap(WWAConsts.MAP_SIZE_DEFAULT),
     mapObject: createEmptyMap(WWAConsts.MAP_SIZE_DEFAULT),
