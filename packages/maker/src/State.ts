@@ -9,6 +9,7 @@ import thunkMiddleware from 'redux-thunk';
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 import actionCreatorFactory from "typescript-fsa";
 import { composeWithDevTools } from "redux-devtools-extension";
+import adjustWWAData from "./wwadata/adjustWWAData";
 
 /**
  * Store の Type です。
@@ -57,7 +58,7 @@ export const closeMapdata = actionCreator('CLOSE_MAPDATA');
 const reducer = reducerWithInitialState(INITIAL_STATE)
     .case(setMapdata, (state, params) => {
         const newState = Object.assign({}, state);
-        newState.wwaData = params.wwaData;
+        newState.wwaData = adjustWWAData(params.wwaData);
         return newState;
     })
     .case(setImage, (state, params) => {

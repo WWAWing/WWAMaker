@@ -1,9 +1,9 @@
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 import actionCreatorFactory from "typescript-fsa";
-import { LoaderError, LoaderProgress, LoaderResponse } from "./Loader";
+import { loadWWADataPromise, encodeImagePromise, loadImagePromise } from "./LoadPromises";
 import { asyncFactory } from "typescript-fsa-redux-thunk";
-import { WWAData } from "@wwawing/common-interface";
 import { setMapdata, setImage, closeMapdata } from "../State";
+import { Progress, LoaderError } from "@wwawing/loader";
 
 /**
  * Load モジュールについて
@@ -12,7 +12,7 @@ import { setMapdata, setImage, closeMapdata } from "../State";
  * @see MapData
  */
 export interface LoadState {
-    progress: LoaderProgress|null,
+    progress: Progress|null,
     error: LoaderError|null
 }
 
@@ -33,108 +33,6 @@ interface LoadImageState {
 const actionCreator = actionCreatorFactory();
 const actionCreatorAsync = asyncFactory<LoadWWADataState>(actionCreator);
 
-/**
- * WWA のマップデータを読み込む Promise です。
- *     WWALoader は Web Worker で呼び出す形となっています。
- *     Web Worker は Promise とはやり方が違うので、読み込み全体の Promise をこのメソッドでまかないます。
- *     Web Worker で発生する途中経過のメッセージについては、このメソッドに付いているコールバックメソッドを介して実行させます。
- * @param mapdataFileName マップデータのファイル名
- * @param messageCallbackFn message イベント発生時に呼び出すメソッド
- * @param errorCallbackFn エラー発生時で呼び出すメソッド
- */
-const loadWWADataPromise = (
-    mapdataFileName: string,
-    messageCallbackFn: (loaderResponse: LoaderResponse) => void
-) => {
-    return new Promise<WWAData>(function (resolve, reject) {
-
-        const loaderWorker = new Worker('./wwaload.js');
-        
-        loaderWorker.postMessage({
-            fileName: mapdataFileName
-        });
-
-        loaderWorker.onmessage = (event: MessageEvent) => {
-            const eventData: LoaderResponse = event.data;
-
-            if (eventData.error !== null) {
-                reject({
-                    title: 'MapData Error',
-                    message: event.data.error.message
-                });
-                loaderWorker.terminate();
-
-            } else if (eventData.progress !== null) {
-                messageCallbackFn(eventData);
-
-            } else if (eventData.wwaData !== null) {
-                resolve(eventData.wwaData);
-                loaderWorker.terminate();
-            }
-        };
-
-    });
-}
-
-/**
- * イメージ画像を読み込む Promise です。
- * @param imageFileName 
- */
-const loadImagePromise = (
-    imageFileName: string
-) => {
-    return new Promise<HTMLImageElement>((resolve, reject) => {
-
-        const imageLoadHandler = () => {
-            image.removeEventListener("load", imageLoadHandler);
-            image.removeEventListener("error", imageErrorHandler);
-            resolve(image);
-        };
-
-        const imageErrorHandler = (event: ErrorEvent) => {
-            reject({
-                title: 'Image Error',
-                message: event.message
-            });
-        };
-
-        const image = new Image();
-        image.addEventListener("load", imageLoadHandler);
-        image.addEventListener("error", imageErrorHandler);
-        image.src = imageFileName;
-    });
-};
-
-/**
- * 読み込んだイメージ画像を objectURL にエンコードする Promise です。
- * @param imageElement 
- */
-const encodeImagePromise = (
-    imageElement: HTMLImageElement
-) => {
-    return new Promise<string>((resolve, reject) => {
-        let canvasElement = document.createElement("canvas");
-        canvasElement.width = imageElement.width;
-        canvasElement.height = imageElement.height;
-
-        const canvasContext = canvasElement.getContext("2d");
-        if (canvasContext === null) {
-            reject({
-                title: "Image Error",
-                message: "イメージのコンテキストの取得に失敗しました。"
-            });
-        } else {
-            canvasContext.drawImage(imageElement, 0, 0);
-        }
-
-        canvasElement.toBlob((blob) => {
-            if (blob === null) {
-                return;
-            }
-            resolve(URL.createObjectURL(blob));
-        }, "image/gif");
-    });
-};
 
 /**
  * マップデータ読み込みを行うアクションです。
@@ -148,10 +46,8 @@ export const loadMapdata = actionCreatorAsync<LoadWWADataState, void, LoaderErro
         // マップデータの読み込み
         const wwaData = await loadWWADataPromise(
             params.mapdataFileName,
-            eventData => {
-                if (eventData.progress !== null) {
-                    dispatch(setLoadingProgress(eventData.progress));
-                }
+            progress => {
+                dispatch(setLoadingProgress(progress));
             }
         );
         dispatch(setMapdata({ wwaData: wwaData }));
@@ -182,7 +78,7 @@ export const loadImage = actionCreatorAsync<LoadImageState, void, LoaderError>(
  *     typescript-fsa-redux-thunk では、 開始→エラー/完了 しかアクションを起こすことができません。
  *     このメソッドは、その「開始」と「エラー/完了」の間で発生する途中経過に対応したアクションになります。
  */
-const setLoadingProgress = actionCreator<LoaderProgress>("SET_LOADING_PROGRESS");
+const setLoadingProgress = actionCreator<Progress>("SET_LOADING_PROGRESS");
 
 export const INITIAL_STATE: LoadState = {
     progress: null,

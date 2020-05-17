@@ -1,5 +1,6 @@
 # WWA Wing で動作確認をしたい場合は、 WWA Wing から各種ファイルをご用意ください。
 *.dat
+*.dat.dms
 *.gif
 *.html
 wwa.js

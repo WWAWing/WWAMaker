@@ -64,7 +64,7 @@ export const defaultWWAData: WWAData = {
     itemBox: [],
 
     mapWidth: WWAConsts.MAP_SIZE_DEFAULT,
-    messageNum: 0,
+    messageNum: WWAConsts.MESSAGE_FIRST_CHARA,
 
     map: createEmptyMap(WWAConsts.MAP_SIZE_DEFAULT),
     mapObject: createEmptyMap(WWAConsts.MAP_SIZE_DEFAULT),
@@ -72,8 +72,8 @@ export const defaultWWAData: WWAData = {
     mapCompressed: [],
     mapObjectCompressed: [],
 
-    mapAttribute: [],
-    objectAttribute: [],
+    mapAttribute: createEmptyPartsAttributes(100, PartsType.MAP),
+    objectAttribute: createEmptyPartsAttributes(100, PartsType.OBJECT),
 
     worldPassword: '',
     message: createEmptyMessages(WWAConsts.MESSAGE_FIRST_CHARA),
@@ -101,8 +101,24 @@ export const defaultWWAData: WWAData = {
     effectCoords: [],
     effectWaits: 0,
 
-    imgClickX: 0,
-    imgClickY: 0,
+    imgStatusEnergyX: WWAConsts.IMGPOS_DEFAULT_STATUS_X + WWAConsts.IMGRELPOS_ENERGY_ICON_X,
+    imgStatusEnergyY: WWAConsts.IMGPOS_DEFAULT_STATUS_Y,
+    imgStatusStrengthX: WWAConsts.IMGPOS_DEFAULT_STATUS_X + WWAConsts.IMGRELPOS_STRENGTH_ICON_X,
+    imgStatusStrengthY: WWAConsts.IMGPOS_DEFAULT_STATUS_Y,
+    imgStatusDefenceX: WWAConsts.IMGPOS_DEFAULT_STATUS_X + WWAConsts.IMGRELPOS_DEFENCE_ICON_X,
+    imgStatusDefenceY: WWAConsts.IMGPOS_DEFAULT_STATUS_Y,
+    imgStatusGoldX: WWAConsts.IMGPOS_DEFAULT_STATUS_X + WWAConsts.IMGRELPOS_GOLD_ICON_X,
+    imgStatusGoldY: WWAConsts.IMGPOS_DEFAULT_STATUS_Y,
+    imgWideCellX: WWAConsts.IMGPOS_DEFAULT_WIDE_CELL_X,
+    imgWideCellY: WWAConsts.IMGPOS_DEFAULT_WIDE_CELL_Y,
+    imgItemboxX: WWAConsts.IMGPOS_DEFAULT_ITEMBOX_X,
+    imgItemboxY: WWAConsts.IMGPOS_DEFAULT_ITEMBOX_Y,
+    imgFrameX: WWAConsts.IMGPOS_DEFAULT_FRAME_X,
+    imgFrameY: WWAConsts.IMGPOS_DEFAULT_FRAME_Y,
+    imgBattleEffectX: WWAConsts.IMGPOS_DEFAULT_BATTLE_EFFECT_X,
+    imgBattleEffectY: WWAConsts.IMGPOS_DEFAULT_BATTLE_EFFECT_Y,
+    imgClickX: WWAConsts.IMGPOS_DEFAULT_YESNO_X,
+    imgClickY: WWAConsts.IMGPOS_DEFAULT_YESNO_Y,
 
     frameColorR: 0,
     frameColorG: 0,
@@ -124,8 +140,10 @@ export const defaultWWAData: WWAData = {
     
     isItemEffectEnabled: false,
 
+    frameCount: 0,
+
     gamePadButtonItemTable: []
-}
+};
 
 /**
  * 空の2次元配列を作成します。WWAData.map の初期化に利用します。
@@ -161,6 +179,10 @@ export function createEmptyPartsAttribute(type: PartsType): number[] {
     }
 }
 
+function createEmptyPartsAttributes(count: number, type: PartsType): PartsAttributes {
+    return new Array<number[]>(count).fill(createEmptyPartsAttribute(type));
+}
+
 function createEmptyMessages(count: number): string[] {
     let emptyString = [];
     for (let index = 0; index < count; index++) {
@@ -168,12 +190,4 @@ function createEmptyMessages(count: number): string[] {
     }
 
     return emptyString;
-}
-
-export enum ObjectPartsType {
-    
-}
-
-export enum MapPartsType {
-
 }

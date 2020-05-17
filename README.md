@@ -16,6 +16,7 @@ yarn をインストールし、以下のコマンドを入力することで、
 
 ```
 yarn
+yarn build
 yarn start
 ```
 
