@@ -12,7 +12,9 @@ import { useImage } from 'wwamaker-image-decorder';
 /**
  * パーツ一覧の Container コンポーネントです。
  */
-const PartsSelect: React.FC = () => {
+const PartsSelect: React.FC<{
+    className: string
+}> = ({ className }) => {
 
     const objectAttribute = useSelector(state => state.wwaData?.objectAttribute);
     const mapAttribute = useSelector(state => state.wwaData?.mapAttribute);
@@ -120,7 +122,7 @@ const PartsSelect: React.FC = () => {
      * @todo toolPanel は PartsSelect が元々 ToolPanel であったな残りであるため、できれば partsSelect に直す。
      */
     return (
-        <div className={styles.toolPanel}>
+        <div className={`${styles.toolPanel} ${className}`}>
             {renderPartsList(PartsType.OBJECT)}
             {renderPartsList(PartsType.MAP)}
         </div>

@@ -3,9 +3,9 @@
 .app {
     display: grid;
     grid-template:
-        [toolbar]   "toolbar  toolbar" 60px  [toolbar]
-        [editarea]  "editarea info"    1fr   [info]
-                   / 1fr      auto;
+          "toolbar toolbar   toolbar" 60px
+          "map     partslist info"    1fr
+        / 1fr      auto      auto;
     height: 100vh;
     width: 100vw;
 }
@@ -14,22 +14,28 @@
     grid-area: toolbar;
 }
 
-.editArea {
+.map {
     background-color: rgb(158, 158, 158);
-    grid-area: editarea;
-    /**
-     * react-split-pane は SplitPane コンポーネントに position: absolute; のプロパティが存在します。
-     *     この場合、ページ全体にズレが発生するため、 position: relative; で予防しています。
-     * @todo SplitPane の親要素用の CSS を common ディレクトリに置いても良いかもしれない。
-     */
-    position: relative;
+    grid-area: map;
     text-align: left;
+}
+
+.partsListWrapper {
+    grid-area: partslist;
+    position: relative;
+    width: 410px;
+}
+
+.partsList {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .infoPanel {
     background-color: #fff;
     grid-area: info;
-    width: 450px;
+    width: 300px;
     overflow-x: hidden; // Segment や Menu のはみ出し対策
     overflow-y: auto;
 

@@ -4,7 +4,6 @@ import MainToolbar from './MainToolbar';
 import PartsSelect from './parts/PartsSelect';
 import InfoPanel from './info/InfoPanel';
 import MapEdit from './map/MapEdit';
-import SplitPane from 'react-split-pane';
 import './common/SplitPane.scss';
 import { connect, MapStateToProps } from 'react-redux';
 import { StoreType } from './State';
@@ -43,11 +42,11 @@ class App extends React.Component<StateProps> {
                 <div className={styles.mainToolbar}>
                     <MainToolbar></MainToolbar>
                 </div>
-                <div className={styles.editArea}>
-                    <SplitPane split="horizontal" defaultSize={300} primary="second">
-                        <MapEdit></MapEdit>
-                        <PartsSelect></PartsSelect>
-                    </SplitPane>
+                <div className={styles.map}>
+                    <MapEdit></MapEdit>
+                </div>
+                <div className={styles.partsListWrapper}>
+                    <PartsSelect className={styles.partsList} />
                 </div>
                 <div className={this.getInfoPanelClassName()}>
                     <InfoPanel></InfoPanel>
