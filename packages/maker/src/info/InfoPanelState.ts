@@ -1,6 +1,7 @@
 import actionCreatorFactory from "typescript-fsa";
 import { reducerWithInitialState } from "typescript-fsa-reducers";
 import { PartsType } from "../classes/WWAData";
+import { showError } from "../modal/ModalStates";
 
 /**
  * InfoPanel のモードです。
@@ -49,14 +50,13 @@ export const InfoPanelReducer = reducerWithInitialState(INITIAL_STATE)
         viewMode: payload.mode
     }))
     .case(showPartsEdit, (state, payload) => {
-        // TODO: Reducer の中にアラートを表示するのはちょっと良くないかもしれない。別の場所に移しておきたい。
         if (payload.number === 0) {
             switch (payload.type) {
                 case PartsType.OBJECT:
-                    alert("パーツ番号０の物体は編集できません。\nこのパーツはマップの物体を消去するときに指定してください。");
+                    showError({ errorMessage: "パーツ番号０の物体は編集できません。\nこのパーツはマップの物体を消去するときに指定してください。" });
                     break;
                 case PartsType.MAP:
-                    alert("パーツ番号０の背景は編集できません。\nこのパーツはマップの背景を消去するときに指定してください。");
+                    showError({ errorMessage: "パーツ番号０の背景は編集できません。\nこのパーツはマップの背景を消去するときに指定してください。" })
             }
             return state;
         }

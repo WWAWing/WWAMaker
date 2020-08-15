@@ -2,6 +2,7 @@ import { LoadState, LoadReducer, INITIAL_STATE as LOAD_INITIAL_STATE } from "./l
 import { PartsState, INITIAL_STATE as PARTS_INITIAL_STATE, ObjectPartsReducer, MapPartsReducer } from "./parts/PartsState";
 import { MapState, INITIAL_STATE as MAP_INITIAL_STATE, MapReducer } from "./map/MapStates";
 import { InfoPanelState, INITIAL_STATE as INFOPANEL_INITIAL_STATE, InfoPanelReducer } from "./info/InfoPanelState";
+import { ModalState, INITIAL_STATE as MODAL_INITIAL_STATE, ModalReducer } from "./modal/ModalStates";
 import { WWAData } from "@wwawing/common-interface";
 import { WWADataReducer } from "./wwadata/WWADataState";
 import { createStore, applyMiddleware } from "redux";
@@ -21,7 +22,8 @@ export interface StoreType {
     objParts: PartsState,
     mapParts: PartsState,
     imageUrl: string|null,
-    info: InfoPanelState
+    info: InfoPanelState,
+    modal: ModalState
 }
 
 /**
@@ -35,7 +37,8 @@ const INITIAL_STATE: StoreType = {
     objParts: PARTS_INITIAL_STATE,
     mapParts: PARTS_INITIAL_STATE,
     imageUrl: null,
-    info: INFOPANEL_INITIAL_STATE
+    info: INFOPANEL_INITIAL_STATE,
+    modal: MODAL_INITIAL_STATE
 }
 
 const actionCreator = actionCreatorFactory();
@@ -86,7 +89,8 @@ const reducer = reducerWithInitialState(INITIAL_STATE)
         map: MapReducer(state.map, action),
         objParts: ObjectPartsReducer(state.objParts, action),
         mapParts: MapPartsReducer(state.mapParts, action),
-        info: InfoPanelReducer(state.info, action)
+        info: InfoPanelReducer(state.info, action),
+        modal: ModalReducer(state.modal, action)
     }))
 
 export const Store = createStore(
