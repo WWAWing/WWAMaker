@@ -8,7 +8,7 @@ import SplitPane from 'react-split-pane';
 import './common/SplitPane.scss';
 import { connect, MapStateToProps } from 'react-redux';
 import { StoreType } from './State';
-import ModalView from './modal/ModalView';
+import NotificationView from './notification/NotificationView';
 
 interface StateProps {
     isOpened: boolean
@@ -41,7 +41,7 @@ class App extends React.Component<StateProps> {
     public render() {
         return (
             <>
-                <ModalView />
+                <NotificationView />
                 <div className={styles.app}>
                     <div className={styles.mainToolbar}>
                         <MainToolbar></MainToolbar>
