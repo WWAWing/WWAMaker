@@ -111,8 +111,12 @@ const MapCanvas: React.FC<Props> = props => {
      * 指定した座標から各パーツ種類のパーツ番号を取得します
      * @param chipX 
      * @param chipY 
+     * @returns その座標にあるパーツ番号 (範囲外の場合は 0)
      */
     const getPartsNumberOnTarget = (chipX: number, chipY: number, type: PartsType) => {
+        if (chipX < 0 || chipX >= mapWidth || chipY < 0 || chipY >= mapWidth) {
+            return 0;
+        }
         switch (type) {
             case PartsType.MAP:
                 return map[chipY][chipX];
