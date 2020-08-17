@@ -1,6 +1,7 @@
 import React from "react";
 import { Message } from "semantic-ui-react";
 import { notify } from "../NotificationStates";
+import { NotificationItemView } from "../NotificationItem";
 
 export type ErrorNotificationState = {
     type: "ERROR",
@@ -20,11 +21,11 @@ export const showError = (message: string) => {
     });
 };
 
-export const ErrorNotification: React.FC<ErrorNotificationState> = ({ message }) => {
+export const ErrorNotification: NotificationItemView = () => {
     return (
         <Message negative>
             <Message.Header>エラー！</Message.Header>
-            <p>{message}</p>
+            {/*<p>{message}</p>*/}
         </Message>
     );
 };

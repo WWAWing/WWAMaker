@@ -1,15 +1,10 @@
-import { reducerWithInitialState } from "typescript-fsa-reducers";
+import { NotificationItem } from "./NotificationItem";
 import actionCreatorFactory from "typescript-fsa";
-import { ErrorNotificationState } from "./types/ErrorNotification";
+import { reducerWithInitialState } from "typescript-fsa-reducers";
 
 export type NotificationState = {
     items: NotificationItem[]
 };
-
-/**
- * 通知で表示するアイテムです。
- */
-type NotificationItem = ErrorNotificationState;
 
 export const INITIAL_STATE: NotificationState = {
     items: []
