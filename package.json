@@ -13,8 +13,5 @@
   "scripts": {
     "start": "yarn workspace wwamaker-maker start",
     "build": "yarn workspace wwamaker-image-decorder build && yarn workspace wwamaker-saver build"
-  },
-  "dependencies": {
-    "set-value": "2.0.1"
   }
 }
