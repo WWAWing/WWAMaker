@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators } from 'redux';
 import { loadMapdata } from './load/LoadStates';
-import { thunkToAction } from 'typescript-fsa-redux-thunk';
 import { setEditMode, EditMode, toggleGrid } from './map/MapStates';
 import { StoreType } from './State';
 import { Input, Button, Label, Icon, List } from 'semantic-ui-react';
@@ -23,7 +22,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     // TODO: bindActionCreators の動きについて調べる
     return bindActionCreators(
         {
-            openMapdata: thunkToAction(loadMapdata.action),
+            openMapdata: loadMapdata,
             setEditMode: setEditMode,
             toggleInfoPanel: toggleInfoPanel,
             toggleGrid: toggleGrid
@@ -124,7 +123,7 @@ class MainToolbar extends React.Component<Props, State> {
                         <Button onClick={() => this.props.toggleGrid()} active={this.props.showGrid}>
                             <Icon name="grid layout" />
                         </Button>
-                        <Button onClick={() => this.props.toggleInfoPanel()} active={this.props.isInfoPanelOpened}>
+                        <Button onClick={() => this.props.toggleInfoPanel({})} active={this.props.isInfoPanelOpened}>
                             <Icon name="edit" />
                         </Button>
                     </List.Item>
