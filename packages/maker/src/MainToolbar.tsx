@@ -1,145 +1,117 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { Dispatch, bindActionCreators } from 'redux';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { loadMapdata } from './load/LoadStates';
-import { thunkToAction } from 'typescript-fsa-redux-thunk';
-import { setEditMode, EditMode, toggleGrid } from './map/MapStates';
-import { StoreType } from './State';
+import { setEditMode as setEditModeAction, EditMode, toggleGrid as toggleGridAction } from './map/MapStates';
 import { Input, Button, Label, Icon, List } from 'semantic-ui-react';
-import { toggleInfoPanel } from './info/InfoPanelState';
+import { toggleInfoPanel as toggleInfoPanelAction } from './info/InfoPanelState';
 import createNewMapdata from './common/createNewMapdata';
 import saveMapdata from './common/saveMapdata';
 
-const mapStateToProps = (state: StoreType) => {
-    return {
-        currentPos: state.map.currentPos,
-        editMode: state.map.editMode,
-        isInfoPanelOpened: state.info.isOpened,
-        showGrid: state.map.showGrid
+const MainToolbar: React.FC = () => {
+
+    const openMapdata = () => {
+        dispatch(loadMapdata({
+            mapdataFileName: mapdataFileName
+        }));
     };
-};
 
-const mapDispatchToProps = (dispatch: Dispatch) => {
-    // TODO: bindActionCreators の動きについて調べる
-    return bindActionCreators(
-        {
-            openMapdata: thunkToAction(loadMapdata.action),
-            setEditMode: setEditMode,
-            toggleInfoPanel: toggleInfoPanel,
-            toggleGrid: toggleGrid
-        },
-        dispatch
-    );
-};
+    const setEditMode = (editMode: EditMode) => {
+        dispatch(setEditModeAction({ editMode }));
+    };
 
-type StateProps = ReturnType<typeof mapStateToProps>;
-type DispatchProps = ReturnType<typeof mapDispatchToProps>;
-type Props = StateProps & DispatchProps;
+    const toggleGrid = () => {
+        dispatch(toggleGridAction());
+    };
 
-type State = {
-    mapdataFileName: string
-};
+    const toggleInfoPanel = () => {
+        dispatch(toggleInfoPanelAction({}));
+    };
 
-class MainToolbar extends React.Component<Props, State> {
+    const onFileNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setMapdataFileName(event.target.value);
+    };
 
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            mapdataFileName: 'wwamap.dat'
+    /**
+     * 編集モードを変更する各ボタンのコンポーネントです。
+     */
+    const EditModeButton: React.FC<{ editMode: EditMode, labelName: string }> = ({ editMode, labelName }) => {
+        const onClick = () => {
+            setEditMode(editMode);
         };
-    }
-
-    private clickOpenButton() {
-        this.props.openMapdata({ mapdataFileName: this.state.mapdataFileName });
-    }
-
-    /**
-     * 編集モードを変更します
-     * @param editMode 変更したい編集モード
-     */
-    private selectEditMode(editMode: EditMode) {
-        this.props.setEditMode({ editMode: editMode });
-    }
-
-    /**
-     * マップデーファイル名を変更します
-     * @param event 
-     * @todo 開く機能が実装でき次第削除する
-     */
-    private changeMapdataFileName(event: React.ChangeEvent<HTMLInputElement>) {
-        this.setState({
-            mapdataFileName: event.target.value
-        });
-    }
-
-    public render() {
         return (
-            <div>
-                <List horizontal>
-                    <List.Item>
-                        <Button onClick={() => createNewMapdata()}>
-                            <Icon name="file" />
-                        </Button>
-                    </List.Item>
-                    <List.Item>
-                        <Input
-                            action={{
-                                icon: "folder open",
-                                onClick: this.clickOpenButton.bind(this)
-                            }}
-                            type="text"
-                            value={this.state.mapdataFileName}
-                            onChange={this.changeMapdataFileName.bind(this)}
-                        />
-                    </List.Item>
-                    <List.Item>
-                        <Button onClick={() => saveMapdata()}>
-                            <Icon name="save" />
-                        </Button>
-                    </List.Item>
-                    <List.Item>
-                        <Button.Group basic>
-                            {this.editModeButton(EditMode.PUT_MAP, "背景パーツ設置")}
-                            {this.editModeButton(EditMode.PUT_OBJECT, "物体パーツ設置")}
-                            {this.editModeButton(EditMode.EDIT_MAP, "背景パーツ編集")}
-                            {this.editModeButton(EditMode.EDIT_OBJECT, "物体パーツ編集")}
-                            {this.editModeButton(EditMode.DELETE_OBJECT, "物体パーツ削除")}
-                        </Button.Group>
-                    </List.Item>
-                    {this.props.currentPos !== undefined &&
-                        <List.Item>
-                            <Label.Group>
-                                <Label>
-                                    X
-                                    <Label.Detail>{this.props.currentPos.chipX}</Label.Detail>
-                                </Label>
-                                <Label>
-                                    Y
-                                    <Label.Detail>{this.props.currentPos.chipY}</Label.Detail>
-                                </Label>
-                            </Label.Group>
-                        </List.Item>
-                    }
-                    <List.Item>
-                        <Button onClick={() => this.props.toggleGrid()} active={this.props.showGrid}>
-                            <Icon name="grid layout" />
-                        </Button>
-                        <Button onClick={() => this.props.toggleInfoPanel()} active={this.props.isInfoPanelOpened}>
-                            <Icon name="edit" />
-                        </Button>
-                    </List.Item>
-                </List>
-            </div>
-        );
-    }
-
-    private editModeButton(editMode: EditMode, labelName: string) {
-        return (
-            <Button active={this.props.editMode === editMode} onClick={() => this.selectEditMode(editMode)}>
+            <Button active={editMode === currentEditMode} onClick={onClick}>
                 {labelName}
             </Button>
         );
     }
-}
 
-export default connect(mapStateToProps, mapDispatchToProps)(MainToolbar);
+    const [mapdataFileName, setMapdataFileName] = useState<string>("wwamap.dat");
+    const dispatch = useDispatch();
+
+    const currentEditMode = useSelector(state => state.map.editMode);
+    const currentPos = useSelector(state => state.map.currentPos);
+
+    const isGridShown = useSelector(state => state.map.showGrid);
+    const isInfoPanelOpened = useSelector(state => state.info.isOpened);
+
+    return (
+        <div>
+            <List horizontal>
+                <List.Item>
+                    <Button onClick={() => createNewMapdata()}>
+                        <Icon name="file" />
+                    </Button>
+                </List.Item>
+                <List.Item>
+                    <Input
+                        action={{
+                            icon: "folder open",
+                            onClick: openMapdata
+                        }}
+                        type="text"
+                        value={mapdataFileName}
+                        onChange={onFileNameChange}
+                    />
+                </List.Item>
+                <List.Item>
+                    <Button onClick={() => saveMapdata()}>
+                        <Icon name="save" />
+                    </Button>
+                </List.Item>
+                <List.Item>
+                    <Button.Group basic>
+                        <EditModeButton editMode={EditMode.PUT_MAP} labelName={"背景パーツ設置"} />
+                        <EditModeButton editMode={EditMode.PUT_OBJECT} labelName={"物体パーツ設置"} />
+                        <EditModeButton editMode={EditMode.EDIT_MAP} labelName={"背景パーツ編集"} />
+                        <EditModeButton editMode={EditMode.EDIT_OBJECT} labelName={"物体パーツ編集"} />
+                        <EditModeButton editMode={EditMode.DELETE_OBJECT} labelName={"物体パーツ削除"} />
+                    </Button.Group>
+                </List.Item>
+                {currentPos !== undefined &&
+                    <List.Item>
+                        <Label.Group>
+                            <Label>
+                                X
+                                <Label.Detail>{currentPos.chipX}</Label.Detail>
+                            </Label>
+                            <Label>
+                                Y
+                                <Label.Detail>{currentPos.chipY}</Label.Detail>
+                            </Label>
+                        </Label.Group>
+                    </List.Item>
+                }
+                <List.Item>
+                    <Button onClick={toggleGrid} active={isGridShown}>
+                        <Icon name="grid layout" />
+                    </Button>
+                    <Button onClick={toggleInfoPanel} active={isInfoPanelOpened}>
+                        <Icon name="edit" />
+                    </Button>
+                </List.Item>
+            </List>
+        </div>
+    );
+};
+
+export default MainToolbar;
