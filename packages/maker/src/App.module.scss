@@ -27,7 +27,8 @@
 .infoPanel {
     background-color: #fff;
     grid-area: info;
-    width: 300px;
+    // (メッセージ入力の文字数分の幅) + (メッセージ入力の余白) + メッセージ入力の枠 + (インフォパネルの余白) + インフォパネルの枠
+    width: (16 * 16) + (14 * 2) + 2 + (14 * 2) + 2 + px;
     overflow-x: hidden; // Segment や Menu のはみ出し対策
     overflow-y: auto;
 
