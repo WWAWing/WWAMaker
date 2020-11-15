@@ -4,7 +4,7 @@
     display: grid;
     grid-template:
           "toolbar toolbar   toolbar" 60px
-          "map     partslist info"    1fr
+          "map     partslist info"    calc(100% - 60px)
         / 1fr      auto      auto;
     height: 100vh;
     width: 100vw;
@@ -20,16 +20,8 @@
     text-align: left;
 }
 
-.partsListWrapper {
-    grid-area: partslist;
-    position: relative;
-    width: 410px;
-}
-
 .partsList {
-    position: absolute;
-    top: 0;
-    left: 0;
+    grid-area: partslist;
 }
 
 .infoPanel {

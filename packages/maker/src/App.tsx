@@ -45,9 +45,7 @@ class App extends React.Component<StateProps> {
                 <div className={styles.map}>
                     <MapEdit></MapEdit>
                 </div>
-                <div className={styles.partsListWrapper}>
-                    <PartsSelect className={styles.partsList} />
-                </div>
+                <PartsSelect className={styles.partsList} />
                 <div className={this.getInfoPanelClassName()}>
                     <InfoPanel></InfoPanel>
                 </div>
