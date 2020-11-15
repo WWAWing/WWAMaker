@@ -1,16 +1,10 @@
 import React from "react";
 import { PartsType } from "../../classes/WWAData";
-import { RelativeValue } from "../../common/convertRelativeValue";
+import { AppearPartsItem } from "./utils";
 import WWAConsts from "../../classes/WWAConsts";
+import { InputChangeFunctionWithIndex } from "./utils";
 import { Form, Dropdown } from "semantic-ui-react";
 import { CoordInput } from "./EditFormUtils";
-
-/**
- * 指定位置にパーツを出現の各項目を表した型です。
- */
-export type AppearPartsItem = { number: number, chipX: RelativeValue, chipY: RelativeValue, type: PartsType };
-
-export type InputChangeFunctionWithIndex = (value: string, index: number) => void;
 
 /**
  * パーツ種類のドロップダウンで使用するオプション値です。
@@ -29,6 +23,7 @@ const PartsTypeOptions = [
  * 指定位置にパーツを出現の1パーツ分の項目です。
  * @param props 
  * @todo onChange の処理内容を正しく整える
+ * @todo 参照ボタンを実装する
  */
 const PartsAppearInputItem: React.FC<{
     item: AppearPartsItem,
@@ -42,27 +37,29 @@ const PartsAppearInputItem: React.FC<{
         <>
             <Form.Group>
                 <Form.Input
-                    width={8}
+                    width={11}
                     type="number"
                     min={0}
                     max={props.partsIDMax}
-                    action={(
-                        <Dropdown
-                            button
-                            basic
-                            options={PartsTypeOptions}
-                            value={type.toString()}
-                            onChange={(event, data) => {
-                                props.onChange(data.value as string, props.index + WWAConsts.REL_ATR_APPERANCE_TYPE);
-                            }}
-                        />
-                    )}
+                    action
                     actionPosition="left"
                     value={number}
                     onChange={(event, data) => {
                         props.onChange(data.value as string, props.index + WWAConsts.REL_ATR_APPERANCE_ID)
                     }}
-                />
+                >
+                    <Dropdown
+                        button
+                        basic
+                        options={PartsTypeOptions}
+                        value={type.toString()}
+                        onChange={(event, data) => {
+                            props.onChange(data.value as string, props.index + WWAConsts.REL_ATR_APPERANCE_TYPE);
+                        }}
+                    />
+                    <input />
+                </Form.Input>
+                <Form.Button width={5}>参照</Form.Button>
             </Form.Group>
             <Form.Group>
                 <CoordInput
