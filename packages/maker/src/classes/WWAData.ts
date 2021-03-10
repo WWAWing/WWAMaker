@@ -54,6 +54,7 @@ export const defaultWWAData: WWAData = {
     objPartsMax: 100,
 
     isOldMap: false,
+    isOldMove: false,
 
     statusEnergyMax: 0,
     statusEnergy: 0,
