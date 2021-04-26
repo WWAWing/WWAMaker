@@ -8,6 +8,7 @@ import SplitPane from 'react-split-pane';
 import './common/SplitPane.scss';
 import { connect, MapStateToProps } from 'react-redux';
 import { StoreType } from './State';
+import NotificationView from './notification/NotificationView';
 
 interface StateProps {
     isOpened: boolean
@@ -39,20 +40,23 @@ class App extends React.Component<StateProps> {
 
     public render() {
         return (
-            <div className={styles.app}>
-                <div className={styles.mainToolbar}>
-                    <MainToolbar></MainToolbar>
+            <>
+                <NotificationView />
+                <div className={styles.app}>
+                    <div className={styles.mainToolbar}>
+                        <MainToolbar></MainToolbar>
+                    </div>
+                    <div className={styles.editArea}>
+                        <SplitPane split="horizontal" defaultSize={300} primary="second">
+                            <MapEdit></MapEdit>
+                            <PartsSelect></PartsSelect>
+                        </SplitPane>
+                    </div>
+                    <div className={this.getInfoPanelClassName()}>
+                        <InfoPanel></InfoPanel>
+                    </div>
                 </div>
-                <div className={styles.editArea}>
-                    <SplitPane split="horizontal" defaultSize={300} primary="second">
-                        <MapEdit></MapEdit>
-                        <PartsSelect></PartsSelect>
-                    </SplitPane>
-                </div>
-                <div className={this.getInfoPanelClassName()}>
-                    <InfoPanel></InfoPanel>
-                </div>
-            </div>
+            </>
         );
     }
 }
