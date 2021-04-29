@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadMapdata } from './load/LoadStates';
 import { setEditMode as setEditModeAction, EditMode, toggleGrid as toggleGridAction } from './map/MapStates';
-import { Input, Button, Label, Icon, List } from 'semantic-ui-react';
+import { Input, Button, Label, Icon, List, SemanticICONS, Popup } from 'semantic-ui-react';
 import { toggleInfoPanel as toggleInfoPanelAction } from './info/InfoPanelState';
 import createNewMapdata from './common/createNewMapdata';
 import saveMapdata from './common/saveMapdata';
@@ -34,14 +34,22 @@ const MainToolbar: React.FC = () => {
     /**
      * 編集モードを変更する各ボタンのコンポーネントです。
      */
-    const EditModeButton: React.FC<{ editMode: EditMode, labelName: string }> = ({ editMode, labelName }) => {
+    const EditModeButton: React.FC<{ editMode: EditMode, primaryIcon: SemanticICONS, secondaryIcon: SemanticICONS, title: string }> = ({ editMode, primaryIcon, secondaryIcon, title }) => {
         const onClick = () => {
             setEditMode(editMode);
         };
         return (
-            <Button active={editMode === currentEditMode} onClick={onClick}>
-                {labelName}
-            </Button>
+            <Popup
+                content={title}
+                trigger={
+                    <Button active={editMode === currentEditMode} onClick={onClick}>
+                        <div>
+                            <Icon name={primaryIcon} />
+                            <Icon name={secondaryIcon} />
+                        </div>
+                    </Button>
+                }
+            />
         );
     }
 
@@ -79,12 +87,12 @@ const MainToolbar: React.FC = () => {
                     </Button>
                 </List.Item>
                 <List.Item>
-                    <Button.Group basic>
-                        <EditModeButton editMode={EditMode.PUT_MAP} labelName={"背景パーツ設置"} />
-                        <EditModeButton editMode={EditMode.PUT_OBJECT} labelName={"物体パーツ設置"} />
-                        <EditModeButton editMode={EditMode.EDIT_MAP} labelName={"背景パーツ編集"} />
-                        <EditModeButton editMode={EditMode.EDIT_OBJECT} labelName={"物体パーツ編集"} />
-                        <EditModeButton editMode={EditMode.DELETE_OBJECT} labelName={"物体パーツ削除"} />
+                    <Button.Group>
+                        <EditModeButton editMode={EditMode.PUT_MAP} primaryIcon={'tree'} secondaryIcon={'arrow down'} title={"背景パーツ設置"} />
+                        <EditModeButton editMode={EditMode.PUT_OBJECT} primaryIcon={'user'} secondaryIcon={'arrow down'} title={"物体パーツ設置"} />
+                        <EditModeButton editMode={EditMode.EDIT_MAP} primaryIcon={'tree'} secondaryIcon={'pencil'} title={"背景パーツ編集"} />
+                        <EditModeButton editMode={EditMode.EDIT_OBJECT} primaryIcon={'user'} secondaryIcon={'pencil'} title={"物体パーツ編集"} />
+                        <EditModeButton editMode={EditMode.DELETE_OBJECT} primaryIcon={'user'} secondaryIcon={'remove'} title={"物体パーツ削除"} />
                     </Button.Group>
                 </List.Item>
                 {currentPos !== undefined &&

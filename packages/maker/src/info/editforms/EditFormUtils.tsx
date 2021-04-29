@@ -5,8 +5,12 @@ import { Input, Dropdown, DropdownItemProps, Form, TextArea, StrictFormFieldProp
 import { RelativeValue, convertDataValueFromRelativeCoord, convertRelativeValueFromStatus, convertDataValueFromRelativeStatus } from "../../common/convertRelativeValue";
 import { useSelector } from "react-redux";
 
-// このファイルはパーツ編集画面で頻繁に使用されるテキストボックスやセレクトボックスなどをまとめたコンポーネント集です。
-// 指定位置にパーツを出現 については、 PartsAppearInput からどうぞ。
+/**
+ * NOTE:
+ * このファイルは utils ディレクトリに移行します。
+ * utils ディレクトリでは、1コンポーネント1ファイルの構成としています。
+ * 型定義については utils/index.ts で定義していますが、定義場所はまだ仮の段階のため、後で移動する可能性があります。
+ */
 
 /**
  * テキストボックスやセレクトボックスで変更が生じた際に実行するコールバック関数の型です。

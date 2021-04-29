@@ -88,7 +88,7 @@ class InfoPanel extends React.Component<Props> {
 
         return (
             <Segment attached>
-                <Tab menu={{ attached: "top" }} panes={panes} />
+                <Tab menu={{ attached: "top", vertical: true }} grid={{ paneWidth: 16, tabWidth: 16 }} panes={panes} />
             </Segment>
         );
     }

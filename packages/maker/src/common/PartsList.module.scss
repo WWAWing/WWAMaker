@@ -1,3 +1,6 @@
+// TODO: 共通のスタイルシート変数を集めた SCSS ファイルを作成しておく
+$chip-size: 40px;
+
 .partsList {
     background-color: rgb(158, 158, 158);
     overflow-y: scroll;
@@ -5,4 +8,8 @@
      * @todo 単純に済ませるために line-height: 0 としているが、問題があったら flex や grid に変更しておく。
      */
     line-height: 0;
+}
+
+.partsListContainer {
+    width: $chip-size * 10;
 }
