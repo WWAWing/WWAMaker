@@ -1,3 +1,6 @@
+// TODO: 共通のスタイルシート変数を集めた SCSS ファイルを作成しておく
+$chip-size: 40px;
+
 .partsList {
     background-color: rgb(158, 158, 158);
     overflow-y: scroll;
@@ -8,5 +11,5 @@
 }
 
 .partsListContainer {
-    width: 400px;
+    width: $chip-size * 10;
 }
