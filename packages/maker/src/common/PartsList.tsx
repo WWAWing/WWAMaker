@@ -30,7 +30,9 @@ const PartsList: React.FC<Props> = props => {
 
     return (
         <div className={styles.partsList}>
-            {props.attribute.map(renderPartsChip)}
+            <div className={styles.partsListContainer}>
+                {props.attribute.map(renderPartsChip)}
+            </div>
         </div>
     );
 
