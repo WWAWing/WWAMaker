@@ -1,0 +1,20 @@
+{
+  "name": "wwamaker-app",
+  "version": "0.0.1",
+  "description": "WWA Making Tool Electron App",
+  "main": "lib/main/index.ts",
+  "author": "WWA Wing Team",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "electron": "electron ./lib/main/index.js",
+    "build": "shx rm -rf lib && tsc -p ."
+  },
+  "dependencies": {
+    "shx": "^0.3.2",
+    "typescript": "^3.4.5"
+  },
+  "devDependencies": {
+    "electron": "^10.1.1"
+  }
+}

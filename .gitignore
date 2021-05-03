@@ -3,6 +3,9 @@
 # dependencies
 node_modules
 
+# dist
+packages/*/lib
+
 # misc
 .DS_Store
 .env.local

@@ -41,6 +41,7 @@ yarn start
 ## 構造について
 このリポジトリでは、 monorepo による複数パッケージの構成を取っています。
 
+- **app** ... Electron メインプロセス
 - **assets** ... アセットファイル (現在未使用)
 - **image-decorder** ... イメージデコーダー (base64 や objectURL などの画像の文字列データを `HTMLImageElement` といったイメージ要素に変換する Hooks)
 - **maker** ... WWA Maker 本体
