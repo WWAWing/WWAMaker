@@ -2,12 +2,13 @@
   "name": "wwamaker-app",
   "version": "0.0.1",
   "description": "WWA Making Tool Electron App",
-  "main": "lib/main/index.ts",
+  "main": "lib/main/index.js",
   "author": "WWA Wing Team",
   "license": "MIT",
   "private": true,
   "scripts": {
     "electron": "electron ./lib/main/index.js",
+    "start": "electron-webpack dev",
     "build": "shx rm -rf lib && tsc -p ."
   },
   "dependencies": {
@@ -15,6 +16,8 @@
     "typescript": "^3.4.5"
   },
   "devDependencies": {
-    "electron": "^10.1.1"
+    "electron": "^10.1.1",
+    "electron-webpack": "2.8.2",
+    "electron-webpack-ts": "4.0.1"
   }
 }

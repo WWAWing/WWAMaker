@@ -1,0 +1,13 @@
+{
+
+    "main": {
+        "sourceDirectory": "src/main"
+    },
+
+    "renderer": {
+        "sourceDirectory": "../maker/src",
+        "template": "../maker/public",
+        "webpackConfig": "../maker/config/webpack.config.js"
+    }
+
+}

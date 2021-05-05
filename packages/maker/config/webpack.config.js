@@ -130,7 +130,6 @@ module.exports = function(webpackEnv) {
 
   return {
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
-    target: 'electron-renderer',
     // Stop compilation early in production
     bail: isEnvProduction,
     devtool: isEnvProduction
