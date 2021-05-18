@@ -1,13 +1,12 @@
 // Based on https://github.com/electron/electron-quick-start-typescript
 
 {
-  // FIXME: 内部パッケージのビルドで型の未定義や重複定義などのコンパイルエラーが100以上発生する
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
     "rootDir": "./src",
     "outDir": "./lib",
     "baseUrl": ".",
-    "noImplicitAny": true,
     "sourceMap": true,
     "paths": {
       "*": ["node_modules/*"]
