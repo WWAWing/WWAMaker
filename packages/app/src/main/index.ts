@@ -1,4 +1,5 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, Menu } from 'electron';
+import makeMenu from './makeMenu';
 
 function createWindow () {
     // ブラウザウインドウを作成
@@ -16,6 +17,8 @@ function createWindow () {
 
     // そしてこのアプリの index.html をロード
     win.loadURL(url);
+
+    Menu.setApplicationMenu(makeMenu());
 }
 
 app.whenReady().then(createWindow);
