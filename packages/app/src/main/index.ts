@@ -1,5 +1,5 @@
-import { app, BrowserWindow, Menu } from 'electron';
 import makeMenu from './makeMenu';
+import { app, BrowserWindow, Menu } from 'electron';
 
 function createWindow () {
     // ブラウザウインドウを作成

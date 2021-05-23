@@ -1,4 +1,5 @@
-import { App, dialog, Menu, MenuItemConstructorOptions } from 'electron';
+import { dialog, Menu, MenuItemConstructorOptions } from 'electron';
+import * as Events from './events';
 
 function makeMenu(): Menu {
 
@@ -14,10 +15,7 @@ function makeMenu(): Menu {
             submenu: [
                 { label: '新規作成' },
                 // TODO: 別の関数に移す
-                { label: '開く', click: () => dialog.showOpenDialogSync({
-                    title: 'マップデータを開く',
-                    filters: FILE_FILTERS
-                }) },
+                { label: '開く', click: Events.open },
                 { label: '上書き保存' },
                 // TODO: 別の関数に移す
                 { label: '名前を付けて保存', click: () => dialog.showSaveDialogSync({

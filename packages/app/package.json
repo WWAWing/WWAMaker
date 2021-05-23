@@ -13,7 +13,11 @@
   },
   "dependencies": {
     "shx": "^0.3.2",
-    "typescript": "^3.4.5"
+    "typescript": "^3.4.5",
+    "@wwawing/common-interface": "^3.5.9-module-test.0",
+    "@wwawing/event-emitter": "^3.5.9-module-test.0",
+    "@wwawing/loader": "^3.5.9-module-test.0",
+    "wwamaker-saver": "^0.0.1"
   },
   "devDependencies": {
     "electron": "^10.1.1",
