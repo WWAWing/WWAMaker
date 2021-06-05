@@ -41,6 +41,8 @@ export function open() {
 
         loader.requestAndLoadMapData();
     }).then(wwaData => {
+        // DEBUG: 読み込み完了後の WWA マップデータの中身
+        console.log(wwaData);
         ipcMain.handle('open-wwadata-complete', event => {
             // DEBUG: 読み込み完了後のイベントデータと WWA マップデータの中身
             console.log(wwaData, event);

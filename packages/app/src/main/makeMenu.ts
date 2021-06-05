@@ -48,6 +48,13 @@ function makeMenu(): Menu {
             submenu: [
 
             ]
+        }, {
+            label: '開発',
+            submenu: [
+                { role: 'reload' },
+                { role: 'forceReload' },
+                { role: 'toggleDevTools' }
+            ] as MenuItemConstructorOptions[]
         }
     ];
     

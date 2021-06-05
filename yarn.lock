@@ -2157,6 +2157,11 @@
   resolved "https://registry.yarnpkg.com/@wwawing/event-emitter/-/event-emitter-3.5.7.tgz#08d11e81d9045e48a8da7b87d5646d0c345bc2e9"
   integrity sha512-wv2MmvNd+n3JnI6INK5+2u3qrAGO4FJI4JMgTsNvbJgJ0vjZU9XHcTBaNtaMW1ZAY66hLWw0Z35+50DqIvspqw==
 
+"@wwawing/event-emitter@^3.5.9":
+  version "3.5.9"
+  resolved "https://registry.yarnpkg.com/@wwawing/event-emitter/-/event-emitter-3.5.9.tgz#e0784a521c20ddc5033ab2ddc326827eb6e99ec1"
+  integrity sha512-Y/ScmeQBKSN4xLE0R7DRfpqZntCO9MsUvJPfBwb9hqybVVD/8XG3C0+rcP0Jq3xtdfbRj6nytxW1M2QFsCjhYQ==
+
 "@wwawing/event-emitter@^3.5.9-module-test.1":
   version "3.5.9-module-test.1"
   resolved "https://registry.yarnpkg.com/@wwawing/event-emitter/-/event-emitter-3.5.9-module-test.1.tgz#60d025b48a76e49f87600d0bb5c4019f7f594fd3"
@@ -2169,12 +2174,12 @@
   dependencies:
     "@wwawing/event-emitter" "^3.5.7"
 
-"@wwawing/loader@^3.5.9-module-test.1":
-  version "3.5.9-module-test.1"
-  resolved "https://registry.yarnpkg.com/@wwawing/loader/-/loader-3.5.9-module-test.1.tgz#ef8dd3ad3ea7982be7abf3c98bd36773a80a3bb8"
-  integrity sha512-Zu9uMrOX8rwAFI7bBoiA9y50xI2cL9f95dA6huTlwgW/GLkknQN+0mZzPPDRX+GShqKcD6YBp+f2mMeYFG5lRQ==
+"@wwawing/loader@^3.5.11-loader-node-impl.0":
+  version "3.5.11-loader-node-impl.0"
+  resolved "https://registry.yarnpkg.com/@wwawing/loader/-/loader-3.5.11-loader-node-impl.0.tgz#012e94df72dbad59ba653fd90f64e6a23f3549f0"
+  integrity sha512-UEO0iapkB6SG1UWmKa64ga24itYsah38AV30cIQ52myJ39+i2cH4m5fJ/kk8KwlGqC1Ykn6DqZm++cy+2NhN8g==
   dependencies:
-    "@wwawing/event-emitter" "^3.5.9-module-test.1"
+    "@wwawing/event-emitter" "^3.5.9"
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
