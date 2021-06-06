@@ -1,7 +1,7 @@
-import { dialog, Menu, MenuItemConstructorOptions } from 'electron';
+import { BrowserWindow, dialog, Menu, MenuItemConstructorOptions } from 'electron';
 import * as Events from './events';
 
-function makeMenu(): Menu {
+function makeMenu(win: BrowserWindow): Menu {
 
     const FILE_FILTERS = [
         { name: 'WWA マップデータ', extensions: ['dat'] },
@@ -15,7 +15,7 @@ function makeMenu(): Menu {
             submenu: [
                 { label: '新規作成' },
                 // TODO: 別の関数に移す
-                { label: '開く', click: Events.open },
+                { label: '開く', click: () => Events.open(win) },
                 { label: '上書き保存' },
                 // TODO: 別の関数に移す
                 { label: '名前を付けて保存', click: () => dialog.showSaveDialogSync({

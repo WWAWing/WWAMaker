@@ -86,6 +86,9 @@
     "wwamaker-image-decorder": "^0.0.1",
     "wwamaker-saver": "^0.0.1"
   },
+  "devDependencies": {
+    "electron": "^10.1.1"
+  },
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",

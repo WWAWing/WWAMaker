@@ -7,7 +7,8 @@ function createWindow () {
         width: 800,
         height: 600,
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: true,
+            enableRemoteModule: true
         }
     });
 
@@ -18,7 +19,7 @@ function createWindow () {
     // そしてこのアプリの index.html をロード
     win.loadURL(url);
 
-    Menu.setApplicationMenu(makeMenu());
+    Menu.setApplicationMenu(makeMenu(win));
 }
 
 app.whenReady().then(createWindow);
