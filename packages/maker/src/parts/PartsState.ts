@@ -1,5 +1,4 @@
-import actionCreatorFactory from "typescript-fsa";
-import { reducerWithInitialState, Handler } from "typescript-fsa-reducers";
+import { CaseReducer, createAction, createReducer } from "@reduxjs/toolkit";
 
 /**
  * Parts モジュールのステートについて
@@ -12,15 +11,20 @@ export interface PartsState {
     number: number
 }
 
-const actionCreator = actionCreatorFactory();
+export type PartsSelectPayload = {
+    number: number
+};
 
 /**
  * 指定したパーツを選択します。
  *     物体パーツと背景パーツで共通のため、アクションクリエイターを作るメソッドを予め用意しておきます。
  */
-const selectPartsCreator = (name: string) => actionCreator<{ number: number }>(`SELECT_${name}_PARTS`);
-export const selectObjParts = selectPartsCreator("OBJECT");
-export const selectMapParts = selectPartsCreator("MAP");
+const createSelectPartsAction = (name: string) => {
+    return createAction<PartsSelectPayload>(`SELECT_${name}_PARTS`);
+}
+
+export const selectObjParts = createSelectPartsAction("OBJECT");
+export const selectMapParts = createSelectPartsAction("MAP");
 
 export const INITIAL_STATE: PartsState = {
     number: 0
@@ -31,13 +35,15 @@ export const INITIAL_STATE: PartsState = {
  * @param state 
  * @param param1 
  */
-const selectPartsReducer: Handler<PartsState, PartsState, { number: number }> = (state, { number }) => ({
+const selectPartsReducer: CaseReducer<PartsState, { payload: PartsSelectPayload, type: string }> = (state, action) => ({
     ...state,
-    number: number
+    number: action.payload.number
 });
 
-export const ObjectPartsReducer = reducerWithInitialState(INITIAL_STATE)
-    .case(selectObjParts, selectPartsReducer)
+export const ObjectPartsReducer = createReducer(INITIAL_STATE, builder =>
+    builder.addCase(selectObjParts, selectPartsReducer)
+);
 
-export const MapPartsReducer = reducerWithInitialState(INITIAL_STATE)
-    .case(selectMapParts, selectPartsReducer)
+export const MapPartsReducer = createReducer(INITIAL_STATE, builder =>
+    builder.addCase(selectMapParts, selectPartsReducer)
+);

@@ -1,5 +1,4 @@
-import actionCreatorFactory from "typescript-fsa"
-import { reducerWithInitialState } from "typescript-fsa-reducers";
+import { createAction, createReducer } from "@reduxjs/toolkit";
 
 export enum EditMode {
     PUT_MAP = 1,
@@ -33,30 +32,31 @@ export const INITIAL_STATE: MapState = {
     showGrid: true
 };
 
-const actionCreator = actionCreatorFactory();
 /**
  * 編集モードを変更します。
  */
-export const setEditMode = actionCreator<{ editMode: EditMode }>("SET_EDIT_MODE");
+export const setEditMode = createAction<{ editMode: EditMode }>("SET_EDIT_MODE");
 /**
  * 現在のマウス位置を変更します。
  */
-export const setCurrentPos = actionCreator<{ chipX: number, chipY: number }>("SET_CURRENT_POS");
+export const setCurrentPos = createAction<{ chipX: number, chipY: number }>("SET_CURRENT_POS");
 /**
  * グリッドの表示を切り替えます。
  */
-export const toggleGrid = actionCreator("TOGGLE_GRID");
+export const toggleGrid = createAction("TOGGLE_GRID");
 
-export const MapReducer = reducerWithInitialState(INITIAL_STATE)
-    .case(setEditMode, (state, payload) => Object.assign(state, {
-        editMode: payload.editMode
-    }))
-    .case(setCurrentPos, (state, payload) => Object.assign(state, {
-        currentPos: {
-            chipX: payload.chipX,
-            chipY: payload.chipY
-        }
-    }))
-    .case(toggleGrid, state => Object.assign(state, {
-        showGrid: !state.showGrid
-    }))
+export const MapReducer = createReducer(INITIAL_STATE, builder => {
+    builder
+        .addCase(setEditMode, (state, { payload }) => Object.assign(state, {
+            editMode: payload.editMode
+        }))
+        .addCase(setCurrentPos, (state, { payload }) => Object.assign(state, {
+            currentPos: {
+                chipX: payload.chipX,
+                chipY: payload.chipY
+            }
+        }))
+        .addCase(toggleGrid, state => Object.assign(state, {
+            showGrid: !state.showGrid
+        }))
+});
