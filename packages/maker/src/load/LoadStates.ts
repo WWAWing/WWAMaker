@@ -78,7 +78,12 @@ export const loadImage = actionCreatorAsync<LoadImageState, void, LoaderError>(
  *     typescript-fsa-redux-thunk では、 開始→エラー/完了 しかアクションを起こすことができません。
  *     このメソッドは、その「開始」と「エラー/完了」の間で発生する途中経過に対応したアクションになります。
  */
-const setLoadingProgress = actionCreator<Progress>("SET_LOADING_PROGRESS");
+export const setLoadingProgress = actionCreator<Progress>("SET_LOADING_PROGRESS");
+
+/**
+ * ローディング状態をエラー状態に差し替えます。
+ */
+export const setLoadingError = actionCreator<LoaderError>("SET_LOADING_ERROR");
 
 export const INITIAL_STATE: LoadState = {
     progress: null,
@@ -89,6 +94,10 @@ export const LoadReducer = reducerWithInitialState(INITIAL_STATE)
     .case(setLoadingProgress, (state, progress) => ({
         ...state,
         progress: progress
+    }))
+    .case(setLoadingError, (state, error) => ({
+        ...state,
+        error: error
     }))
     .case(loadMapdata.async.failed, (state, params) => ({
         ...state,

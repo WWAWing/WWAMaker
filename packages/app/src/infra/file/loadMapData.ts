@@ -1,13 +1,17 @@
 import { WWAData } from '@wwawing/common-interface';
 import { NodeEventEmitter } from '@wwawing/event-emitter';
-import { WWALoader } from '@wwawing/loader';
-import { ipcMain } from 'electron';
+import { LoaderError, LoaderProgress, WWALoader } from '@wwawing/loader';
 
 /**
  * ファイルを読み込みます。
  * @param filePath ファイルのPath
  */
-export default function open(filePath: string, onCompleteCallback: (wwaData: WWAData) => void) {
+export default function open(
+    filePath: string,
+    onProgressCallback: (progress: LoaderProgress) => void,
+    onErrorCallback: (error: LoaderError) => void,
+    onCompleteCallback: (wwaData: WWAData) => void
+) {
     
     // FROM wwamaker-maker/src/loac/LoadPromises.ts
     new Promise<WWAData>((resolve, reject) => {
@@ -21,13 +25,8 @@ export default function open(filePath: string, onCompleteCallback: (wwaData: WWA
             resolve(wwaMap);
         });
 
-        const handleProgress = emitter.addListener("progress", progress => {
-            // TODO: IPC 通信をつける
-        });
-
-        const handleError = emitter.addListener("error", error => {
-            reject(error);
-        });
+        const handleProgress = emitter.addListener("progress", onProgressCallback);
+        const handleError = emitter.addListener("error", onErrorCallback);
 
         loader.requestAndLoadMapData();
     })
