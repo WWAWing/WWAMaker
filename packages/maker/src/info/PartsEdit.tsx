@@ -142,11 +142,11 @@ const PartsEdit: React.FC = () => {
 
     const handleEditButtonClick = () => {
         handleSubmit();
-        dispatch(switchInfoPanel({ mode: "GENERAL" }));
+        dispatch(switchInfoPanel("GENERAL"));
     };
 
     const handleCancelButtonClick = () => {
-        dispatch(switchInfoPanel({ mode: "GENERAL" }));
+        dispatch(switchInfoPanel("GENERAL"));
     };
 
     /**

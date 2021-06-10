@@ -11,10 +11,6 @@ export interface PartsState {
     number: number
 }
 
-export type PartsSelectPayload = {
-    number: number
-};
-
 /**
  * Redux の Slice を作成します。
  * 物体パーツと背景パーツで共通のため、アクションクリエイターを作るメソッドを予め用意しておきます。
@@ -31,8 +27,8 @@ export const makePartsSlice = (name: string) => {
             /**
              * 指定したパーツを選択します。
              */
-            selectParts(state, action: PayloadAction<PartsSelectPayload>) {
-                state.number = action.payload.number;
+            selectParts(state, action: PayloadAction<number>) {
+                state.number = action.payload;
             }
         }
     });
@@ -40,8 +36,8 @@ export const makePartsSlice = (name: string) => {
 
 export const objectPartsSlice = makePartsSlice("object");
 export const objectPartsReducer = objectPartsSlice.reducer;
-export const objectselectParts = objectPartsSlice.actions.selectParts;
+export const selectObjectParts = objectPartsSlice.actions.selectParts;
 
 export const mapPartsSlice = makePartsSlice("map");
 export const mapPartsReducer = mapPartsSlice.reducer;
-export const mapselectParts = mapPartsSlice.actions.selectParts;
+export const selectMapParts = mapPartsSlice.actions.selectParts;

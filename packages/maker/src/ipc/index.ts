@@ -16,6 +16,7 @@ ipcRenderer.on('open-wwadata-error', (event, error: { loaderError: LoaderError }
 ipcRenderer.on('open-wwadata-complete', (event, data: { filePath: String, data: WWAData } ) => {
     Store.dispatch(closeMapdata());
     Store.dispatch(setMapdata(data.data));
-    const imagePath = data.filePath.substring(0, data.filePath.lastIndexOf("/")) + data.data.charCGName;
+    const imagePath = data.filePath.substring(0, data.filePath.lastIndexOf("/")) + "/" + data.data.mapCGName;
     Store.dispatch(loadImage(imagePath));
+    // FIXME 何も起こらない
 });

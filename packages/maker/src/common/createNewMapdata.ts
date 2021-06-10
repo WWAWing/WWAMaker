@@ -3,10 +3,7 @@ import { switchInfoPanel } from "../info/InfoPanelState";
 import { defaultWWAData } from "../classes/WWAData";
 
 export default function createNewMapdata() {
-    Store.dispatch(setMapdata({
-        wwaData: defaultWWAData
-    }));
-    Store.dispatch(switchInfoPanel({
-        mode: "GENERAL"
-    }));
+    // TODO: もしかしたら Electron メインプロセスに移るかもしれない
+    Store.dispatch(setMapdata(defaultWWAData));
+    Store.dispatch(switchInfoPanel("GENERAL"));
 }
