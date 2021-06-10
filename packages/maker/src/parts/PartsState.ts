@@ -1,4 +1,4 @@
-import { CaseReducer, createAction, createReducer } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 /**
  * Parts モジュールのステートについて
@@ -16,34 +16,32 @@ export type PartsSelectPayload = {
 };
 
 /**
- * 指定したパーツを選択します。
- *     物体パーツと背景パーツで共通のため、アクションクリエイターを作るメソッドを予め用意しておきます。
+ * Redux の Slice を作成します。
+ * 物体パーツと背景パーツで共通のため、アクションクリエイターを作るメソッドを予め用意しておきます。
+ * @param name 物体なら "object", 背景なら "map"
+ * @returns Redux の Slice
  */
-const createSelectPartsAction = (name: string) => {
-    return createAction<PartsSelectPayload>(`SELECT_${name}_PARTS`);
-}
+export const makePartsSlice = (name: string) => {
+    return createSlice({
+        name: `${name}parts`,
+        initialState: {
+            number: 0
+        } as PartsState,
+        reducers: {
+            /**
+             * 指定したパーツを選択します。
+             */
+            selectParts(state, action: PayloadAction<PartsSelectPayload>) {
+                state.number = action.payload.number;
+            }
+        }
+    });
+};
 
-export const selectObjParts = createSelectPartsAction("OBJECT");
-export const selectMapParts = createSelectPartsAction("MAP");
+export const objectPartsSlice = makePartsSlice("object");
+export const objectPartsReducer = objectPartsSlice.reducer;
+export const objectselectParts = objectPartsSlice.actions.selectParts;
 
-export const INITIAL_STATE: PartsState = {
-    number: 0
-}
-
-/**
- * パーツ選択に対応した Reducer です。
- * @param state 
- * @param param1 
- */
-const selectPartsReducer: CaseReducer<PartsState, { payload: PartsSelectPayload, type: string }> = (state, action) => ({
-    ...state,
-    number: action.payload.number
-});
-
-export const ObjectPartsReducer = createReducer(INITIAL_STATE, builder =>
-    builder.addCase(selectObjParts, selectPartsReducer)
-);
-
-export const MapPartsReducer = createReducer(INITIAL_STATE, builder =>
-    builder.addCase(selectMapParts, selectPartsReducer)
-);
+export const mapPartsSlice = makePartsSlice("map");
+export const mapPartsReducer = mapPartsSlice.reducer;
+export const mapselectParts = mapPartsSlice.actions.selectParts;

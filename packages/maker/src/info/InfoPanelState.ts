@@ -27,7 +27,7 @@ export const initialState: InfoPanelState = {
     viewMode: 'GENERAL'
 }
 
-export const infoPanelSlice = createSlice({
+const infoPanelSlice = createSlice({
     name: 'infopanel',
     initialState,
     reducers: {
@@ -54,4 +54,4 @@ export const infoPanelSlice = createSlice({
 
 export const { toggleInfoPanel, switchInfoPanel, showPartsEdit } = infoPanelSlice.actions;
 
-export const InfoPanelReducer = infoPanelSlice.reducer;
+export const infoPanelReducer = infoPanelSlice.reducer;

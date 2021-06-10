@@ -1,7 +1,7 @@
-import { LoadState, LoadReducer, INITIAL_STATE as LOAD_INITIAL_STATE } from "./load/LoadStates";
-import { PartsState, INITIAL_STATE as PARTS_INITIAL_STATE, ObjectPartsReducer, MapPartsReducer } from "./parts/PartsState";
-import { MapState, INITIAL_STATE as MAP_INITIAL_STATE, MapReducer } from "./map/MapStates";
-import { InfoPanelState, initialState as INFOPANEL_INITIAL_STATE, InfoPanelReducer } from "./info/InfoPanelState";
+import { LoadState, loadReducer } from "./load/LoadStates";
+import { PartsState, objectPartsReducer, mapPartsReducer } from "./parts/PartsState";
+import { MapState, mapReducer } from "./map/MapStates";
+import { InfoPanelState, infoPanelReducer } from "./info/InfoPanelState";
 import { WWAData } from "@wwawing/common-interface";
 import { wwaDataReducer } from "./wwadata/WWADataState";
 import thunkMiddleware from 'redux-thunk';
@@ -21,20 +21,6 @@ export interface StoreType {
 }
 
 /**
- * StoreType の初期値です。
- * @todo 物体/背景パーツのステートについては別ファイルにまとめておく
- */
-const INITIAL_STATE: StoreType = {
-    load: LOAD_INITIAL_STATE,
-    wwaData: null,
-    map: MAP_INITIAL_STATE,
-    objParts: PARTS_INITIAL_STATE,
-    mapParts: PARTS_INITIAL_STATE,
-    imageUrl: null,
-    info: INFOPANEL_INITIAL_STATE
-}
-
-/**
  * マップデータの情報を設定します。
  */
 export const setMapdata = createAction<WWAData>('OPEN_MAPDATA');
@@ -51,7 +37,10 @@ export const closeMapdata = createAction('CLOSE_MAPDATA');
  * root の Reducer です。
  */
 const rootReducer = createReducer(
-    INITIAL_STATE,
+    {
+        wwaData: null,
+        imageUrl: null
+    } as StoreType,
     builder => builder
         .addCase(setMapdata, (state, action: PayloadAction<WWAData>) => {
             state.wwaData = action.payload;
@@ -73,12 +62,12 @@ const rootReducer = createReducer(
 
 const reducer = {
     ...rootReducer,
-    load: LoadReducer,
+    load: loadReducer,
     wwaData: wwaDataReducer,
-    map: MapReducer,
-    objParts: ObjectPartsReducer,
-    mapParts: MapPartsReducer,
-    info: InfoPanelReducer
+    map: mapReducer,
+    objParts: objectPartsReducer,
+    mapParts: mapPartsReducer,
+    info: infoPanelReducer
 };
 
 /**

@@ -1,5 +1,8 @@
-import { createAction, createReducer, createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+/**
+ * @todo enum から type に変えたい
+ */
 export enum EditMode {
     PUT_MAP = 1,
     PUT_OBJECT = 2,
@@ -26,37 +29,37 @@ export interface MapState {
     showGrid: boolean;
 }
 
-export const INITIAL_STATE: MapState = {
-    editMode: EditMode.PUT_MAP,
-    currentPos: undefined,
-    showGrid: true
-};
-
-/**
- * 編集モードを変更します。
- */
-export const setEditMode = createAction<{ editMode: EditMode }>("SET_EDIT_MODE");
-/**
- * 現在のマウス位置を変更します。
- */
-export const setCurrentPos = createAction<{ chipX: number, chipY: number }>("SET_CURRENT_POS");
-/**
- * グリッドの表示を切り替えます。
- */
-export const toggleGrid = createAction("TOGGLE_GRID");
-
-export const MapReducer = createReducer(INITIAL_STATE, builder => {
-    builder
-        .addCase(setEditMode, (state, { payload }) => Object.assign(state, {
-            editMode: payload.editMode
-        }))
-        .addCase(setCurrentPos, (state, { payload }) => Object.assign(state, {
-            currentPos: {
-                chipX: payload.chipX,
-                chipY: payload.chipY
-            }
-        }))
-        .addCase(toggleGrid, state => Object.assign(state, {
-            showGrid: !state.showGrid
-        }))
+const mapSlice = createSlice({
+    name: 'map',
+    initialState: {
+        editMode: EditMode.PUT_MAP,
+        currentPos: undefined,
+        showGrid: true
+    } as MapState,
+    reducers: {
+        /**
+         * 編集モードを変更します。
+         */
+        setEditMode(state, action: PayloadAction<EditMode>) {
+            state.editMode = action.payload;
+        },
+        /**
+         * 現在のマウス位置を変更します。
+         */
+        setCurrentPos(state, action: PayloadAction<{ chipX: number, chipY: number }>) {
+            state.currentPos = {
+                chipX: action.payload.chipX,
+                chipY: action.payload.chipY
+            };
+        },
+        /**
+         * グリッドの表示を切り替えます。
+         */
+        toggleGrid(state) {
+            state.showGrid = !state.showGrid;
+        }
+    }
 });
+
+export const { setEditMode, setCurrentPos, toggleGrid } = mapSlice.actions;
+export const mapReducer = mapSlice.reducer;

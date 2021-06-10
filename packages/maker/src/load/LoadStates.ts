@@ -61,4 +61,4 @@ const loadSlice = createSlice({
 
 export const { setLoadingProgress, setLoadingError } = loadSlice.actions;
 
-export const LoadReducer = loadSlice.reducer;
+export const loadReducer = loadSlice.reducer;
