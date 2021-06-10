@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loadMapdata } from './load/LoadStates';
 import { setEditMode as setEditModeAction, EditMode, toggleGrid as toggleGridAction } from './map/MapStates';
 import { Input, Button, Label, Icon, List, SemanticICONS, Popup } from 'semantic-ui-react';
 import { toggleInfoPanel as toggleInfoPanelAction } from './info/InfoPanelState';
 import createNewMapdata from './common/createNewMapdata';
 import saveMapdata from './common/saveMapdata';
+import { ipcRenderer } from 'electron/renderer';
 
 const MainToolbar: React.FC = () => {
 
     const openMapdata = () => {
-        dispatch(loadMapdata({
-            mapdataFileName: mapdataFileName
-        }));
+        ipcRenderer.send('open-wwadata', {
+            filePath: mapdataFileName
+        });
     };
 
     const setEditMode = (editMode: EditMode) => {
@@ -24,7 +24,7 @@ const MainToolbar: React.FC = () => {
     };
 
     const toggleInfoPanel = () => {
-        dispatch(toggleInfoPanelAction({}));
+        dispatch(toggleInfoPanelAction());
     };
 
     const onFileNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,15 +1,11 @@
 import { LoadState, LoadReducer, INITIAL_STATE as LOAD_INITIAL_STATE } from "./load/LoadStates";
 import { PartsState, INITIAL_STATE as PARTS_INITIAL_STATE, ObjectPartsReducer, MapPartsReducer } from "./parts/PartsState";
 import { MapState, INITIAL_STATE as MAP_INITIAL_STATE, MapReducer } from "./map/MapStates";
-import { InfoPanelState, INITIAL_STATE as INFOPANEL_INITIAL_STATE, InfoPanelReducer } from "./info/InfoPanelState";
+import { InfoPanelState, initialState as INFOPANEL_INITIAL_STATE, InfoPanelReducer } from "./info/InfoPanelState";
 import { WWAData } from "@wwawing/common-interface";
-import { WWADataReducer } from "./wwadata/WWADataState";
-import { createStore, applyMiddleware } from "redux";
+import { wwaDataReducer } from "./wwadata/WWADataState";
 import thunkMiddleware from 'redux-thunk';
-import { reducerWithInitialState } from "typescript-fsa-reducers";
-import actionCreatorFactory from "typescript-fsa";
-import { composeWithDevTools } from "redux-devtools-extension";
-import adjustWWAData from "./wwadata/adjustWWAData";
+import { configureStore, createAction, createReducer, PayloadAction } from "@reduxjs/toolkit";
 
 /**
  * Store の Type です。
@@ -38,60 +34,62 @@ const INITIAL_STATE: StoreType = {
     info: INFOPANEL_INITIAL_STATE
 }
 
-const actionCreator = actionCreatorFactory();
 /**
  * マップデータの情報を設定します。
  */
-export const setMapdata = actionCreator<{ wwaData: WWAData }>('OPEN_MAPDATA');
+export const setMapdata = createAction<WWAData>('OPEN_MAPDATA');
 /**
  * 画像リソースを設定します。
  */
-export const setImage = actionCreator<{ imageUrl: string }>('OPEN_IMAGE');
+export const setImage = createAction<string>('OPEN_IMAGE');
 /**
  * 開いているマップデータと画像リソースを閉じます。
  */
-export const closeMapdata = actionCreator('CLOSE_MAPDATA');
+export const closeMapdata = createAction('CLOSE_MAPDATA');
 
 /**
  * root の Reducer です。
  */
-const reducer = reducerWithInitialState(INITIAL_STATE)
-    .case(setMapdata, (state, params) => {
-        const newState = Object.assign({}, state);
-        newState.wwaData = adjustWWAData(params.wwaData);
-        return newState;
-    })
-    .case(setImage, (state, params) => {
-        if (state.imageUrl !== null) {
-            URL.revokeObjectURL(state.imageUrl);
-        }
-        return {
-            ...state,
-            imageUrl: params.imageUrl
-        };
-    })
-    .case(closeMapdata, (state) => {
-        if (state.imageUrl !== null) {
-            URL.revokeObjectURL(state.imageUrl);
-        }
-        const newState = Object.assign({}, state);
-        newState.wwaData = null;
-        newState.imageUrl = null;
-        return newState;
-    })
-    .default((state, action) => ({
-        ...state,
-        load: LoadReducer(state.load, action),
-        wwaData: WWADataReducer(state.wwaData, action),
-        map: MapReducer(state.map, action),
-        objParts: ObjectPartsReducer(state.objParts, action),
-        mapParts: MapPartsReducer(state.mapParts, action),
-        info: InfoPanelReducer(state.info, action)
-    }))
-
-export const Store = createStore(
-    reducer,
-    composeWithDevTools(
-        applyMiddleware(thunkMiddleware)
-    )
+const rootReducer = createReducer(
+    INITIAL_STATE,
+    builder => builder
+        .addCase(setMapdata, (state, action: PayloadAction<WWAData>) => {
+            state.wwaData = action.payload;
+        })
+        .addCase(setImage, (state, action: PayloadAction<string>) => {
+            if (state.imageUrl !== null) {
+                URL.revokeObjectURL(state.imageUrl);
+            }
+            state.imageUrl = action.payload;
+        })
+        .addCase(closeMapdata, state => {
+            if (state.imageUrl !== null) {
+                URL.revokeObjectURL(state.imageUrl);
+            }
+            state.wwaData = null;
+            state.imageUrl = null;
+        })
 );
+
+const reducer = {
+    ...rootReducer,
+    load: LoadReducer,
+    wwaData: wwaDataReducer,
+    map: MapReducer,
+    objParts: ObjectPartsReducer,
+    mapParts: MapPartsReducer,
+    info: InfoPanelReducer
+};
+
+/**
+ * @see https://redux-toolkit.js.org/usage/usage-with-typescript
+ */
+export const Store = configureStore({
+    reducer,
+    middleware: getDefaultMiddleware =>
+        getDefaultMiddleware()
+            .prepend(
+                thunkMiddleware
+            ),
+    devTools: process.env.NODE_ENV !== 'production'
+});

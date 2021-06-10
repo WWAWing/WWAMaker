@@ -15,12 +15,7 @@ ipcRenderer.on('open-wwadata-error', (event, error: { loaderError: LoaderError }
 
 ipcRenderer.on('open-wwadata-complete', (event, data: { filePath: String, data: WWAData } ) => {
     Store.dispatch(closeMapdata());
-    Store.dispatch(setMapdata({
-        wwaData: data.data
-    }));
+    Store.dispatch(setMapdata(data.data));
     const imagePath = data.filePath.substring(0, data.filePath.lastIndexOf("/")) + data.data.charCGName;
-    // FIXME: Store.dispatch の型が Redux-Thunk の Action の型に対応していない
-    // Store.dispatch(loadImage({
-    //     imagePath
-    // }));
+    Store.dispatch(loadImage(imagePath));
 });
