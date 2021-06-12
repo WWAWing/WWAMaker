@@ -109,9 +109,7 @@ class SystemMessage extends React.Component<Props, SystemMessageField> {
     }
 
     private send() {
-        this.props.setSystemMessage({
-            messages: this.state.messages
-        });
+        this.props.setSystemMessage(this.state.messages);
     }
 
     private handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {

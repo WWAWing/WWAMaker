@@ -7,6 +7,7 @@
   "private": true,
   "dependencies": {
     "@babel/core": "7.9.0",
+    "@reduxjs/toolkit": "1.6.0",
     "@svgr/webpack": "4.3.3",
     "@types/jest": "^25.2.2",
     "@types/node": "^14.0.1",
@@ -75,9 +76,6 @@
     "terser-webpack-plugin": "2.3.5",
     "ts-pnp": "1.1.6",
     "typescript": "^3.4.5",
-    "typescript-fsa": "^3.0.0",
-    "typescript-fsa-reducers": "^1.2.1",
-    "typescript-fsa-redux-thunk": "^2.1.9",
     "url-loader": "2.3.0",
     "webpack": "4.42.0",
     "webpack-dev-server": "3.11.0",

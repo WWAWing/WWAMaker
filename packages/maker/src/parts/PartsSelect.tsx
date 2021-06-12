@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './PartsSelect.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectObjParts, selectMapParts } from './PartsState';
+import { selectObjectParts, selectMapParts } from './PartsState';
 import PartsList from '../common/PartsList';
 import { PartsType } from '../classes/WWAData';
 import { showPartsEdit } from '../info/InfoPanelState';
@@ -31,10 +31,10 @@ const PartsSelect: React.FC<{
     const handlePartsSelect = (partsNumber: number, partsType: PartsType) => {
         switch (partsType) {
             case PartsType.OBJECT:
-                dispatch(selectObjParts({ number: partsNumber }));
+                dispatch(selectObjectParts(partsNumber));
                 break;
             case PartsType.MAP:
-                dispatch(selectMapParts({ number: partsNumber }));
+                dispatch(selectMapParts(partsNumber));
                 break;
         }
     };

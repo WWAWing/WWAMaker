@@ -1,9 +1,7 @@
-import { reducerWithInitialState } from "typescript-fsa-reducers";
-import actionCreatorFactory from "typescript-fsa";
-import { loadWWADataPromise, encodeImagePromise, loadImagePromise } from "./LoadPromises";
-import { asyncFactory } from "typescript-fsa-redux-thunk";
-import { setMapdata, setImage, closeMapdata } from "../State";
-import { Progress, LoaderError } from "@wwawing/loader";
+import { encodeImagePromise, loadImagePromise } from "./LoadPromises";
+import { setImage } from "../State";
+import { Progress, LoaderError, LoaderProgress } from "@wwawing/loader";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 /**
  * Load モジュールについて
@@ -17,97 +15,50 @@ export interface LoadState {
 }
 
 /**
- * 読み込み操作を行う際に指定が必要な interface です。
- */
-interface LoadWWADataState {
-    mapdataFileName: string
-}
-
-/**
- * 画像読み込み操作を行う際に指定が必要な interface です。
- */
-interface LoadImageState {
-    imagePath: string
-}
-
-const actionCreator = actionCreatorFactory();
-const actionCreatorAsync = asyncFactory<LoadWWADataState>(actionCreator);
-
-
-/**
- * マップデータ読み込みを行うアクションです。
- */
-export const loadMapdata = actionCreatorAsync<LoadWWADataState, void, LoaderError>(
-    'LOAD_MAPDATA',
-    async (params, dispatch) => {
-        // マップデータを閉じる
-        dispatch(closeMapdata());
-
-        // マップデータの読み込み
-        const wwaData = await loadWWADataPromise(
-            params.mapdataFileName,
-            progress => {
-                dispatch(setLoadingProgress(progress));
-            }
-        );
-        dispatch(setMapdata({ wwaData: wwaData }));
-
-        // イメージ画像の読み込み
-        const imageData = await loadImagePromise(wwaData.mapCGName);
-        const imageUrl = await encodeImagePromise(imageData);
-        dispatch(setImage({ imageUrl }));
-    }
-);
-
-/**
  * イメージを読み込むアクションです。
  *     基本設定の編集のような、画像だけの再読み込みを必要とする場合に使用します。
  */
-export const loadImage = actionCreatorAsync<LoadImageState, void, LoaderError>(
-    'LOAD_IMAGE',
-    async (params, dispatch) => {
-        // イメージ画像の読み込み
-        const imageData = await loadImagePromise(params.imagePath);
+export const loadImage = createAsyncThunk<void, string, { rejectValue: LoaderError }>(
+    'load/image',
+    async (imagePath, thunkAPI) => {
+        const imageData = await loadImagePromise(imagePath);
         const imageUrl = await encodeImagePromise(imageData);
-        dispatch(setImage({ imageUrl }));
+        thunkAPI.dispatch(setImage(imageUrl));
     }
 );
-
-/**
- * ローディング状態を記録します。
- *     typescript-fsa-redux-thunk では、 開始→エラー/完了 しかアクションを起こすことができません。
- *     このメソッドは、その「開始」と「エラー/完了」の間で発生する途中経過に対応したアクションになります。
- */
-export const setLoadingProgress = actionCreator<Progress>("SET_LOADING_PROGRESS");
-
-/**
- * ローディング状態をエラー状態に差し替えます。
- */
-export const setLoadingError = actionCreator<LoaderError>("SET_LOADING_ERROR");
 
 export const INITIAL_STATE: LoadState = {
     progress: null,
     error: null
 };
 
-export const LoadReducer = reducerWithInitialState(INITIAL_STATE)
-    .case(setLoadingProgress, (state, progress) => ({
-        ...state,
-        progress: progress
-    }))
-    .case(setLoadingError, (state, error) => ({
-        ...state,
-        error: error
-    }))
-    .case(loadMapdata.async.failed, (state, params) => ({
-        ...state,
-        error: params.error
-    }))
-    .case(loadMapdata.async.done, (state) => ({
-        ...state,
-        progress: null
-    }))
-    .case(loadImage.async.failed, (state, params) => ({
-        ...state,
-        error: params.error
-    }))
+const loadSlice = createSlice({
+    name: 'load',
+    initialState: {
+        progress: null,
+        error: null
+    } as LoadState,
+    reducers: {
+        setLoadingProgress: (state, action: PayloadAction<LoaderProgress>) => {
+            state.progress = action.payload;
+        },
+        setLoadingError: (state, action: PayloadAction<LoaderError>) => {
+            state.error = action.payload;
+        }
+    },
+    extraReducers: builder => {
+        builder.addCase(loadImage.rejected, (state, action) => {
+            if (action.payload) {
+                state.error = action.payload;
+            }
+            // TODO: payload が unkown の場合はどうするのか？
+        });
+        builder.addCase(loadImage.fulfilled, state => {
+            state.progress = null;
+        });
+    }
+});
+
+export const { setLoadingProgress, setLoadingError } = loadSlice.actions;
+
+export const loadReducer = loadSlice.reducer;

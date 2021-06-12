@@ -71,9 +71,7 @@ const MapFoundation: React.FC<{}> = () => {
     
         if (field.mapCGName !== field?.mapCGName) {
             // TODO: 非同期アクションを dispatch では呼び出せないのではないか？
-            dispatch(loadImage({
-                imagePath: field.mapCGName
-            }));
+            dispatch(loadImage(field.mapCGName));
         }
     
         dispatch(setMapFoundation(field));

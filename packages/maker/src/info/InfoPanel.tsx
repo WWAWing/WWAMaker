@@ -58,7 +58,7 @@ class InfoPanel extends React.Component<Props> {
                 return (
                     <>
                         <Header attached="top">
-                            <Button onClick={() => this.props.switchInfoPanel({ mode: "GENERAL" })}>
+                            <Button onClick={() => this.props.switchInfoPanel("GENERAL")}>
                                 <Icon name="close"/>
                             </Button>
                             パーツの編集
