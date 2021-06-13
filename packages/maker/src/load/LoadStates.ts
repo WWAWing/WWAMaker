@@ -1,7 +1,9 @@
 import { encodeImagePromise, loadImagePromise } from "./LoadPromises";
-import { setImage } from "../State";
 import { Progress, LoaderError, LoaderProgress } from "@wwawing/loader";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { closeImage, setImage } from "../image/ImageState";
+import { WWAData } from "@wwawing/common-interface";
+import { closeMapdata, setMapdata } from "../wwadata/WWADataState";
 
 /**
  * Load モジュールについて
@@ -24,6 +26,17 @@ export const loadImage = createAsyncThunk<void, string, { rejectValue: LoaderErr
         const imageData = await loadImagePromise(imagePath);
         const imageUrl = await encodeImagePromise(imageData);
         thunkAPI.dispatch(setImage(imageUrl));
+    }
+);
+
+export const loadMapdata = createAsyncThunk<void, { filePath: string, data: WWAData }, { rejectValue: LoaderError }>(
+    'load/wwadata',
+    async (data, thunkAPI) => {
+        thunkAPI.dispatch(closeMapdata());
+        thunkAPI.dispatch(closeImage());
+        thunkAPI.dispatch(setMapdata(data.data));
+        const imagePath = data.filePath.substring(0, data.filePath.lastIndexOf("/")) + "/" + data.data.mapCGName;
+        thunkAPI.dispatch(loadImage(imagePath));
     }
 );
 

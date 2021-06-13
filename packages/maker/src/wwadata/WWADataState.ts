@@ -32,6 +32,18 @@ const wwaDataSlice = createSlice({
     name: 'wwadata',
     initialState: null as WWADataStateType,
     reducers: {
+        /**
+         * マップデータの情報を設定します。
+         */
+        setMapdata(state, action: PayloadAction<WWAData>) {
+            return action.payload;
+        },
+        /**
+         * マップデータの情報を消去し、マップデータを閉じたことにします。
+         */
+        closeMapdata(state) {
+            state = null;
+        },
         putParts(state, action: PayloadAction<PutPartsParams>) {
             if (state === null) {
                 return;
@@ -118,6 +130,6 @@ const wwaDataSlice = createSlice({
     }
 })
 
-export const { putParts, setMapFoundation, setSystemMessage, editParts, deleteParts } = wwaDataSlice.actions;
+export const { setMapdata, closeMapdata, putParts, setMapFoundation, setSystemMessage, editParts, deleteParts } = wwaDataSlice.actions;
 
 export const wwaDataReducer = wwaDataSlice.reducer;

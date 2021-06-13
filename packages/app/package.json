@@ -20,8 +20,7 @@
     "wwamaker-saver": "^0.0.1"
   },
   "devDependencies": {
-    "electron": "^10.1.1",
-    "electron-webpack": "2.8.2",
-    "electron-webpack-ts": "4.0.1"
+    "electron": "^13.1.2",
+    "electron-devtools-installer": "3.2.0"
   }
 }

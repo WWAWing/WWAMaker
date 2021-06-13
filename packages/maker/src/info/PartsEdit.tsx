@@ -46,7 +46,7 @@ const PartsEdit: React.FC = () => {
     const mapAttribute = useSelector(state => state.wwaData?.mapAttribute);
     const messages = useSelector(state => state.wwaData?.message);
 
-    const imageUrl = useSelector(state => state.imageUrl);
+    const imageUrl = useSelector(state => state.image);
     const image = useImage(imageUrl ?? "");
     const objPartsMax = useSelector(state => state.wwaData?.objPartsMax) ?? 0;
     const mapPartsMax = useSelector(state => state.wwaData?.mapPartsMax) ?? 0;

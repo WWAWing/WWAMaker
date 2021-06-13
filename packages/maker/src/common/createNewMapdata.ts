@@ -1,6 +1,7 @@
-import { Store, setMapdata } from "../State";
+import { Store } from "../State";
 import { switchInfoPanel } from "../info/InfoPanelState";
 import { defaultWWAData } from "../classes/WWAData";
+import { setMapdata } from "../wwadata/WWADataState";
 
 export default function createNewMapdata() {
     // TODO: もしかしたら Electron メインプロセスに移るかもしれない

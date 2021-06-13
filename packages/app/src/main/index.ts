@@ -1,5 +1,6 @@
 import makeMenu from './makeMenu';
 import { app, BrowserWindow, Menu } from 'electron';
+import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer';
 
 function createWindow () {
     // ブラウザウインドウを作成
@@ -8,7 +9,8 @@ function createWindow () {
         height: 600,
         webPreferences: {
             nodeIntegration: true,
-            enableRemoteModule: true
+            enableRemoteModule: true,
+            contextIsolation: false
         }
     });
 
@@ -22,4 +24,9 @@ function createWindow () {
     Menu.setApplicationMenu(makeMenu(win));
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+    installExtension(REDUX_DEVTOOLS)
+        .then(name => console.log(`Added Extension: ${name}`))
+        .catch(error => console.error(`An error occured: `, error));
+    createWindow();
+});
