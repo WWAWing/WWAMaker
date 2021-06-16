@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "WWA Mapdata Save API",
   "main": "lib/index.js",
+  "module": "module/index.js",
   "typings": "lib/index.d.ts",
   "author": "WWA Wing Team",
   "license": "MIT",
@@ -17,7 +18,9 @@
     "typescript": "^3.4.5"
   },
   "scripts": {
-    "build": "shx rm -rf lib && tsc -p .",
+    "build": "run-p build:*",
+    "build:lib": "shx rm -rf lib && tsc -p ./tsconfig.lib.json",
+    "build:module": "shx rm -rf module && tsc -p ./tsconfig.module.json",
     "test": "jest"
   }
 }

@@ -18,13 +18,7 @@ function makeMenu(win: BrowserWindow): Menu {
                 { label: '開く', click: () => Events.open(win) },
                 { label: '上書き保存' },
                 // TODO: 別の関数に移す
-                { label: '名前を付けて保存', click: () => dialog.showSaveDialogSync({
-                    title: 'マップデータを保存',
-                    filters: FILE_FILTERS,
-                    properties: [
-                        'createDirectory'
-                    ]
-                }) },
+                { label: '名前を付けて保存', click: () => Events.save(win) },
                 { type: 'separator' },
                 { role: 'quit' }
             ] as MenuItemConstructorOptions[]

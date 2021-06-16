@@ -16,3 +16,7 @@ ipcRenderer.on('open-wwadata-error', (event, error: { loaderError: LoaderError }
 ipcRenderer.on('open-wwadata-complete', (event, data: { filePath: string, data: WWAData } ) => {
     Store.dispatch(loadMapdata(data));
 });
+
+ipcRenderer.on('save-wwadata-request-wwadata', () => {
+    ipcRenderer.send('send-wwadata-receive-wwadata', Store.getState().wwaData);
+});
