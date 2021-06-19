@@ -1983,44 +1983,22 @@
   dependencies:
     lodash "^4"
 
-"@wwawing/common-interface@^3.2.11", "@wwawing/common-interface@^3.3.0":
-  version "3.5.7"
-  resolved "https://registry.yarnpkg.com/@wwawing/common-interface/-/common-interface-3.5.7.tgz#34d34b1b1af907d4a9a5f4ba83c235f0b92a6bd8"
-  integrity sha512-j1EOimzAM/ROQEib/Fbjv7Bq1CGSmCJxYzb82Af2yY4DT/Nm6ohJGhp1h3MxohbKBJFAL1fds2h+gyjchkHTxA==
+"@wwawing/common-interface@^3.5.11-publishtest.1":
+  version "3.5.11-publishtest.1"
+  resolved "https://registry.yarnpkg.com/@wwawing/common-interface/-/common-interface-3.5.11-publishtest.1.tgz#ed38a78dd65c63d50948cc3e7fbbca97bffbaec2"
+  integrity sha512-oTjXqmQ24jSaDpqIsk6Cr624FARk5iGzvVCId/fuRaI9BiG33YTH+z9gO+isIsDyRGgq37yWmL3kwYZM3lDw5A==
 
-"@wwawing/common-interface@^3.5.9-module-test.1":
-  version "3.5.9-module-test.1"
-  resolved "https://registry.yarnpkg.com/@wwawing/common-interface/-/common-interface-3.5.9-module-test.1.tgz#f6e754f92ac16dac925068bff81d1280ac68e991"
-  integrity sha512-LOP8ObiYCm0jMgF/QS7wq57+ZQS6mOTgWk1B06ZmWi4VvfIVkdg7k3rN0X7VDAUoHiXD6yduiFlPMoaooXtaKQ==
+"@wwawing/event-emitter@^3.5.11-publishtest.1":
+  version "3.5.11-publishtest.1"
+  resolved "https://registry.yarnpkg.com/@wwawing/event-emitter/-/event-emitter-3.5.11-publishtest.1.tgz#44d28aa97be48f50795a952c2d0b9f389855566c"
+  integrity sha512-/4+/jgZUqVrTzRWY+forfik5jTSt27ZXvSTKA1WmzCQ37F+nNqz2tU4z/73zg1z8nwDHRcYHC/fYUz6+a+7SlA==
 
-"@wwawing/event-emitter@^3.4.0", "@wwawing/event-emitter@^3.5.7":
-  version "3.5.7"
-  resolved "https://registry.yarnpkg.com/@wwawing/event-emitter/-/event-emitter-3.5.7.tgz#08d11e81d9045e48a8da7b87d5646d0c345bc2e9"
-  integrity sha512-wv2MmvNd+n3JnI6INK5+2u3qrAGO4FJI4JMgTsNvbJgJ0vjZU9XHcTBaNtaMW1ZAY66hLWw0Z35+50DqIvspqw==
-
-"@wwawing/event-emitter@^3.5.9":
-  version "3.5.9"
-  resolved "https://registry.yarnpkg.com/@wwawing/event-emitter/-/event-emitter-3.5.9.tgz#e0784a521c20ddc5033ab2ddc326827eb6e99ec1"
-  integrity sha512-Y/ScmeQBKSN4xLE0R7DRfpqZntCO9MsUvJPfBwb9hqybVVD/8XG3C0+rcP0Jq3xtdfbRj6nytxW1M2QFsCjhYQ==
-
-"@wwawing/event-emitter@^3.5.9-module-test.1":
-  version "3.5.9-module-test.1"
-  resolved "https://registry.yarnpkg.com/@wwawing/event-emitter/-/event-emitter-3.5.9-module-test.1.tgz#60d025b48a76e49f87600d0bb5c4019f7f594fd3"
-  integrity sha512-cJ62Hf17+kRgPBqKj79OLY9FsEnhpUz0R2nmwB9fDeYKgiE1fIW+PT8ORBbYvyaTfrIes9zEUJf8cjlyXFbE5g==
-
-"@wwawing/loader@^3.4.1":
-  version "3.5.7"
-  resolved "https://registry.yarnpkg.com/@wwawing/loader/-/loader-3.5.7.tgz#a5285a7031ee4eaa92e6e46077f286d0f689cea5"
-  integrity sha512-VFHoCbHItbu4nfi8QRkAwHQJe0m7/Gvkqz0mfSM6+UfrrfJoD3H59ERyO6fzGpXmS/grTY7NwK5RDnv2Z+asig==
+"@wwawing/loader@^3.5.11-publishtest.1":
+  version "3.5.11-publishtest.1"
+  resolved "https://registry.yarnpkg.com/@wwawing/loader/-/loader-3.5.11-publishtest.1.tgz#cf0f5fbf8fe9e647c1f806fd0cee9f5e5e3d909f"
+  integrity sha512-HBP+Ea0tnTn9n3JxXNiyCHIiSzktn6Yl0ODfBYPtNoLMm/Cvg5lMo9sAiQUzZblTOgSh+MuPVPy40gZoPZsktQ==
   dependencies:
-    "@wwawing/event-emitter" "^3.5.7"
-
-"@wwawing/loader@^3.5.11-loader-node-impl.0":
-  version "3.5.11-loader-node-impl.0"
-  resolved "https://registry.yarnpkg.com/@wwawing/loader/-/loader-3.5.11-loader-node-impl.0.tgz#012e94df72dbad59ba653fd90f64e6a23f3549f0"
-  integrity sha512-UEO0iapkB6SG1UWmKa64ga24itYsah38AV30cIQ52myJ39+i2cH4m5fJ/kk8KwlGqC1Ykn6DqZm++cy+2NhN8g==
-  dependencies:
-    "@wwawing/event-emitter" "^3.5.9"
+    "@wwawing/event-emitter" "^3.5.11-publishtest.1"
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"

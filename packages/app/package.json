@@ -14,9 +14,9 @@
   "dependencies": {
     "shx": "^0.3.2",
     "typescript": "^3.4.5",
-    "@wwawing/common-interface": "^3.5.9-module-test.1",
-    "@wwawing/event-emitter": "^3.5.9-module-test.1",
-    "@wwawing/loader": "^3.5.11-loader-node-impl.0",
+    "@wwawing/common-interface": "^3.5.11-publishtest.1",
+    "@wwawing/event-emitter": "^3.5.11-publishtest.1",
+    "@wwawing/loader": "^3.5.11-publishtest.1",
     "wwamaker-saver": "^0.0.1"
   },
   "devDependencies": {

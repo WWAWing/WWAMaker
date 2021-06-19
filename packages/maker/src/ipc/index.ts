@@ -18,5 +18,6 @@ ipcRenderer.on('open-wwadata-complete', (event, data: { filePath: string, data: 
 });
 
 ipcRenderer.on('save-wwadata-request-wwadata', () => {
-    ipcRenderer.send('send-wwadata-receive-wwadata', Store.getState().wwaData);
+    console.log('received WWAData request.');
+    ipcRenderer.send('save-wwadata-receive-wwadata', Store.getState().wwaData);
 });

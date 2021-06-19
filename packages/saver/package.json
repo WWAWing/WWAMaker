@@ -5,13 +5,17 @@
   "main": "lib/index.js",
   "module": "module/index.js",
   "typings": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "module"
+  ],
   "author": "WWA Wing Team",
   "license": "MIT",
   "private": true,
   "dependencies": {
     "@types/jest": "^25.2.2",
-    "@wwawing/common-interface": "^3.3.0",
-    "@wwawing/loader": "^3.4.1",
+    "@wwawing/common-interface": "^3.5.11-publishtest.1",
+    "@wwawing/loader": "^3.5.11-publishtest.1",
     "jest": "24.9.0",
     "shx": "^0.3.2",
     "ts-jest": "^26.0.0",
@@ -19,7 +23,7 @@
   },
   "scripts": {
     "build": "run-p build:*",
-    "build:lib": "shx rm -rf lib && tsc -p ./tsconfig.lib.json",
+    "build:lib": "shx rm -rf lib && tsc -p ./",
     "build:module": "shx rm -rf module && tsc -p ./tsconfig.module.json",
     "test": "jest"
   }

@@ -8,7 +8,6 @@ import fs from "fs";
  * @returns マップデータファイルの Blob
  */
 export default async function save(filePath: string, wwaData: WWAData, callback: fs.NoParamCallback) {
-    // FIXME: ESModules の Saver を使用している
     const data = await Saver(wwaData);
     fs.writeFile(filePath, data, callback);
 }

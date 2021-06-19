@@ -44,21 +44,23 @@ export function open(win: BrowserWindow) {
 
 export function save(win: BrowserWindow) {
 
-    const filePaths = dialog.showSaveDialogSync({
+    const filePath = dialog.showSaveDialogSync({
         title: 'マップデータを保存',
         filters: FILE_FILTERS,
         properties: [
             'createDirectory'
         ]
     });
-    if (filePaths === undefined) {
+    if (filePath === undefined) {
         return;
     }
 
-    const filePath = filePaths[0];
     win.webContents.send('save-wwadata-request-wwadata');
+    console.log('WWAData request sent.');
     ipcMain.on('save-wwadata-receive-wwadata', (event, data: WWAData) => {
+        console.log('received WWAData. saving...');
         saveMapData(filePath, data, err => {
+            console.log('saving file path: ' + filePath);
             if (err) {
                 throw err;
             }
