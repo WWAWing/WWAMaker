@@ -47,7 +47,11 @@ const infoPanelSlice = createSlice({
          * パーツ編集を表示します。
          */
         showPartsEdit: (state, action: PayloadAction<InfoPanelPartsEditState>) => {
-            state.partsEdit = action.payload;
+            return {
+                ...state,
+                viewMode: 'PARTS_EDIT',
+                partsEdit: action.payload
+            }
         }
     }
 });
