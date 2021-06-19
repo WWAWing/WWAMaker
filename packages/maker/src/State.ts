@@ -4,7 +4,7 @@ import { mapReducer } from "./map/MapStates";
 import { infoPanelReducer } from "./info/InfoPanelState";
 import { wwaDataReducer } from "./wwadata/WWADataState";
 import thunkMiddleware from 'redux-thunk';
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import { imageReducer } from "./image/ImageState";
 
 const reducer = combineReducers({
@@ -19,14 +19,16 @@ const reducer = combineReducers({
 
 /**
  * @see https://redux-toolkit.js.org/usage/usage-with-typescript
+ * @todo immuitableCheck と serializableCheck を切らなくてはならないほど State の変更が大きいので、なるべくこれらの確認の負担を減らすように工夫する
  */
 export const Store = configureStore({
     reducer,
-    middleware: getDefaultMiddleware =>
-        getDefaultMiddleware()
-            .prepend(
-                thunkMiddleware
-            ),
+    middleware: getDefaultMiddleware({
+        immutableCheck: false,
+        serializableCheck: false
+    }).concat(
+        thunkMiddleware
+    ),
     devTools: process.env.NODE_ENV !== 'production'
 });
 

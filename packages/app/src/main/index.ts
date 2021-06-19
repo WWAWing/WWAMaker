@@ -5,8 +5,8 @@ import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer';
 function createWindow () {
     // ブラウザウインドウを作成
     let win = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1344,
+        height: 768,
         webPreferences: {
             nodeIntegration: true,
             enableRemoteModule: true,
