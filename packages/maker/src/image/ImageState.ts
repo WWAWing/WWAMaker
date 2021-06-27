@@ -7,7 +7,7 @@ const imageSlice = createSlice({
         /**
          * 画像リソースを設定します。
          */
-        setImage(state, action: PayloadAction<string>) {
+        setEncodedImage(state, action: PayloadAction<string>) {
             if (state != null) {
                 URL.revokeObjectURL(state);
             }
@@ -25,5 +25,5 @@ const imageSlice = createSlice({
     }
 })
 
-export const { setImage, closeImage } = imageSlice.actions;
+export const { setEncodedImage, closeImage } = imageSlice.actions;
 export const imageReducer = imageSlice.reducer;

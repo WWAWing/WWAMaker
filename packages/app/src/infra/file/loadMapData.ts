@@ -8,13 +8,11 @@ import { LoaderError, LoaderProgress, WWALoader } from '@wwawing/loader';
  */
 export default function open(
     filePath: string,
-    onProgressCallback: (progress: LoaderProgress) => void,
-    onErrorCallback: (error: LoaderError) => void,
-    onCompleteCallback: (wwaData: WWAData) => void
-) {
+    onProgressCallback: (progress: LoaderProgress) => void
+): Promise<WWAData> {
     
     // FROM wwamaker-maker/src/loac/LoadPromises.ts
-    new Promise<WWAData>((resolve, reject) => {
+    return new Promise<WWAData>((resolve, reject) => {
         const emitter = new NodeEventEmitter();
         const loader = new WWALoader(filePath, emitter);
 
@@ -26,11 +24,11 @@ export default function open(
         });
 
         const handleProgress = emitter.addListener("progress", onProgressCallback);
-        const handleError = emitter.addListener("error", onErrorCallback);
+        const handleError = emitter.addListener("error", (error: LoaderError) => {
+            reject(error);
+        });
 
         loader.requestAndLoadMapData();
-    })
-    .then(onCompleteCallback)
-    .catch(reason => console.error(reason));
+    });
 
 }
