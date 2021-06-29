@@ -4,6 +4,7 @@ import loadMapData from "../infra/file/loadMapData";
 import saveMapData from "../infra/file/saveMapData";
 import loadImage from "../infra/file/loadImage";
 import { LoaderError } from "@wwawing/loader";
+import getImagePath from "../infra/path/getImagePath";
 
 const FILE_FILTERS = [
     { name: 'WWA マップデータ', extensions: ['dat'] },
@@ -22,6 +23,7 @@ export function open(win: BrowserWindow) {
 
     const filePath = filePaths[0];
     let stage: "MAPDATA" | "IMAGE" = "MAPDATA";
+    win.webContents.send('open-wwadata-start');
     loadMapData(
         filePath,
         progress => {
@@ -37,12 +39,12 @@ export function open(win: BrowserWindow) {
             data: wwaData
         });
         stage = "IMAGE";
-        const imagePath = filePath.substring(0, filePath.lastIndexOf("/")) + "/" + wwaData.charCGName;
+        const imagePath = getImagePath(filePath, wwaData.mapCGName);
         return loadImage(imagePath)
     })
-    .then(imageUrl => {
+    .then(imageBuffer => {
         win.webContents.send('load-image-complete', {
-            imageUrl
+            imageBuffer: imageBuffer
         });
     })
     .catch(err => {

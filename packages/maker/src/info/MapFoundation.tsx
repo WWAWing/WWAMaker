@@ -3,9 +3,9 @@ import { useSelector, useDispatch } from "react-redux";
 import getPartsCountPerIncreaseUnit from "../common/getPartsCountPerIncreaseUnit";
 import { Form, Button, Input, Icon } from "semantic-ui-react";
 import WWAConsts from "../classes/WWAConsts";
-import { setImage } from "../load/LoadStates";
+import { startImageLoading } from "../load/LoadStates";
 import { setMapFoundation } from "../wwadata/WWADataState";
-import { ipcRenderer } from "electron/renderer";
+import { ipcRenderer } from "electron";
 
 /**
  * 基本設定の編集で使用する欄です。
@@ -71,9 +71,9 @@ const MapFoundation: React.FC<{}> = () => {
         }
     
         if (field.mapCGName !== field?.mapCGName) {
-            // TODO: メインプロセス側の IPC 通信を実装する
-            ipcRenderer.send('load-image');
-            dispatch(setImage(field.mapCGName));
+            dispatch(startImageLoading());
+            // TODO: imageFilePath を指定する
+            ipcRenderer.send('load-image', { imageFilePath: '' });
         }
     
         dispatch(setMapFoundation(field));

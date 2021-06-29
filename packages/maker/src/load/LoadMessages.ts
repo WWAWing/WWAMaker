@@ -1,9 +1,10 @@
 import { WWAData } from '@wwawing/common-interface';
 import { LoaderError, LoaderProgress } from '@wwawing/loader';
 import { ipcRenderer } from 'electron';
-import { completeLoading, loadMapdata, setMapdataLoadingError, setLoadingProgress, startImageLoading, startMapdataLoading, setImageLoadingError } from './LoadStates';
+import { completeLoading, setMapdataLoadingError, setLoadingProgress, startImageLoading, startMapdataLoading, setImageLoadingError } from './LoadStates';
 import { Store } from '../State';
-import { setEncodedImage } from '../image/ImageState';
+import { closeImage, setImage } from '../image/ImageState';
+import { closeMapdata, setMapdata } from '../wwadata/WWADataState';
 
 /**
  * WWAデータの読み込み進捗について
@@ -14,6 +15,8 @@ import { setEncodedImage } from '../image/ImageState';
 
 // TODO: データの型を app のものと共通化する
 ipcRenderer.on('open-wwadata-start', () => {
+    Store.dispatch(closeMapdata());
+    Store.dispatch(closeImage());
     Store.dispatch(startMapdataLoading());
 });
 
@@ -26,13 +29,13 @@ ipcRenderer.on('open-wwadata-error', (event, error: { loaderError: LoaderError }
 });
 
 ipcRenderer.on('open-wwadata-complete', (event, data: { filePath: string, data: WWAData } ) => {
-    Store.dispatch(loadMapdata(data));
+    Store.dispatch(setMapdata(data.data));
     // 画像データの読み込みはメインプロセスの方で勝手に始まってます。
     Store.dispatch(startImageLoading());
 });
 
-ipcRenderer.on('load-image-complete', (event, data: { imageUrl: string }) => {
-    Store.dispatch(setEncodedImage(data.imageUrl));
+ipcRenderer.on('load-image-complete', (event, data: { imageBuffer: Buffer, filePath: string }) => {
+    Store.dispatch(setImage(data.imageBuffer));
     Store.dispatch(completeLoading());
 });
 
