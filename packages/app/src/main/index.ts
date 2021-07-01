@@ -1,6 +1,7 @@
 import makeMenu from './makeMenu';
 import { app, BrowserWindow, Menu } from 'electron';
 import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer';
+import "../messages";
 
 function createWindow () {
     // ブラウザウインドウを作成

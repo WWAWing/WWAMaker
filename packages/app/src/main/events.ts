@@ -23,7 +23,7 @@ export function open(win: BrowserWindow) {
 
     const filePath = filePaths[0];
     let stage: "MAPDATA" | "IMAGE" = "MAPDATA";
-    win.webContents.send('open-wwadata-start');
+    win.webContents.send('open-wwadata-start', { filePath });
     loadMapData(
         filePath,
         progress => {

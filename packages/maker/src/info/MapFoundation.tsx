@@ -54,6 +54,9 @@ const defaultMapFoundationField: MapFoundationField = {
  */
 const MapFoundation: React.FC<{}> = () => {
 
+    const filePath = useSelector(state => state.load?.currentFilePath);
+    const imageFilename = useSelector(state => state.wwaData?.mapCGName);
+
     /**
      * Redux ステートの更新を本コンポーネントのステートに受け取ります。
      */
@@ -70,10 +73,9 @@ const MapFoundation: React.FC<{}> = () => {
             return;
         }
     
-        if (field.mapCGName !== field?.mapCGName) {
+        if (field.mapCGName !== imageFilename) {
             dispatch(startImageLoading());
-            // TODO: imageFilePath を指定する
-            ipcRenderer.send('load-image', { imageFilePath: '' });
+            ipcRenderer.send('load-image', { filePath, imageFilename: field.mapCGName });
         }
     
         dispatch(setMapFoundation(field));

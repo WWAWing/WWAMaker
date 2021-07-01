@@ -14,10 +14,10 @@ import { closeMapdata, setMapdata } from '../wwadata/WWADataState';
  */
 
 // TODO: データの型を app のものと共通化する
-ipcRenderer.on('open-wwadata-start', () => {
+ipcRenderer.on('open-wwadata-start', (event, data: {filePath: string }) => {
     Store.dispatch(closeMapdata());
     Store.dispatch(closeImage());
-    Store.dispatch(startMapdataLoading());
+    Store.dispatch(startMapdataLoading(data.filePath));
 });
 
 ipcRenderer.on('open-wwadata-progress', (event, progress: { loaderProgress: LoaderProgress }) => {
