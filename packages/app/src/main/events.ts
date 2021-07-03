@@ -35,7 +35,6 @@ export function open(win: BrowserWindow) {
     )
     .then(wwaData => {
         win.webContents.send('open-wwadata-complete', {
-            filePath,
             data: wwaData
         });
         stage = "IMAGE";
@@ -79,14 +78,13 @@ export function save(win: BrowserWindow) {
     win.webContents.send('save-wwadata-request-wwadata');
     console.log('WWAData request sent.');
     ipcMain.on('save-wwadata-receive-wwadata', (event, data: WWAData) => {
-        console.log('received WWAData. saving...');
+        if (data === undefined) {
+            throw new Error("データが来ていません。");
+        }
         saveMapData(filePath, data, err => {
-            console.log('saving file path: ' + filePath);
             if (err) {
                 throw err;
             }
-            // DEBUG: ファイルの保存を完了するメッセージ
-            console.log('done!');
         })
     });
 

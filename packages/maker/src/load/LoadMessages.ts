@@ -13,32 +13,49 @@ import { closeMapdata, setMapdata } from '../wwadata/WWADataState';
  * 2. 画像読み込み
  */
 
-// TODO: データの型を app のものと共通化する
-ipcRenderer.on('open-wwadata-start', (event, data: {filePath: string }) => {
+ipcRenderer.on('open-wwadata-start', (event, data: { filePath: string }) => {
+    if (!data.filePath) {
+        throw new Error("ファイルの Path が含まれていません。");
+    }
     Store.dispatch(closeMapdata());
     Store.dispatch(closeImage());
     Store.dispatch(startMapdataLoading(data.filePath));
 });
 
 ipcRenderer.on('open-wwadata-progress', (event, progress: { loaderProgress: LoaderProgress }) => {
+    if (!progress.loaderProgress) {
+        throw new Error("読み込み進捗情報が含まれていません。");
+    }
     Store.dispatch(setLoadingProgress(progress.loaderProgress));
 });
 
 ipcRenderer.on('open-wwadata-error', (event, error: { loaderError: LoaderError }) => {
+    if (!error.loaderError) {
+        throw new Error("エラー情報が含まれていません。");
+    }
     Store.dispatch(setMapdataLoadingError(error.loaderError));
 });
 
-ipcRenderer.on('open-wwadata-complete', (event, data: { filePath: string, data: WWAData } ) => {
+ipcRenderer.on('open-wwadata-complete', (event, data: { data: WWAData } ) => {
+    if (!data.data) {
+        throw new Error("WWAデータが含まれていません。");
+    }
     Store.dispatch(setMapdata(data.data));
     // 画像データの読み込みはメインプロセスの方で勝手に始まってます。
     Store.dispatch(startImageLoading());
 });
 
-ipcRenderer.on('load-image-complete', (event, data: { imageBuffer: Buffer, filePath: string }) => {
+ipcRenderer.on('load-image-complete', (event, data: { imageBuffer: Buffer }) => {
+    if (!data.imageBuffer) {
+        throw new Error("画像データが含まれていません。");
+    }
     Store.dispatch(setImage(data.imageBuffer));
     Store.dispatch(completeLoading());
 });
 
 ipcRenderer.on('load-image-error', (event, data: { err: NodeJS.ErrnoException }) => {
+    if (!data.err) {
+        throw new Error("エラー情報が含まれていません。")
+    }
     Store.dispatch(setImageLoadingError(data.err));
 });
