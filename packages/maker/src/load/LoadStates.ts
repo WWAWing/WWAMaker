@@ -1,9 +1,5 @@
-import { encodeImagePromise, loadImagePromise } from "./LoadPromises";
 import { Progress, LoaderError, LoaderProgress } from "@wwawing/loader";
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { closeImage, setImage } from "../image/ImageState";
-import { WWAData } from "@wwawing/common-interface";
-import { closeMapdata, setMapdata } from "../wwadata/WWADataState";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 /**
  * Load モジュールについて
@@ -11,67 +7,92 @@ import { closeMapdata, setMapdata } from "../wwadata/WWADataState";
  *     読み込みの開始 → 読み込みの途中経過 → 読み込み完了/読み込みエラー の際にこの Load モジュールが働きます。
  * @see MapData
  */
-export interface LoadState {
-    progress: Progress|null,
-    error: LoaderError|null
-}
-
-/**
- * イメージを読み込むアクションです。
- *     基本設定の編集のような、画像だけの再読み込みを必要とする場合に使用します。
- */
-export const loadImage = createAsyncThunk<void, string, { rejectValue: LoaderError }>(
-    'load/image',
-    async (imagePath, thunkAPI) => {
-        const imageData = await loadImagePromise(imagePath);
-        const imageUrl = await encodeImagePromise(imageData);
-        thunkAPI.dispatch(setImage(imageUrl));
-    }
-);
-
-export const loadMapdata = createAsyncThunk<void, { filePath: string, data: WWAData }, { rejectValue: LoaderError }>(
-    'load/wwadata',
-    async (data, thunkAPI) => {
-        thunkAPI.dispatch(closeMapdata());
-        thunkAPI.dispatch(closeImage());
-        thunkAPI.dispatch(setMapdata(data.data));
-        const imagePath = data.filePath.substring(0, data.filePath.lastIndexOf("/")) + "/" + data.data.mapCGName;
-        thunkAPI.dispatch(loadImage(imagePath));
-    }
-);
-
-export const INITIAL_STATE: LoadState = {
-    progress: null,
-    error: null
-};
+export type LoadState =
+    null |
+    (
+        {
+            stage: "MAPDATA",
+            progress?: Progress,
+            error?: LoaderError
+        } |
+        {
+            stage: "IMAGE",
+            error?: NodeJS.ErrnoException
+        } |
+        {
+            stage: "DONE",
+            error?: undefined
+        }
+    ) & {
+        currentFilePath?: string
+    };
 
 const loadSlice = createSlice({
     name: 'load',
-    initialState: {
-        progress: null,
-        error: null
-    } as LoadState,
+    initialState: null as LoadState,
     reducers: {
+        startMapdataLoading: (state, action: PayloadAction<string>) => {
+            if (state?.stage === "MAPDATA") {
+                console.warn("現在別のマップデータを読み込んでいる途中だそうです。動作に不都合が発生するかもしれません。");
+            }
+            return {
+                stage: "MAPDATA",
+                currentFilePath: action.payload
+            };
+        },
+        startImageLoading: state => {
+            if (state === null) {
+                throw new Error("マップデータを読み込んでいません。先にマップデータの読み込みを完了させてください。");
+            }
+            if (state?.stage === "IMAGE") {
+                console.warn("現在別のイメージを読み込んでいる途中だそうです。動作に不都合が発生するかもしれません。");
+            }
+            return {
+                ...state,
+                stage: "IMAGE"
+            };
+        },
         setLoadingProgress: (state, action: PayloadAction<LoaderProgress>) => {
+            if (state?.stage !== "MAPDATA") {
+                throw new Error("setLoadingProgress アクションはマップデータの読み込みでのみ使用できます。マップデータの読み込み開始を宣言したか確認してください。");
+            }
             state.progress = action.payload;
         },
-        setLoadingError: (state, action: PayloadAction<LoaderError>) => {
-            state.error = action.payload;
-        }
-    },
-    extraReducers: builder => {
-        builder.addCase(loadImage.rejected, (state, action) => {
-            if (action.payload) {
-                state.error = action.payload;
+        setMapdataLoadingError: (state, action: PayloadAction<LoaderError>) => {
+            if (state?.stage !== "MAPDATA") {
+                throw new Error("現在マップデータを読み込んでいません。すでに読み込みは完了していましたか？");
             }
-            // TODO: payload が unkown の場合はどうするのか？
-        });
-        builder.addCase(loadImage.fulfilled, state => {
-            state.progress = null;
-        });
+            state.error = action.payload;
+        },
+        setImageLoadingError: (state, action: PayloadAction<NodeJS.ErrnoException>) => {
+            if (state?.stage !== "IMAGE") {
+                throw new Error("現在画像データを読み込んでいません。すでに読み込みは完了していましたか？");
+            }
+            state.error = action.payload;
+        },
+        completeLoading: state => {
+            if (state === null) {
+                throw new Error("読み込みステータス情報が存在しません。すでに読み込みは完了していましたか？");
+            }
+            if (state?.error) {
+                throw new Error("現在読み込みでエラーが発生しています。正常に読み込み完了の手続きを完了できません。");
+            }
+            return {
+                ...state,
+                stage: "DONE",
+                error: undefined
+            };
+        }
     }
 });
 
-export const { setLoadingProgress, setLoadingError } = loadSlice.actions;
+export const {
+    startMapdataLoading,
+    startImageLoading,
+    setLoadingProgress,
+    setMapdataLoadingError,
+    setImageLoadingError,
+    completeLoading
+} = loadSlice.actions;
 
 export const loadReducer = loadSlice.reducer;

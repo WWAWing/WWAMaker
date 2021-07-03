@@ -5,13 +5,14 @@ const imageSlice = createSlice({
     initialState: null as string | null,
     reducers: {
         /**
-         * 画像リソースを設定します。
+         * Blob を作成し、 Blob からオブジェクト URL を作成します。
          */
-        setImage(state, action: PayloadAction<string>) {
+        setImage(state, action: PayloadAction<Buffer>) {
             if (state != null) {
                 URL.revokeObjectURL(state);
             }
-            return action.payload;
+            const blob = new Blob([ action.payload ], { type: "image/gif" });
+            return URL.createObjectURL(blob);
         },
         /**
          * 画像リソースを閉じます。

@@ -3,8 +3,9 @@ import { useSelector, useDispatch } from "react-redux";
 import getPartsCountPerIncreaseUnit from "../common/getPartsCountPerIncreaseUnit";
 import { Form, Button, Input, Icon } from "semantic-ui-react";
 import WWAConsts from "../classes/WWAConsts";
-import { loadImage } from "../load/LoadStates";
+import { startImageLoading } from "../load/LoadStates";
 import { setMapFoundation } from "../wwadata/WWADataState";
+import { ipcRenderer } from "electron";
 
 /**
  * 基本設定の編集で使用する欄です。
@@ -53,6 +54,9 @@ const defaultMapFoundationField: MapFoundationField = {
  */
 const MapFoundation: React.FC<{}> = () => {
 
+    const filePath = useSelector(state => state.load?.currentFilePath);
+    const imageFilename = useSelector(state => state.wwaData?.mapCGName);
+
     /**
      * Redux ステートの更新を本コンポーネントのステートに受け取ります。
      */
@@ -69,9 +73,9 @@ const MapFoundation: React.FC<{}> = () => {
             return;
         }
     
-        if (field.mapCGName !== field?.mapCGName) {
-            // TODO: 非同期アクションを dispatch では呼び出せないのではないか？
-            dispatch(loadImage(field.mapCGName));
+        if (field.mapCGName !== imageFilename) {
+            dispatch(startImageLoading());
+            ipcRenderer.send('load-image', { filePath, imageFilename: field.mapCGName });
         }
     
         dispatch(setMapFoundation(field));

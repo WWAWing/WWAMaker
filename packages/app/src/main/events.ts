@@ -2,6 +2,9 @@ import { WWAData } from "@wwawing/common-interface";
 import { BrowserWindow, dialog, ipcMain } from "electron";
 import loadMapData from "../infra/file/loadMapData";
 import saveMapData from "../infra/file/saveMapData";
+import loadImage from "../infra/file/loadImage";
+import { LoaderError } from "@wwawing/loader";
+import getImagePath from "../infra/path/getImagePath";
 
 const FILE_FILTERS = [
     { name: 'WWA マップデータ', extensions: ['dat'] },
@@ -19,6 +22,8 @@ export function open(win: BrowserWindow) {
     }
 
     const filePath = filePaths[0];
+    let stage: "MAPDATA" | "IMAGE" = "MAPDATA";
+    win.webContents.send('open-wwadata-start', { filePath });
     loadMapData(
         filePath,
         progress => {
@@ -26,19 +31,35 @@ export function open(win: BrowserWindow) {
             win.webContents.send('open-wwadata-progress', {
                 loaderProgress: progress
             });
-        },
-        error => {
-            win.webContents.send('open-wwadata-error', {
-                loaderError: error
-            });
-        },
-        wwaData => {
-            win.webContents.send('open-wwadata-complete', {
-                filePath,
-                data: wwaData
-            });
         }
-    );
+    )
+    .then(wwaData => {
+        win.webContents.send('open-wwadata-complete', {
+            filePath,
+            data: wwaData
+        });
+        stage = "IMAGE";
+        const imagePath = getImagePath(filePath, wwaData.mapCGName);
+        return loadImage(imagePath)
+    })
+    .then(imageBuffer => {
+        win.webContents.send('load-image-complete', {
+            imageBuffer: imageBuffer
+        });
+    })
+    .catch(err => {
+        switch (stage) {
+            case "MAPDATA":
+                win.webContents.send('open-wwadata-error', {
+                    loaderError: err as LoaderError
+                });
+                break;
+            case "IMAGE":
+                win.webContents.send('load-image-error', {
+                    err: err as NodeJS.ErrnoException
+                });
+        }
+    });
 
 }
 
