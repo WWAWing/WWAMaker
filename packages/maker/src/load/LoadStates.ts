@@ -72,7 +72,7 @@ const loadSlice = createSlice({
         },
         completeLoading: state => {
             if (state === null) {
-                throw new Error("読み込みステータス情報が存在しません。すでに読み込みは完了していましたか？");
+                throw new Error("読み込みステータス情報が存在しません。マップデータの読み込み開始を宣言したか確認してください。");
             }
             if (state?.error) {
                 throw new Error("現在読み込みでエラーが発生しています。正常に読み込み完了の手続きを完了できません。");
@@ -82,6 +82,15 @@ const loadSlice = createSlice({
                 stage: "DONE",
                 error: undefined
             };
+        },
+        updateFilePath: (state, action: PayloadAction<string>) => {
+            if (state === null) {
+                throw new Error("読み込みステータス情報が存在しません。マップデータの読み込み開始を宣言したか確認してください。");
+            }
+            return {
+                ...state,
+                currentFilePath: action.payload
+            }
         }
     }
 });
@@ -92,7 +101,8 @@ export const {
     setLoadingProgress,
     setMapdataLoadingError,
     setImageLoadingError,
-    completeLoading
+    completeLoading,
+    updateFilePath
 } = loadSlice.actions;
 
 export const loadReducer = loadSlice.reducer;

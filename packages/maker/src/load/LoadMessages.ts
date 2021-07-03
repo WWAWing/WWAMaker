@@ -1,7 +1,7 @@
 import { WWAData } from '@wwawing/common-interface';
 import { LoaderError, LoaderProgress } from '@wwawing/loader';
 import { ipcRenderer } from 'electron';
-import { completeLoading, setMapdataLoadingError, setLoadingProgress, startImageLoading, startMapdataLoading, setImageLoadingError } from './LoadStates';
+import { completeLoading, setMapdataLoadingError, setLoadingProgress, startImageLoading, startMapdataLoading, setImageLoadingError, updateFilePath } from './LoadStates';
 import { Store } from '../State';
 import { closeImage, setImage } from '../image/ImageState';
 import { closeMapdata, setMapdata } from '../wwadata/WWADataState';
@@ -58,4 +58,11 @@ ipcRenderer.on('load-image-error', (event, data: { err: NodeJS.ErrnoException })
         throw new Error("エラー情報が含まれていません。")
     }
     Store.dispatch(setImageLoadingError(data.err));
+});
+
+ipcRenderer.on('save-wwadata-update-filepath', (event, data: { filePath: string }) => {
+    if (!data.filePath) {
+        throw new Error("ファイルの Path が含まれていません。");
+    }
+    Store.dispatch(updateFilePath(data.filePath));
 });
