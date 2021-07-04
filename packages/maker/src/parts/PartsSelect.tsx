@@ -8,6 +8,7 @@ import { showPartsEdit } from '../info/InfoPanelState';
 import { Button, Segment, Label, Header } from 'semantic-ui-react';
 import { deleteParts } from '../wwadata/WWADataState';
 import { useImage } from 'wwamaker-image-decorder';
+import validatePartsEdit from '../info/validatePartsEdit';
 
 /**
  * パーツ一覧の Container コンポーネントです。
@@ -45,13 +46,16 @@ const PartsSelect: React.FC<{
      * @param partsType 対象のパーツ種類
      */
     const handlePartsEdit = (partsNumber: number, partsType: PartsType) => {
-        switch (partsType) {
-            case PartsType.OBJECT:
-                dispatch(showPartsEdit({ type: partsType, number: partsNumber }));
-                break;
-            case PartsType.MAP:
-                dispatch(showPartsEdit({ type: partsType, number: partsNumber }));
-        }
+        validatePartsEdit(partsType, partsNumber)
+            .then(() => {
+                switch (partsType) {
+                    case PartsType.OBJECT:
+                        dispatch(showPartsEdit({ type: partsType, number: partsNumber }));
+                        break;
+                    case PartsType.MAP:
+                        dispatch(showPartsEdit({ type: partsType, number: partsNumber }));
+                }
+            })
     };
 
     const handlePartsDelete = (partsType: PartsType) => {

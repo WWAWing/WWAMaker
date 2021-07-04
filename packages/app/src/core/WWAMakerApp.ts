@@ -18,6 +18,18 @@ export default class WWAMakerApp {
     }
 
     /**
+     * 警告メッセージを表示します。
+     * @param message メッセージテキスト
+     * @returns メッセージ表示後、 OK ボタンを押したあとに解決される Promise (返ってくる値は 0 固定)
+     */
+    public warningDialog(message: string): Promise<Electron.MessageBoxReturnValue> {
+        return dialog.showMessageBox(this.win, {
+            message,
+            type: "warning"
+        });
+    }
+
+    /**
      * ファイルを読み込みます。
      * @param filePath ファイルの Path
      */

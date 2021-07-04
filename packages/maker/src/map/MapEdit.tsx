@@ -9,6 +9,7 @@ import { putParts } from '../wwadata/WWADataState';
 import getRect from '../common/getRect';
 import { showPartsEdit } from '../info/InfoPanelState';
 import { selectObjectParts, selectMapParts } from '../parts/PartsState';
+import validatePartsEdit from '../info/validatePartsEdit';
 
 interface StateProps {
     editParts: {
@@ -229,18 +230,21 @@ class MapEdit extends React.Component<Props, State> {
             }
         }
 
-        this.props.showPartsEdit({
-            type: targetPartsType,
-            number: targetPartsNumber
-        });
+        validatePartsEdit(targetPartsType, targetPartsNumber)
+            .then(() => {
+                this.props.showPartsEdit({
+                    type: targetPartsType,
+                    number: targetPartsNumber
+                });
+                switch (targetPartsType) {
+                    case PartsType.OBJECT:
+                        this.props.selectObjectParts(targetPartsNumber);
+                        break;
+                    case PartsType.MAP:
+                        this.props.selectMapParts(targetPartsNumber);
+                }
+            })
 
-        switch (targetPartsType) {
-            case PartsType.OBJECT:
-                this.props.selectObjectParts(targetPartsNumber);
-                break;
-            case PartsType.MAP:
-                this.props.selectMapParts(targetPartsNumber);
-        }
     }
 
     public render() {

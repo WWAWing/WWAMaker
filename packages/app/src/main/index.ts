@@ -2,7 +2,7 @@ import makeMenu from './makeMenu';
 import WWAMakerApp from '../core/WWAMakerApp';
 import { app, BrowserWindow, Menu } from 'electron';
 import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer';
-import "../messages";
+import messages from "../messages";
 
 function createWindow () {
     // ブラウザウインドウを作成
@@ -24,6 +24,9 @@ function createWindow () {
 
     // そしてこのアプリの index.html をロード
     win.loadURL(url);
+
+    messages.setLoadMessages();
+    messages.setMessageMessages(app);
 
     Menu.setApplicationMenu(makeMenu(app));
 }
