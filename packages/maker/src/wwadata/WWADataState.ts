@@ -61,7 +61,7 @@ const wwaDataSlice = createSlice({
             if (state === null) {
                 return;
             }
-            state = {
+            return {
                 ...state,
                 ...action.payload
             };

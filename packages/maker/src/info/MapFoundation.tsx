@@ -73,7 +73,6 @@ const MapFoundation: React.FC<{}> = () => {
             return;
         }
     
-        // FIXME: 2度実行すると画像が更新されない
         if (field.mapCGName !== imageFilename) {
             dispatch(startImageLoading());
             ipcRenderer.send('load-image', { filePath, imageFilename: field.mapCGName });
