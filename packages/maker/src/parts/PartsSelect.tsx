@@ -4,11 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectObjectParts, selectMapParts } from './PartsState';
 import PartsList from '../common/PartsList';
 import { PartsType } from '../classes/WWAData';
-import { showPartsEdit } from '../info/InfoPanelState';
 import { Button, Segment, Label, Header } from 'semantic-ui-react';
 import { deleteParts } from '../wwadata/WWADataState';
 import { useImage } from 'wwamaker-image-decorder';
-import validatePartsEdit from '../info/validatePartsEdit';
+import checkPartsEdit from '../info/checkPartsEdit';
+import { showPartsEdit } from '../info/InfoPanelState';
 
 /**
  * パーツ一覧の Container コンポーネントです。
@@ -46,16 +46,12 @@ const PartsSelect: React.FC<{
      * @param partsType 対象のパーツ種類
      */
     const handlePartsEdit = (partsNumber: number, partsType: PartsType) => {
-        validatePartsEdit(partsType, partsNumber)
-            .then(() => {
-                switch (partsType) {
-                    case PartsType.OBJECT:
-                        dispatch(showPartsEdit({ type: partsType, number: partsNumber }));
-                        break;
-                    case PartsType.MAP:
-                        dispatch(showPartsEdit({ type: partsType, number: partsNumber }));
-                }
-            })
+        checkPartsEdit(partsType, partsNumber, () => {
+            dispatch(showPartsEdit({
+                number: partsNumber,
+                type: partsType
+            }));
+        });
     };
 
     const handlePartsDelete = (partsType: PartsType) => {
