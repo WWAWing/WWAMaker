@@ -1,8 +1,13 @@
+import WWAMakerApp from "../core/WWAMakerApp";
 import { ipcMain } from "electron";
 import getImagePath from "../infra/path/getImagePath";
 import loadImage from "../infra/file/loadImage";
 
-export default function setLoadMessages() {
+export default function setLoadMessages(app: WWAMakerApp) {
+
+    ipcMain.on('open-wwadata', () => {
+        app.openWithDialog();
+    });
 
     ipcMain.on('load-image', (event, data: { filePath: string, imageFilename: string }) => {
         if (!data.filePath) {

@@ -144,4 +144,18 @@ export default class WWAMakerApp {
             })
         });
     }
+
+    /**
+     * 境界線の表示を切り替えます。
+     */
+    public toggleGrid() {
+        this.win.webContents.send('view-toggle-grid');
+    }
+
+    /**
+     * インフォパネルの表示を切り替えます。
+     */
+    public toggleInfopanel() {
+        this.win.webContents.send('view-toggle-infopanel');
+    }
 }

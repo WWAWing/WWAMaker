@@ -5,6 +5,7 @@ import { Store, StoreType } from './State';
 
 import "./load/LoadMessages";
 import "./wwadata/WWADataMessages";
+import "./map/MapMessages";
 
 import "semantic-ui-css/semantic.min.css";
 import './index.css';

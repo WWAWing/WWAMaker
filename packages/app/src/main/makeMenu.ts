@@ -30,8 +30,9 @@ function makeMenu(app: WWAMakerApp): Menu {
         }, {
             label: '表示',
             submenu: [
-
-            ]
+                { label: '境界線の表示切替', click:() => app.toggleGrid() },
+                { label: 'インフォパネルの表示切替', click:() => app.toggleInfopanel() }
+            ] as MenuItemConstructorOptions[]
         }, {
             label: 'ヘルプ',
             submenu: [

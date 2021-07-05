@@ -25,7 +25,7 @@ function createWindow () {
     // そしてこのアプリの index.html をロード
     win.loadURL(url);
 
-    messages.setLoadMessages();
+    messages.setLoadMessages(app);
     messages.setMessageMessages(app);
 
     Menu.setApplicationMenu(makeMenu(app));
