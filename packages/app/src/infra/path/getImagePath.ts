@@ -1,3 +1,5 @@
+import path from 'path';
+
 /**
  * 読み込む画像ファイルの Path を特定します。
  * filePath からファイル名の箇所を削除し、代わりに imageFilename を追記しています。
@@ -12,8 +14,5 @@
  * @returns 
  */
 export default function getImagePath(filePath: string, imageFilename: string): string {
-    const pathDelimiter = 
-        (!filePath.includes("/") && filePath.includes("\\")) ? "\\"
-        : "/";
-    return filePath.substring(0, filePath.lastIndexOf(pathDelimiter)) + pathDelimiter + imageFilename;
+    return path.dirname(filePath) + path.sep + imageFilename;
 }

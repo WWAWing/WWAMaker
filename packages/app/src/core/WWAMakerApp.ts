@@ -6,6 +6,7 @@ import loadImage from "../infra/file/loadImage";
 import { LoaderError } from "@wwawing/loader";
 import getImagePath from "../infra/path/getImagePath";
 import fileFilters from "../infra/file/fileFilters";
+import path from "path";
 
 /**
  * WWA Maker の Electron アプリケーションです。
@@ -27,6 +28,15 @@ export default class WWAMakerApp {
             message,
             type: "warning"
         });
+    }
+
+    /**
+     * エラーメッセージを表示します。
+     * @param title ダイアログのタイトル
+     * @param message ダイアログのテキスト
+     */
+    public errorDialog(title: string, message: string) {
+        return dialog.showErrorBox(title, message);
     }
 
     /**
@@ -60,15 +70,21 @@ export default class WWAMakerApp {
         })
         .catch(err => {
             switch (stage) {
-                case "MAPDATA":
-                    this.win.webContents.send('open-wwadata-error', {
-                        loaderError: err as LoaderError
-                    });
+                case "MAPDATA": {
+                    const loaderError = err as LoaderError;
+                    this.errorDialog("エラー！", loaderError.message);
                     break;
-                case "IMAGE":
-                    this.win.webContents.send('load-image-error', {
-                        err: err as NodeJS.ErrnoException
-                    });
+                }
+                case "IMAGE": {
+                    const nodeError = err as NodeJS.ErrnoException;
+                    // 画像ファイル名が特定できない場合は別にエラーメッセージを出す必要がありますが、原作を尊重するためにあえて空にしています。
+                    const errorPath = nodeError.path ?? "";
+                    const imageFilename = path.basename(errorPath);
+                    this.errorDialog("注意",
+                        "GIF画像ファイル「" + imageFilename + "」がオープンできません。\n" +
+                        "ファイルが存在するか、他のアプリケーションにより使用されていないかを確認してください。"
+                    );
+                }
             }
         });
     }
