@@ -8,14 +8,12 @@ function makeMenu(app: WWAMakerApp): Menu {
         {
             label: 'ファイル',
             submenu: [
-                { label: '新規作成' },
-                // TODO: 別の関数に移す
+                { label: '新規作成', click: () => app.newMapdata() },
                 { label: '開く', click: () => app.openWithDialog() },
                 { label: '上書き保存', click: () => app.save() },
-                // TODO: 別の関数に移す
                 { label: '名前を付けて保存', click: () => app.saveWithDialog() },
                 { type: 'separator' },
-                { role: 'quit' }
+                { role: 'quit', click: () => app.quit() }
             ] as MenuItemConstructorOptions[]
         }, {
             label: '編集',

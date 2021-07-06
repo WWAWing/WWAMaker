@@ -25,8 +25,23 @@ export default class WWAMakerApp {
      */
     public warningDialog(message: string): Promise<Electron.MessageBoxReturnValue> {
         return dialog.showMessageBox(this.win, {
+            title: "注意！",
             message,
             type: "warning"
+        });
+    }
+
+    /**
+     * 情報メッセージを表示します。
+     * @param title タイトル
+     * @param message メッセージテキスト
+     * @returns メッセージ表示後、 OK ボタンを押したあとに解決される Promise (返ってくる値は 0 固定)
+     */
+    public infoDialog(title: string, message: string): Promise<Electron.MessageBoxReturnValue> {
+        return dialog.showMessageBox(this.win, {
+            title,
+            message,
+            type: "info"
         });
     }
 
@@ -37,6 +52,28 @@ export default class WWAMakerApp {
      */
     public errorDialog(title: string, message: string) {
         return dialog.showErrorBox(title, message);
+    }
+
+    public newMapdata() {
+        dialog.showMessageBox(this.win, {
+            title: "マップの新規作成",
+            message: "マップの新規作成をします。\n現在、編集中のデータは失われますが、よろしいですか？",
+            buttons: ["OK", "Cancel"],
+            type: "question"
+        }).then(response => {
+            if (response.response === 0) {
+                this.win.webContents.send('new-wwadata-process');
+            }
+        });
+        ipcMain.once('new-wwadata-complete', () => {
+            this.infoDialog(
+                "マップの新規作成",
+                "マップを新規作成しました。\n" +
+                "画面には何も表示されなくなりますがこれが正常です。\n" +
+                "使用する GIF 画像ファイルを選択後、\n" +
+                "新たにパーツを作成してマップに配置していってください。",
+            );
+        });
     }
 
     /**
@@ -141,8 +178,7 @@ export default class WWAMakerApp {
 
     private makeSave(filePathFunc: (filePath: string) => string) {
         this.win.webContents.send('save-wwadata-request-wwadata');
-        // TODO: messages ディレクトリに移行したほうが良いかもしれないが、処理の流れがわからなくなるのでこのままでも良いかもしれない
-        ipcMain.on('save-wwadata-receive-wwadata', (event, data: { data: WWAData, filePath: string }) => {
+        ipcMain.once('save-wwadata-receive-wwadata', (event, data: { data: WWAData, filePath: string }) => {
             if (data.data === undefined) {
                 throw new Error("WWA データが含まれていません。");
             }
@@ -173,5 +209,10 @@ export default class WWAMakerApp {
      */
     public toggleInfopanel() {
         this.win.webContents.send('view-toggle-infopanel');
+    }
+
+    public quit() {
+        // TODO: マップデータに変更がある場合は警告を表示するようにする
+        this.win.close();
     }
 }

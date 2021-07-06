@@ -3,11 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setEditMode as setEditModeAction, EditMode, toggleGrid as toggleGridAction } from './map/MapStates';
 import { Button, Label, Icon, List, SemanticICONS, Popup } from 'semantic-ui-react';
 import { toggleInfoPanel as toggleInfoPanelAction } from './info/InfoPanelState';
-import createNewMapdata from './common/createNewMapdata';
 import saveMapdata from './common/saveMapdata';
 import { ipcRenderer } from 'electron';
 
 const MainToolbar: React.FC = () => {
+
+    const createNewMapdata = () => {
+        ipcRenderer.send('new-wwadata');
+    };
 
     const openMapdata = () => {
         ipcRenderer.send('open-wwadata');
@@ -59,7 +62,7 @@ const MainToolbar: React.FC = () => {
         <div>
             <List horizontal>
                 <List.Item>
-                    <Button onClick={() => createNewMapdata()}>
+                    <Button onClick={createNewMapdata}>
                         <Icon name="file" />
                     </Button>
                 </List.Item>

@@ -5,6 +5,15 @@ import loadImage from "../infra/file/loadImage";
 
 export default function setLoadMessages(app: WWAMakerApp) {
 
+    /**
+     * [main->renderer] new-wwadata
+     * [renderer->main] new-wwadata-process
+     * [main->renderer] new-wwadata-complete
+     */
+    ipcMain.on('new-wwadata', () => {
+        app.newMapdata();
+    });
+
     ipcMain.on('open-wwadata', () => {
         app.openWithDialog();
     });
