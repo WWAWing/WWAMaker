@@ -8,7 +8,8 @@ import { setCurrentPos, EditMode, setEditMode } from './MapStates';
 import { putParts } from '../wwadata/WWADataState';
 import getRect from '../common/getRect';
 import { showPartsEdit } from '../info/InfoPanelState';
-import { selectObjParts, selectMapParts } from '../parts/PartsState';
+import { selectObjectParts, selectMapParts } from '../parts/PartsState';
+import checkPartsEdit from '../info/checkPartsEdit';
 
 interface StateProps {
     editParts: {
@@ -38,7 +39,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
         setCurrentPos: setCurrentPos,
         putParts: putParts,
         showPartsEdit: showPartsEdit,
-        selectObjParts: selectObjParts,
+        selectObjectParts: selectObjectParts,
         selectMapParts: selectMapParts,
         setEditMode: setEditMode
     }, dispatch);
@@ -209,11 +210,11 @@ class MapEdit extends React.Component<Props, State> {
             if (targetParts[PartsType.OBJECT] !== 0) {
                 targetPartsType = PartsType.OBJECT;
                 targetPartsNumber = targetParts[PartsType.OBJECT];
-                this.props.setEditMode({ editMode: EditMode.PUT_OBJECT });
+                this.props.setEditMode(EditMode.PUT_OBJECT);
             } else {
                 targetPartsType = PartsType.MAP;
                 targetPartsNumber = targetParts[PartsType.MAP];
-                this.props.setEditMode({ editMode: EditMode.PUT_MAP });
+                this.props.setEditMode(EditMode.PUT_MAP);
             }
         } else {
             targetPartsType = type;
@@ -229,22 +230,20 @@ class MapEdit extends React.Component<Props, State> {
             }
         }
 
-        this.props.showPartsEdit({
-            type: targetPartsType,
-            number: targetPartsNumber
+        checkPartsEdit(targetPartsType, targetPartsNumber, () => {
+            this.props.showPartsEdit({
+                type: targetPartsType,
+                number: targetPartsNumber
+            });
+            switch (targetPartsType) {
+                case PartsType.OBJECT:
+                    this.props.selectObjectParts(targetPartsNumber);
+                    break;
+                case PartsType.MAP:
+                    this.props.selectMapParts(targetPartsNumber);
+            }
         });
 
-        switch (targetPartsType) {
-            case PartsType.OBJECT:
-                this.props.selectObjParts({
-                    number: targetPartsNumber
-                });
-                break;
-            case PartsType.MAP:
-                this.props.selectMapParts({
-                    number: targetPartsNumber
-                });
-        }
     }
 
     public render() {

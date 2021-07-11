@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loadMapdata } from './load/LoadStates';
 import { setEditMode as setEditModeAction, EditMode, toggleGrid as toggleGridAction } from './map/MapStates';
-import { Input, Button, Label, Icon, List, SemanticICONS, Popup } from 'semantic-ui-react';
+import { Button, Label, Icon, List, SemanticICONS, Popup } from 'semantic-ui-react';
 import { toggleInfoPanel as toggleInfoPanelAction } from './info/InfoPanelState';
-import createNewMapdata from './common/createNewMapdata';
 import saveMapdata from './common/saveMapdata';
+import { ipcRenderer } from 'electron';
 
 const MainToolbar: React.FC = () => {
 
+    const createNewMapdata = () => {
+        ipcRenderer.send('new-wwadata');
+    };
+
     const openMapdata = () => {
-        dispatch(loadMapdata({
-            mapdataFileName: mapdataFileName
-        }));
+        ipcRenderer.send('open-wwadata');
     };
 
     const setEditMode = (editMode: EditMode) => {
-        dispatch(setEditModeAction({ editMode }));
+        dispatch(setEditModeAction(editMode));
     };
 
     const toggleGrid = () => {
@@ -24,11 +25,7 @@ const MainToolbar: React.FC = () => {
     };
 
     const toggleInfoPanel = () => {
-        dispatch(toggleInfoPanelAction({}));
-    };
-
-    const onFileNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setMapdataFileName(event.target.value);
+        dispatch(toggleInfoPanelAction());
     };
 
     /**
@@ -53,7 +50,6 @@ const MainToolbar: React.FC = () => {
         );
     }
 
-    const [mapdataFileName, setMapdataFileName] = useState<string>("wwamap.dat");
     const dispatch = useDispatch();
 
     const currentEditMode = useSelector(state => state.map.editMode);
@@ -66,20 +62,14 @@ const MainToolbar: React.FC = () => {
         <div>
             <List horizontal>
                 <List.Item>
-                    <Button onClick={() => createNewMapdata()}>
+                    <Button onClick={createNewMapdata}>
                         <Icon name="file" />
                     </Button>
                 </List.Item>
                 <List.Item>
-                    <Input
-                        action={{
-                            icon: "folder open",
-                            onClick: openMapdata
-                        }}
-                        type="text"
-                        value={mapdataFileName}
-                        onChange={onFileNameChange}
-                    />
+                    <Button onClick={openMapdata}>
+                        <Icon name="folder open" />
+                    </Button>
                 </List.Item>
                 <List.Item>
                     <Button onClick={() => saveMapdata()}>

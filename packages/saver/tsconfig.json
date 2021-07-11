@@ -3,9 +3,7 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./lib",
-    "lib": [
-      "esnext"
-    ],
+    "module": "CommonJS",
     "declaration": true
   },
   "include": [

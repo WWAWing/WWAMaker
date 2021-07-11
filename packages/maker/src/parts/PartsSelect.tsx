@@ -1,13 +1,14 @@
 import React from 'react';
 import styles from './PartsSelect.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectObjParts, selectMapParts } from './PartsState';
+import { selectObjectParts, selectMapParts } from './PartsState';
 import PartsList from '../common/PartsList';
 import { PartsType } from '../classes/WWAData';
-import { showPartsEdit } from '../info/InfoPanelState';
 import { Button, Segment, Label, Header } from 'semantic-ui-react';
 import { deleteParts } from '../wwadata/WWADataState';
 import { useImage } from 'wwamaker-image-decorder';
+import checkPartsEdit from '../info/checkPartsEdit';
+import { showPartsEdit } from '../info/InfoPanelState';
 
 /**
  * パーツ一覧の Container コンポーネントです。
@@ -20,7 +21,7 @@ const PartsSelect: React.FC<{
     const mapAttribute = useSelector(state => state.wwaData?.mapAttribute);
     const objParts = useSelector(state => state.objParts);
     const mapParts = useSelector(state => state.mapParts);
-    const imageUrl = useSelector(state => state.imageUrl);
+    const imageUrl = useSelector(state => state.image);
     const image = useImage(imageUrl ?? "");
 
     const dispatch = useDispatch();
@@ -31,10 +32,10 @@ const PartsSelect: React.FC<{
     const handlePartsSelect = (partsNumber: number, partsType: PartsType) => {
         switch (partsType) {
             case PartsType.OBJECT:
-                dispatch(selectObjParts({ number: partsNumber }));
+                dispatch(selectObjectParts(partsNumber));
                 break;
             case PartsType.MAP:
-                dispatch(selectMapParts({ number: partsNumber }));
+                dispatch(selectMapParts(partsNumber));
                 break;
         }
     };
@@ -45,13 +46,12 @@ const PartsSelect: React.FC<{
      * @param partsType 対象のパーツ種類
      */
     const handlePartsEdit = (partsNumber: number, partsType: PartsType) => {
-        switch (partsType) {
-            case PartsType.OBJECT:
-                dispatch(showPartsEdit({ type: partsType, number: partsNumber }));
-                break;
-            case PartsType.MAP:
-                dispatch(showPartsEdit({ type: partsType, number: partsNumber }));
-        }
+        checkPartsEdit(partsType, partsNumber, () => {
+            dispatch(showPartsEdit({
+                number: partsNumber,
+                type: partsType
+            }));
+        });
     };
 
     const handlePartsDelete = (partsType: PartsType) => {

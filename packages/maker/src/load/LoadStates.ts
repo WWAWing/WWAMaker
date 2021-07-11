@@ -1,9 +1,5 @@
-import { reducerWithInitialState } from "typescript-fsa-reducers";
-import actionCreatorFactory from "typescript-fsa";
-import { loadWWADataPromise, encodeImagePromise, loadImagePromise } from "./LoadPromises";
-import { asyncFactory } from "typescript-fsa-redux-thunk";
-import { setMapdata, setImage, closeMapdata } from "../State";
-import { Progress, LoaderError } from "@wwawing/loader";
+import { Progress, LoaderError, LoaderProgress } from "@wwawing/loader";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 /**
  * Load モジュールについて
@@ -11,94 +7,102 @@ import { Progress, LoaderError } from "@wwawing/loader";
  *     読み込みの開始 → 読み込みの途中経過 → 読み込み完了/読み込みエラー の際にこの Load モジュールが働きます。
  * @see MapData
  */
-export interface LoadState {
-    progress: Progress|null,
-    error: LoaderError|null
-}
+export type LoadState =
+    null |
+    (
+        {
+            stage: "MAPDATA",
+            progress?: Progress,
+            error?: LoaderError
+        } |
+        {
+            stage: "IMAGE",
+            error?: NodeJS.ErrnoException
+        } |
+        {
+            stage: "DONE",
+            error?: undefined
+        }
+    ) & {
+        currentFilePath?: string
+    };
 
-/**
- * 読み込み操作を行う際に指定が必要な interface です。
- */
-interface LoadWWADataState {
-    mapdataFileName: string
-}
-
-/**
- * 画像読み込み操作を行う際に指定が必要な interface です。
- */
-interface LoadImageState {
-    imagePath: string
-}
-
-const actionCreator = actionCreatorFactory();
-const actionCreatorAsync = asyncFactory<LoadWWADataState>(actionCreator);
-
-
-/**
- * マップデータ読み込みを行うアクションです。
- */
-export const loadMapdata = actionCreatorAsync<LoadWWADataState, void, LoaderError>(
-    'LOAD_MAPDATA',
-    async (params, dispatch) => {
-        // マップデータを閉じる
-        dispatch(closeMapdata());
-
-        // マップデータの読み込み
-        const wwaData = await loadWWADataPromise(
-            params.mapdataFileName,
-            progress => {
-                dispatch(setLoadingProgress(progress));
+const loadSlice = createSlice({
+    name: 'load',
+    initialState: null as LoadState,
+    reducers: {
+        startMapdataLoading: (state, action: PayloadAction<string>) => {
+            if (state?.stage === "MAPDATA") {
+                console.warn("現在別のマップデータを読み込んでいる途中だそうです。動作に不都合が発生するかもしれません。");
             }
-        );
-        dispatch(setMapdata({ wwaData: wwaData }));
-
-        // イメージ画像の読み込み
-        const imageData = await loadImagePromise(wwaData.mapCGName);
-        const imageUrl = await encodeImagePromise(imageData);
-        dispatch(setImage({ imageUrl }));
+            return {
+                stage: "MAPDATA",
+                currentFilePath: action.payload
+            };
+        },
+        startImageLoading: state => {
+            if (state === null) {
+                throw new Error("マップデータを読み込んでいません。先にマップデータの読み込みを完了させてください。");
+            }
+            if (state?.stage === "IMAGE") {
+                console.warn("現在別のイメージを読み込んでいる途中だそうです。動作に不都合が発生するかもしれません。");
+            }
+            return {
+                ...state,
+                stage: "IMAGE"
+            };
+        },
+        setLoadingProgress: (state, action: PayloadAction<LoaderProgress>) => {
+            if (state?.stage !== "MAPDATA") {
+                throw new Error("setLoadingProgress アクションはマップデータの読み込みでのみ使用できます。マップデータの読み込み開始を宣言したか確認してください。");
+            }
+            state.progress = action.payload;
+        },
+        setMapdataLoadingError: (state, action: PayloadAction<LoaderError>) => {
+            if (state?.stage !== "MAPDATA") {
+                throw new Error("現在マップデータを読み込んでいません。すでに読み込みは完了していましたか？");
+            }
+            state.error = action.payload;
+        },
+        setImageLoadingError: (state, action: PayloadAction<NodeJS.ErrnoException>) => {
+            if (state?.stage !== "IMAGE") {
+                throw new Error("現在画像データを読み込んでいません。すでに読み込みは完了していましたか？");
+            }
+            state.error = action.payload;
+        },
+        completeLoading: state => {
+            if (state === null) {
+                throw new Error("読み込みステータス情報が存在しません。マップデータの読み込み開始を宣言したか確認してください。");
+            }
+            if (state?.error) {
+                throw new Error("現在読み込みでエラーが発生しています。正常に読み込み完了の手続きを完了できません。");
+            }
+            return {
+                ...state,
+                stage: "DONE",
+                error: undefined
+            };
+        },
+        updateFilePath: (state, action: PayloadAction<string>) => {
+            if (state === null) {
+                throw new Error("読み込みステータス情報が存在しません。マップデータの読み込み開始を宣言したか確認してください。");
+            }
+            return {
+                ...state,
+                currentFilePath: action.payload
+            }
+        }
     }
-);
+});
 
-/**
- * イメージを読み込むアクションです。
- *     基本設定の編集のような、画像だけの再読み込みを必要とする場合に使用します。
- */
-export const loadImage = actionCreatorAsync<LoadImageState, void, LoaderError>(
-    'LOAD_IMAGE',
-    async (params, dispatch) => {
-        // イメージ画像の読み込み
-        const imageData = await loadImagePromise(params.imagePath);
-        const imageUrl = await encodeImagePromise(imageData);
-        dispatch(setImage({ imageUrl }));
-    }
-);
+export const {
+    startMapdataLoading,
+    startImageLoading,
+    setLoadingProgress,
+    setMapdataLoadingError,
+    setImageLoadingError,
+    completeLoading,
+    updateFilePath
+} = loadSlice.actions;
 
-/**
- * ローディング状態を記録します。
- *     typescript-fsa-redux-thunk では、 開始→エラー/完了 しかアクションを起こすことができません。
- *     このメソッドは、その「開始」と「エラー/完了」の間で発生する途中経過に対応したアクションになります。
- */
-const setLoadingProgress = actionCreator<Progress>("SET_LOADING_PROGRESS");
-
-export const INITIAL_STATE: LoadState = {
-    progress: null,
-    error: null
-};
-
-export const LoadReducer = reducerWithInitialState(INITIAL_STATE)
-    .case(setLoadingProgress, (state, progress) => ({
-        ...state,
-        progress: progress
-    }))
-    .case(loadMapdata.async.failed, (state, params) => ({
-        ...state,
-        error: params.error
-    }))
-    .case(loadMapdata.async.done, (state) => ({
-        ...state,
-        progress: null
-    }))
-    .case(loadImage.async.failed, (state, params) => ({
-        ...state,
-        error: params.error
-    }))
+export const loadReducer = loadSlice.reducer;

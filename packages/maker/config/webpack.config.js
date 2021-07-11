@@ -130,6 +130,8 @@ module.exports = function(webpackEnv) {
 
   return {
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
+    // TODO: ここで target を明示的に指定すると汎用性を失うため、状況に応じて値を変化できるようにする
+    target: 'electron-renderer',
     // Stop compilation early in production
     bail: isEnvProduction,
     devtool: isEnvProduction

@@ -6,7 +6,6 @@
       "dom.iterable",
       "esnext"
     ],
-    "skipLibCheck": true,
     "noEmit": true,
     "jsx": "preserve"
   },
