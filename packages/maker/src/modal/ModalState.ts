@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-type ModalState = {
+export type ModalState = {
     open: false
 } | {
     open: true,

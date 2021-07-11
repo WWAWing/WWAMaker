@@ -21,6 +21,8 @@
     "@welldone-software/why-did-you-render": "^4.1.3",
     "@wwawing/common-interface": "^3.5.11-publishtest.1",
     "@wwawing/event-emitter": "^3.5.11-publishtest.1",
+    "@wwawing/engine": "3.5.10",
+    "@wwawing/styles": "3.5.9",
     "babel-eslint": "10.1.0",
     "babel-jest": "^24.9.0",
     "babel-loader": "8.1.0",

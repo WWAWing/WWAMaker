@@ -1988,6 +1988,11 @@
   resolved "https://registry.yarnpkg.com/@wwawing/common-interface/-/common-interface-3.5.11-publishtest.1.tgz#ed38a78dd65c63d50948cc3e7fbbca97bffbaec2"
   integrity sha512-oTjXqmQ24jSaDpqIsk6Cr624FARk5iGzvVCId/fuRaI9BiG33YTH+z9gO+isIsDyRGgq37yWmL3kwYZM3lDw5A==
 
+"@wwawing/engine@3.5.10":
+  version "3.5.10"
+  resolved "https://registry.yarnpkg.com/@wwawing/engine/-/engine-3.5.10.tgz#72b2956922d9ab44d6a876327d35ad6e9a248c15"
+  integrity sha512-svW2+vhIWZP82aP+hnLkY8dN2KABLoKrUDddHocae53x69pi6t27K8Gpx1l0SDwBiawFOE4xO2VW5BNv1yXqBA==
+
 "@wwawing/event-emitter@^3.5.11-publishtest.1":
   version "3.5.11-publishtest.1"
   resolved "https://registry.yarnpkg.com/@wwawing/event-emitter/-/event-emitter-3.5.11-publishtest.1.tgz#44d28aa97be48f50795a952c2d0b9f389855566c"
@@ -1999,6 +2004,11 @@
   integrity sha512-HBP+Ea0tnTn9n3JxXNiyCHIiSzktn6Yl0ODfBYPtNoLMm/Cvg5lMo9sAiQUzZblTOgSh+MuPVPy40gZoPZsktQ==
   dependencies:
     "@wwawing/event-emitter" "^3.5.11-publishtest.1"
+
+"@wwawing/styles@3.5.9":
+  version "3.5.9"
+  resolved "https://registry.yarnpkg.com/@wwawing/styles/-/styles-3.5.9.tgz#92b12ffcf7b2193838d968e178db9b437cdd62df"
+  integrity sha512-Uo4pjX/d+ZHHsw9dOujnl+0k8zcoswVPj27rYtfptfUaKhiVASI0oik7EDyjpe0nMKzP/Q7lIu7mCdW9tifvUg==
 
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
