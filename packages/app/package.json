@@ -17,9 +17,12 @@
     "@wwawing/common-interface": "^3.5.11-publishtest.1",
     "@wwawing/event-emitter": "^3.5.11-publishtest.1",
     "@wwawing/loader": "^3.5.11-publishtest.1",
-    "wwamaker-saver": "^0.0.1"
+    "@wwawing/page-generator": "3.5.11",
+    "wwamaker-saver": "^0.0.1",
+    "express": "4.17.1"
   },
   "devDependencies": {
+    "@types/express": "^4.17.13",
     "electron": "^13.1.2",
     "electron-devtools-installer": "3.2.0"
   }
