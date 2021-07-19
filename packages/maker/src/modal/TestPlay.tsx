@@ -1,38 +1,38 @@
+import { ipcRenderer } from "electron";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import Saver from "wwamaker-saver";
-// TODO: まだ動きません！！
-// import "@wwawing/engine";
-// import "@wwawing/styles";
 
 const TestPlay: React.FC<{}> = () => {
-    const wwadata = useSelector(state => state.wwaData);
-    const [mapdataUrl, updateWWADataUrl] = useState<string>("");
+    const wwaData = useSelector(state => state.wwaData);
+    const absolutePath = useSelector(state => state.load?.currentFilePath);
+    const [testplayUrl, setTestPlayUrl] = useState<string>("");
 
     useEffect(() => {
-        if (wwadata === null) {
+        if (wwaData === null) {
             return;
         }
-        Saver(wwadata).then(data => {
-            const blob = new Blob([ data ]);
-            updateWWADataUrl(URL.createObjectURL(blob));
+        ipcRenderer.send('testplay', {
+            wwaData,
+            absolutePath
         });
-    }, [wwadata]);
+        ipcRenderer.once('testplay-return-url', (event, data) => {
+            if (!data.url) {
+                throw new Error("テストプレイの結果から URL が取得できませんでした。");
+            }
+            setTestPlayUrl(data.url);
+        });
+    }, [wwaData, absolutePath]);
 
-    if (wwadata === null) {
+    if (wwaData === null) {
         return null;
     }
-    if (mapdataUrl.length <= 0) {
+    if (testplayUrl.length <= 0) {
         return null;
     }
 
+    // TODO: 横幅と縦幅は定数を使用して求めるようにしたい
     return (
-        <div
-            id="wwa-wrapper"
-            className="wwa-size-box"
-            data-wwa-mapdata={mapdataUrl}
-        >
-        </div>
+        <iframe src={testplayUrl} title={wwaData.worldName} width="800" height="600" />
     );
 };
 

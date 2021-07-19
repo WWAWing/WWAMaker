@@ -27,6 +27,7 @@ function createWindow () {
 
     messages.setLoadMessages(app);
     messages.setMessageMessages(app);
+    messages.setTestPlayMessages();
 
     Menu.setApplicationMenu(makeMenu(app));
 }
