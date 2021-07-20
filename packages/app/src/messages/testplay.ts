@@ -10,6 +10,9 @@ type TestPlayPayload = {
     absolutePath: string
 };
 
+// 300: Ver3.x, 10: WWA Maker Prod & Dev(00 は WWA Wing?), 1: テストプレイ
+export const DEBUG_SERVER_PORT = 3311;
+
 export default function setTestPlayMessages() {
 
     ipcMain.on('testplay', (event, data: TestPlayPayload) => {
@@ -26,10 +29,15 @@ export default function setTestPlayMessages() {
 
         app.get("/", (req, res) => {
             res.send(render({
+                page: {
+                    additionalCssFiles: [
+                        // TODO: オフラインで使用できないので @wwawing/all などから取得するようにする
+                        "https://unpkg.com/@wwawing/all/dist/wwawing-dist/mapdata/style.css"
+                    ]
+                },
                 wwa: {
                     resources: {
                         mapData: mapdataFilename,
-                        // TODO: オフラインで使用できないので @wwawing/engine などから取得するようにする
                         wwaJs: "https://unpkg.com/@wwawing/all/dist/wwawing-dist/mapdata/wwa.js",
                         wwaCss: "https://unpkg.com/@wwawing/all/dist/wwawing-dist/mapdata/wwa.css"
                     }
@@ -39,19 +47,16 @@ export default function setTestPlayMessages() {
 
         app.get("/" + mapdataFilename, (req, res) => {
             res.set('Content-Type', 'application/octet-stream');
-            // FIXME: JSON データをそのままバイナリ化したようなマップデータファイルが返ってくる
             Saver(data.wwaData).then(value => {
-                res.send(value);
+                res.send(Buffer.from(value));
             });
         });
 
         app.use("/", express.static(dirPath));
 
-        // TODO: well-knwon ポートとぶつからないか確かめる
-        const server = app.listen(0, () => {
+        // FIXME: テストプレイ画面を閉じてもポートは閉じてない
+        const server = app.listen(DEBUG_SERVER_PORT, () => {
             const serverAddress = server.address();
-            // DEBUG: サーバーアドレスを表示
-            console.log(serverAddress);
             event.reply('testplay-return-url', {
                 url: typeof serverAddress === "string" ? serverAddress : `http://localhost:${serverAddress?.port}`
             });
