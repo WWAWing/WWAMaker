@@ -1,5 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { ipcRenderer } from "electron";
 import { Modal } from "semantic-ui-react";
 import { closeModal } from "./ModalState";
 import TestPlay from "./TestPlay";
@@ -18,11 +19,16 @@ const ModalComponent: React.FC<{}> = () => {
         }
     };
 
+    const onClose = () => {
+        ipcRenderer.send('testplay-close');
+        dispatch(closeModal());
+    };
+
     return (
         <Modal
             closeIcon
             open={isOpened}
-            onClose={() => dispatch(closeModal())}
+            onClose={onClose}
         >
             <Modal.Content>
                 <ContentComponent currentMode={mode} />

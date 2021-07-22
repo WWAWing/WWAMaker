@@ -7,15 +7,19 @@ import { LoaderError } from "@wwawing/loader";
 import getImagePath from "../infra/path/getImagePath";
 import fileFilters from "../infra/file/fileFilters";
 import path from "path";
+import WWAMakerDebugServer from "./WWAMakerDebugServer";
+import { Server } from "http";
 
 /**
  * WWA Maker の Electron アプリケーションです。
  */
 export default class WWAMakerApp {
     private win: BrowserWindow;
+    private debugServer: WWAMakerDebugServer;
 
     public constructor(win: BrowserWindow) {
         this.win = win;
+        this.debugServer = new WWAMakerDebugServer();
     }
 
     /**
@@ -195,6 +199,28 @@ export default class WWAMakerApp {
                 }
             })
         });
+    }
+
+    public showTestPlay() {
+        this.win.webContents.send('show-testplay');
+    }
+
+    /**
+     * テストプレイを開始します。
+     * @see WWAMakerDebugServer.launch
+     * @param wwaData
+     * @param absolutePath
+     * @returns
+     */
+    public startTestPlay(wwaData: WWAData, absolutePath: string): Promise<Server> {
+        return this.debugServer.launch(wwaData, absolutePath);
+    }
+
+    /**
+     * テストプレイを終了します。
+     */
+    public endTestPlay() {
+        this.debugServer.exit();
     }
 
     /**
