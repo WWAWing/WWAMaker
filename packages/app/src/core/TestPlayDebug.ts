@@ -4,18 +4,30 @@ import express from "express";
 import path from "path";
 import { render } from "@wwawing/page-generator";
 import Saver from "wwamaker-saver";
+import { BrowserWindow, ipcMain } from "electron";
 
 /**
- * WWA Maker のテストプレイデバッグサーバーです。
+ * テストプレイを行うにあたって必要な情報
+ */
+type TestPlayRequirements = {
+    wwaData: WWAData,
+    absolutePath: string
+};
+
+/**
+ * WWA Maker のテストプレイを行うウインドウとその内部で動作しているデバッグサーバーを管理するクラスです。
  * テストプレイを行うと、内部で express を起動し、マップデータのあるディレクトリを参照します。
  */
-export default class WWAMakerDebugServer {
+export default class TestPlayDebug {
+
+    private win: BrowserWindow;
 
     private server: Server | null;
 
     private static DEBUG_SERVER_PORT = 3311;
 
-    constructor() {
+    constructor(win: BrowserWindow) {
+        this.win = win;
         this.server = null;
     }
 
@@ -23,20 +35,16 @@ export default class WWAMakerDebugServer {
      * デバッグサーバーを起動し、 Node のサーバーインスタンスを内部に格納します。
      * @param wwaData WWA のマップデータオブジェクト
      * @param absolutePath WWA のマップデータファイルへの絶対 Path
-     * @returns サーバーインスタンスを返り値に取る Promise
      */
-    public launch(wwaData: WWAData, absolutePath: string): Promise<Server> {
-        return new Promise((resolve, reject) => {
-            if (this.server !== null) {
-                reject("すでにサーバーが起動しています。再度起動したい場合はもう一度閉じる必要があります。");
-            }
-            
+    public launch(wwaData: WWAData, absolutePath: string): void {
+        // FIXME: 閉じた後に再度テストプレイをすると Object has been destroyed になる
+        if (this.server === null) {
             const expressApp = express();
             const dirPath = path.dirname(absolutePath);
             const mapdataFilename = path.basename(absolutePath);
 
             expressApp.get("/", (req, res) => {
-                res.send(render(WWAMakerDebugServer.makePageGeneratorConfig(mapdataFilename)));
+                res.send(render(TestPlayDebug.makePageGeneratorConfig(mapdataFilename)));
             });
 
             expressApp.get("/" + mapdataFilename, (req, res) => {
@@ -48,12 +56,35 @@ export default class WWAMakerDebugServer {
 
             expressApp.use("/", express.static(dirPath));
 
-            this.server = expressApp.listen(WWAMakerDebugServer.DEBUG_SERVER_PORT, () => {
-                if (this.server === null) {
-                    reject("サーバーの起動に失敗しました。");
-                } else {
-                    resolve(this.server);
+            this.server = expressApp.listen(TestPlayDebug.DEBUG_SERVER_PORT);
+        }
+
+        const address = this.server.address();
+        if (address === null) {
+            throw new Error("サーバーのアドレスの取得に失敗しました。");
+        }
+
+        this.win.loadURL(
+            typeof address === "string" ? address : `http://localhost:${address.port}`
+        );
+        this.win.show();
+    }
+
+    /**
+     * テストプレイに必要なデータをレンダラープロセスから持ってきます。
+     * @returns テストプレイに必要なデータ ({@link TestPlayRequirements}) が含まれたオブジェクトの Promise
+     */
+    public requestWWAData(): Promise<TestPlayRequirements> {
+        return new Promise((resolve, reject) => {
+            this.win.webContents.send('testplay-request-data');
+            ipcMain.once('testplay', (event, data: TestPlayRequirements) => {
+                if (!data.wwaData) {
+                    reject("WWAデータが含まれていません。");
                 }
+                if (!data.absolutePath) {
+                    reject("マップデータファイルへの絶対 Path が含まれていません。")
+                }
+                resolve(data);
             });
         });
     }
@@ -65,6 +96,7 @@ export default class WWAMakerDebugServer {
         if (this.server === null) {
             return;
         }
+        this.win.close();
         this.server.close();
         this.server = null;
     }

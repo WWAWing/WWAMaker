@@ -15,8 +15,19 @@ function createWindow () {
             contextIsolation: false
         }
     });
+    let debugWin = new BrowserWindow({
+        width: 800,
+        height: 600,
+        show: false,
+        resizable: false,
+        maximizable: false,
+        minimizable: false,
+        // TODO: 特にメニューバーは必要ないのに Alt を押すと表示されてしまう、修正したい
+        autoHideMenuBar: true,
+        parent: win
+    });
 
-    let app = new WWAMakerApp(win);
+    let app = new WWAMakerApp(win, debugWin);
 
     // TODO: production 時の URL も用意しておく
     // TODO: 今後は webpack-dev-server と組み込む形でなるように検討する

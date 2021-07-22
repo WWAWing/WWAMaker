@@ -17,17 +17,7 @@ export default function setTestPlayMessages(app: WWAMakerApp) {
             throw new Error("マップデータの絶対 Path が含まれていません。");
         }
 
-        app.startTestPlay(data.wwaData, data.absolutePath)
-            .then(server => {
-                const serverAddress = server.address();
-                event.reply('testplay-return-url', {
-                    url: typeof serverAddress === "string" ? serverAddress : `http://localhost:${serverAddress?.port}`
-                });
-            })
-            .catch(reason => {
-                throw new Error(reason);
-            });
-
+        app.startTestPlay(data.wwaData, data.absolutePath);
     });
 
     ipcMain.on('testplay-close', (event) => {

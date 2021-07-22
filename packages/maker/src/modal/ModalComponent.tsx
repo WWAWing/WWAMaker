@@ -5,6 +5,7 @@ import { Modal } from "semantic-ui-react";
 import { closeModal } from "./ModalState";
 import TestPlay from "./TestPlay";
 
+// 多分使わないかもしれないです。
 const ModalComponent: React.FC<{}> = () => {
     const dispatch = useDispatch();
     const isOpened = useSelector(state => state.modal.open);

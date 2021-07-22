@@ -7,19 +7,19 @@ import { LoaderError } from "@wwawing/loader";
 import getImagePath from "../infra/path/getImagePath";
 import fileFilters from "../infra/file/fileFilters";
 import path from "path";
-import WWAMakerDebugServer from "./WWAMakerDebugServer";
 import { Server } from "http";
+import TestPlayDebug from "./TestPlayDebug";
 
 /**
  * WWA Maker の Electron アプリケーションです。
  */
 export default class WWAMakerApp {
     private win: BrowserWindow;
-    private debugServer: WWAMakerDebugServer;
+    private debugApp: TestPlayDebug;
 
-    public constructor(win: BrowserWindow) {
-        this.win = win;
-        this.debugServer = new WWAMakerDebugServer();
+    public constructor(mainWin: BrowserWindow, debugWin: BrowserWindow) {
+        this.win = mainWin;
+        this.debugApp = new TestPlayDebug(debugWin);
     }
 
     /**
@@ -202,7 +202,10 @@ export default class WWAMakerApp {
     }
 
     public showTestPlay() {
-        this.win.webContents.send('show-testplay');
+        this.win.webContents.send('testplay');
+        this.debugApp.requestWWAData().then(data => {
+            this.startTestPlay(data.wwaData, data.absolutePath);
+        });
     }
 
     /**
@@ -212,15 +215,15 @@ export default class WWAMakerApp {
      * @param absolutePath
      * @returns
      */
-    public startTestPlay(wwaData: WWAData, absolutePath: string): Promise<Server> {
-        return this.debugServer.launch(wwaData, absolutePath);
+    public startTestPlay(wwaData: WWAData, absolutePath: string) {
+        this.debugApp.launch(wwaData, absolutePath);
     }
 
     /**
      * テストプレイを終了します。
      */
     public endTestPlay() {
-        this.debugServer.exit();
+        this.debugApp.exit();
     }
 
     /**
