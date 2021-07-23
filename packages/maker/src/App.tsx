@@ -4,7 +4,6 @@ import MainToolbar from './MainToolbar';
 import PartsSelect from './parts/PartsSelect';
 import InfoPanel from './info/InfoPanel';
 import MapEdit from './map/MapEdit';
-import ModalComponent from './modal/ModalComponent';
 import './common/SplitPane.scss';
 import { connect, MapStateToProps } from 'react-redux';
 import { StoreType } from './State';
@@ -50,7 +49,6 @@ class App extends React.Component<StateProps> {
                 <div className={this.getInfoPanelClassName()}>
                     <InfoPanel></InfoPanel>
                 </div>
-                <ModalComponent />
             </div>
         );
     }
