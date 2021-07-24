@@ -233,6 +233,10 @@ export default class WWAMakerApp {
     }
 
     private createTestPlayWindow(): BrowserWindow {
+        if (this.debugWin !== null && !this.debugWin.isDestroyed()) {
+            return this.debugWin;
+        }
+        // TODO: macOS だとウインドウが常に前に表示されてしまう
         let debugWin = new BrowserWindow({
             width: 800,
             height: 600,

@@ -29,7 +29,11 @@ function createWindow () {
     messages.setMessageMessages(app);
     messages.setTestPlayMessages(app);
 
-    win.setMenu(makeMenu(app));
+    if (process.platform === "darwin") {
+        Menu.setApplicationMenu(makeMenu(app));
+    } else {
+        win.setMenu(makeMenu(app));
+    }
 }
 
 app.whenReady().then(() => {
