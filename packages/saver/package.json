@@ -15,11 +15,14 @@
   "dependencies": {
     "@types/jest": "^25.2.2",
     "@wwawing/common-interface": "^3.5.11-publishtest.1",
-    "@wwawing/loader": "^3.5.11-publishtest.1",
     "jest": "24.9.0",
     "shx": "^0.3.2",
     "ts-jest": "^26.0.0",
     "typescript": "^3.4.5"
+  },
+  "devDependencies": {
+    "@wwawing/loader": "^3.5.11-publishtest.1",
+    "@wwawing/event-emitter": "^3.5.11-publishtest.1"
   },
   "scripts": {
     "build": "run-p build:*",
