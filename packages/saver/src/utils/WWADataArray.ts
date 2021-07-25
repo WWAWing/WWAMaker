@@ -46,7 +46,7 @@ export default class WWADataArray {
     }
 
     /**
-     * 1ビット値の値を設定します。
+     * 1バイト値の値を設定します。
      * @param value 値
      * @param index セットしたいインデックスの値
      */
@@ -59,7 +59,7 @@ export default class WWADataArray {
     }
 
     /**
-     * 2ビット値の値を設定します。
+     * 2バイト値の値を設定します。上位バイトの値を次のバイトにセットするリトルエンディアン方式を使用しています。
      * @param value 値
      * @param index セットしたいインデックスの1ビット目の値
      */
