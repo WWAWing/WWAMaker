@@ -6,7 +6,6 @@ import { WWAConsts } from "../utils/wwa_data";
  * @param map 対象の背景パーツのマップ
  * @param mapObject 対象の物体パーツのマップ
  * @returns 正方形で収められる最小の1辺の長さ
- * @todo マップサイズ 101 未満だと 101 が返ってこないので直す
  */
 export default function getMapWidth(map: WWAData["map"], mapObject: WWAData["mapObject"]): number {
     const maxWidth = Math.min(map.length, mapObject.length, WWAConsts.MAP_SIZE_MAX);
