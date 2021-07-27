@@ -1,0 +1,36 @@
+import Saver from ".";
+import loadMapData from "./samples/loadMapData";
+
+import { decompressMapData } from "@wwawing/loader/lib/core/decompressor";
+import { WWADataExtractor } from "@wwawing/loader/lib/core/extractor";
+import { TextLoader } from "@wwawing/loader/lib/core/text-loader";
+import { NodeEventEmitter } from "@wwawing/event-emitter";
+
+test("Standard Map の出力内容が同じ", async () => {
+    const wwaData = await loadMapData("wwamap.dat");
+    const wwaDataBinary = await Saver(wwaData);
+
+    const result = decompressMapData(wwaDataBinary);
+    const resultTextless = new WWADataExtractor(
+        result.byteMapData,
+        result.byteMapLength,
+        new NodeEventEmitter()
+    ).extractAllData();
+    const resultWWAData = new TextLoader(
+        resultTextless,
+        wwaDataBinary,
+        result.compressedEndPosition,
+        new NodeEventEmitter
+    ).load();
+
+    expect(resultWWAData.worldName).toBe(wwaData.worldName);
+    expect(resultWWAData.mapCGName).toBe(wwaData.mapCGName);
+    expect(resultWWAData.charCGName).toBe(wwaData.charCGName);
+    expect(resultWWAData.playerX).toBe(wwaData.playerX);
+    expect(resultWWAData.playerY).toBe(wwaData.playerY);
+    expect(resultWWAData.statusEnergy).toBe(wwaData.statusEnergy);
+    expect(resultWWAData.statusEnergyMax).toBe(wwaData.statusEnergyMax);
+    expect(resultWWAData.statusStrength).toBe(wwaData.statusStrength);
+    expect(resultWWAData.statusDefence).toBe(wwaData.statusDefence);
+    expect(resultWWAData.statusGold).toBe(wwaData.statusGold);
+});
