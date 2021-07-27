@@ -3,14 +3,17 @@ import { NodeEventEmitter } from "@wwawing/event-emitter";
 import { LoaderError, WWALoader } from "@wwawing/loader";
 import path from "path";
 
-export default function wwamapData(): Promise<WWAData> {
-    return loadMapData(path.join(__dirname, "resources", "wwamap.dat"));
-}
-
-function loadMapData(filePath: string) {
+/**
+ * マップデータを読み込みます。テストで使用します。
+ * @param filePath resources 下のマップデータファイル名
+ * @returns WWAマップが含まれた Promise
+ */
+export default function loadMapData(filePath: string) {
     return new Promise<WWAData>((resolve, reject) => {
+        // TODO: package の root ディレクトリの Path を取得する方法が無いか探す
+        const absoluteFilePath = path.join(__dirname, "..", "..", "resources", filePath);
         const emitter = new NodeEventEmitter();
-        const loader = new WWALoader(filePath, emitter);
+        const loader = new WWALoader(absoluteFilePath, emitter);
     
         const handleMapData = emitter.addListener("mapData", wwaMap => {
             emitter.removeListener("mapData", handleMapData);
