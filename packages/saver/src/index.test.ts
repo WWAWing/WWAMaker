@@ -23,6 +23,12 @@ test("Standard Map の出力内容が同じ", async () => {
         new NodeEventEmitter
     ).load();
 
+    expect(resultWWAData.message.length).toBe(resultWWAData.messageNum);
+    expect(resultWWAData.objectAttribute.length).toBe(resultWWAData.objPartsMax);
+    expect(resultWWAData.mapAttribute.length).toBe(resultWWAData.mapPartsMax);
+    expect(resultWWAData.map.length).toBe(resultWWAData.mapWidth);
+    expect(resultWWAData.mapObject.length).toBe(resultWWAData.mapWidth);
+
     expect(resultWWAData.worldName).toBe(wwaData.worldName);
     expect(resultWWAData.mapCGName).toBe(wwaData.mapCGName);
     expect(resultWWAData.charCGName).toBe(wwaData.charCGName);
