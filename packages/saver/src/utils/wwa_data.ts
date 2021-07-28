@@ -7,7 +7,7 @@ export class WWAConsts extends LoaderWWAConsts {
     static ATR_0: number = 0;
     static ATR_STRING: number = 5;
     static MAP_SIZE_DEFAULT: number = 101;
-    static MAP_SIZE_INCREASE_UNIT: number = 100;
+    static MAP_SIZE_INCREASE_UNIT: number = 50;
 
     // ここからは作成ツールから引っ張った定数一覧です。
     static DATA_CHECK: number = 0;
