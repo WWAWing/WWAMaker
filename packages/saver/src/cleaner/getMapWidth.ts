@@ -43,5 +43,5 @@ function getMapWidthPerIncreaseUnit(mapWidth: number): number {
     if (mapWidth < WWAConsts.MAP_SIZE_DEFAULT) {
         return WWAConsts.MAP_SIZE_DEFAULT;
     }
-    return Math.ceil(mapWidth / WWAConsts.MAP_SIZE_INCREASE_UNIT) * WWAConsts.MAP_SIZE_INCREASE_UNIT + 1;
+    return Math.ceil((mapWidth - 1) / WWAConsts.MAP_SIZE_INCREASE_UNIT) * WWAConsts.MAP_SIZE_INCREASE_UNIT + 1;
 }

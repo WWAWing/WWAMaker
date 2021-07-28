@@ -53,7 +53,7 @@ test("非正方形 (115,78/301) のマップが圧縮されている", () => {
         return new Array(WIDTH).fill(0);
     });
 
-    expect(getMapWidth(map, mapObject)).toBe(201);
+    expect(getMapWidth(map, mapObject)).toBe(151);
 });
 
 test("空のマップで 0 が出力される", () => {

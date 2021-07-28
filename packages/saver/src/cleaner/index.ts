@@ -57,8 +57,8 @@ export default function clean(wwaData: WWAData): WWAData {
     newWWAData.mapWidth = newMapWidth;
 
     function removeMapPartsOutside(map: number[][], mapWidth: number) {
-        map.splice(mapWidth + 1);
-        map.forEach(line => line.splice(mapWidth + 1));
+        map.splice(mapWidth);
+        map.forEach(line => line.splice(mapWidth));
     }
     removeMapPartsOutside(newWWAData.map, newMapWidth);
     removeMapPartsOutside(newWWAData.mapObject, newMapWidth);
