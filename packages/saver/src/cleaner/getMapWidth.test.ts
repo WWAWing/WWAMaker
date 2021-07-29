@@ -25,7 +25,10 @@ test("101/201 マップが圧縮されている", () => {
         return new Array(WIDTH).fill(0);
     });
     
-    expect(getMapWidth(map, mapObject)).toBe(101);
+    const newWidth = getMapWidth(map, mapObject);
+    expect(newWidth).toBe(101);
+    // 圧縮が目的のため、実行時に返されたマップサイズは同じか小さくなくてはならない
+    expect(newWidth).toBeLessThanOrEqual(WIDTH);
 });
 
 test("非正方形 (115,78/301) のマップが圧縮されている", () => {
@@ -53,10 +56,17 @@ test("非正方形 (115,78/301) のマップが圧縮されている", () => {
         return new Array(WIDTH).fill(0);
     });
 
-    expect(getMapWidth(map, mapObject)).toBe(151);
+    const newWidth = getMapWidth(map, mapObject);
+    expect(newWidth).toBe(151);
+    expect(newWidth).toBeLessThanOrEqual(WIDTH);
 });
 
-test("空のマップで 0 が出力される", () => {
+test("空のマップで 101 が出力される", () => {
+    // 101 未満にした場合、実際の配列のサイズが 101 ( getMapWidth が返す最小値の値) を下回り、テストに失敗します。
+    // 足りない分を補填する処理は getMapWidth 及びその関連メソッドにはないので、その分は cleaner 内の処理にお任せすることになります。
     const map = new Array(101).fill(new Array(101).fill(0));
-    expect(getMapWidth(map, map)).toBe(0);
+
+    const newWidth = getMapWidth(map, map);
+    expect(newWidth).toBe(101);
+    expect(newWidth).toBeLessThanOrEqual(map.length);
 });
