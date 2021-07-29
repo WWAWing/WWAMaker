@@ -29,6 +29,9 @@ test("Standard Map の出力内容が同じ", async () => {
     expect(resultWWAData.map.length).toBe(resultWWAData.mapWidth);
     expect(resultWWAData.mapObject.length).toBe(resultWWAData.mapWidth);
 
+    expect(getMapSum(resultWWAData.map)).toBe(getMapSum(wwaData.map));
+    expect(getMapSum(resultWWAData.mapObject)).toBe(getMapSum(wwaData.mapObject));
+
     expect(resultWWAData.worldName).toBe(wwaData.worldName);
     expect(resultWWAData.mapCGName).toBe(wwaData.mapCGName);
     expect(resultWWAData.charCGName).toBe(wwaData.charCGName);
@@ -40,3 +43,8 @@ test("Standard Map の出力内容が同じ", async () => {
     expect(resultWWAData.statusDefence).toBe(wwaData.statusDefence);
     expect(resultWWAData.statusGold).toBe(wwaData.statusGold);
 });
+
+function getMapSum(map: number[][]): number {
+    const makeSum = (sum: number, current: number) => sum + current;
+    return map.map(mapLine => mapLine.reduce(makeSum)).reduce(makeSum);
+}

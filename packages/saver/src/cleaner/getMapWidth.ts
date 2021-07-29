@@ -30,7 +30,7 @@ export default function getMapWidth(map: WWAData["map"], mapObject: WWAData["map
         }
     }
 
-    return 0;
+    return getMapWidthPerIncreaseUnit(maxWidth);
 }
 
 /**
