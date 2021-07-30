@@ -9,3 +9,6 @@ WWA Saver では Jest を導入していますが、テストの実行ファイ�
 `package.json` の Jest のバージョンは maker パッケージの Jest のバージョンと揃えるようにしてください。
 
 maker パッケージの Jest は react-scripts の中にありますので、 react-scripts がバージョンアップしましたら、この saver にある Jest のバージョンも更新してください。
+
+### メッセージ内容について
+テストで使用されるサンプルデータのメッセージ内容については、 [キャラバンサークル](https://www.wwajp.com) の WWA ゲームのメッセージを使用しています。

@@ -46,7 +46,15 @@ export default class WWADataArray {
     }
 
     /**
-     * 1ビット値の値を設定します。
+     * lastIndex を既存の値に関係なく強制的に設定します。
+     * @param index 
+     */
+    private setLastIndexForce(index: number) {
+        this.lastIndex = index;
+    }
+
+    /**
+     * 1バイト値の値を設定します。
      * @param value 値
      * @param index セットしたいインデックスの値
      */
@@ -59,7 +67,7 @@ export default class WWADataArray {
     }
 
     /**
-     * 2ビット値の値を設定します。
+     * 2バイト値の値を設定します。上位バイトの値を次のバイトにセットするリトルエンディアン方式を使用しています。
      * @param value 値
      * @param index セットしたいインデックスの1ビット目の値
      */
@@ -155,7 +163,7 @@ export default class WWADataArray {
         compressedData[j + 2] = 0;
 
         this.array = compressedData;
-        this.setLastIndex(j + 3);
+        this.setLastIndexForce(j + 3);
         return j + 3;
     }
 
