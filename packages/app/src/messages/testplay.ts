@@ -20,8 +20,4 @@ export default function setTestPlayMessages(app: WWAMakerApp) {
         app.startTestPlay(data.wwaData, data.absolutePath);
     });
 
-    ipcMain.on('testplay-close', (event) => {
-        app.endTestPlay();
-    });
-
 }

@@ -50,10 +50,6 @@ export default class TestPlayDebug {
             this.server = expressApp.listen(TestPlayDebug.DEBUG_SERVER_PORT);
         }
 
-        if (this.server === null) {
-            throw new Error("サーバーが起動していません。");
-        }
-
         const address = this.server.address();
         if (address === null) {
             throw new Error("サーバーのアドレスの取得に失敗しました。");
