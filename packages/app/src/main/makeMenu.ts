@@ -13,6 +13,8 @@ function makeMenu(app: WWAMakerApp): Menu {
                 { label: '上書き保存', click: () => app.save() },
                 { label: '名前を付けて保存', click: () => app.saveWithDialog() },
                 { type: 'separator' },
+                { label: 'テストプレイ', click: () => app.showTestPlay() },
+                { type: 'separator' },
                 { role: 'quit', click: () => app.quit() }
             ] as MenuItemConstructorOptions[]
         }, {

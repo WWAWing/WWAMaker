@@ -5,6 +5,7 @@ import { Button, Label, Icon, List, SemanticICONS, Popup } from 'semantic-ui-rea
 import { toggleInfoPanel as toggleInfoPanelAction } from './info/InfoPanelState';
 import saveMapdata from './common/saveMapdata';
 import { ipcRenderer } from 'electron';
+import startTestPlay from './common/startTestPlay';
 
 const MainToolbar: React.FC = () => {
 
@@ -26,6 +27,10 @@ const MainToolbar: React.FC = () => {
 
     const toggleInfoPanel = () => {
         dispatch(toggleInfoPanelAction());
+    };
+
+    const testPlay = () => {
+        startTestPlay();
     };
 
     /**
@@ -105,6 +110,11 @@ const MainToolbar: React.FC = () => {
                     </Button>
                     <Button onClick={toggleInfoPanel} active={isInfoPanelOpened}>
                         <Icon name="edit" />
+                    </Button>
+                </List.Item>
+                <List.Item>
+                    <Button onClick={testPlay}>
+                        <Icon name="play" />
                     </Button>
                 </List.Item>
             </List>

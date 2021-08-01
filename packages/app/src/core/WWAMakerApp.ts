@@ -7,15 +7,20 @@ import { LoaderError } from "@wwawing/loader";
 import getImagePath from "../infra/path/getImagePath";
 import fileFilters from "../infra/file/fileFilters";
 import path from "path";
+import TestPlayDebug from "./TestPlayDebug";
 
 /**
  * WWA Maker の Electron アプリケーションです。
  */
 export default class WWAMakerApp {
     private win: BrowserWindow;
+    private debugWin: BrowserWindow | null;
+    private debugApp: TestPlayDebug;
 
-    public constructor(win: BrowserWindow) {
-        this.win = win;
+    public constructor(mainWin: BrowserWindow) {
+        this.win = mainWin;
+        this.debugWin = null;
+        this.debugApp = new TestPlayDebug();
     }
 
     /**
@@ -195,6 +200,56 @@ export default class WWAMakerApp {
                 }
             })
         });
+    }
+
+    /**
+     * テストプレイの呼び出しを開始します。
+     * {@link WWAMakerApp.startTestPlay} メソッドとの違いは、テストプレイに必要な情報の有無です。
+     * @see setTestPlayMessages
+     */
+    public showTestPlay() {
+        this.win.webContents.send('testplay-request-data');
+    }
+
+    /**
+     * テストプレイを開始します。
+     * @see WWAMakerDebugServer.launch
+     * @param wwaData
+     * @param absolutePath
+     * @returns
+     */
+    public startTestPlay(wwaData: WWAData, absolutePath: string) {
+        const address = this.debugApp.launch(wwaData, absolutePath);
+        
+        this.debugWin = this.createTestPlayWindow();
+        this.debugWin.loadURL(address);
+    }
+
+    /**
+     * テストプレイを終了します。
+     */
+    public endTestPlay() {
+        this.debugApp.exit();
+    }
+
+    private createTestPlayWindow(): BrowserWindow {
+        if (this.debugWin !== null && !this.debugWin.isDestroyed()) {
+            return this.debugWin;
+        }
+        // TODO: macOS だとウインドウが常に前に表示されてしまう
+        let debugWin = new BrowserWindow({
+            width: 800,
+            height: 600,
+            resizable: false,
+            maximizable: false,
+            minimizable: false,
+            parent: this.win
+        });
+        debugWin.on("close", () => {
+            this.endTestPlay();
+        });
+        debugWin.removeMenu();
+        return debugWin;
     }
 
     /**
