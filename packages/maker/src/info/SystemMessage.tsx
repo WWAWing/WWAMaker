@@ -1,30 +1,8 @@
-import React from "react";
-import { MapStateToProps, connect } from "react-redux";
-import { StoreType } from "../State";
-import { Dispatch, bindActionCreators } from "redux";
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { SystemMessage1, SystemMessage2, SystemMessageType } from "../classes/WWAData";
 import { setSystemMessage } from "../wwadata/WWADataState";
 import { Form, Message, Button, Icon } from "semantic-ui-react";
-
-interface StateProps {
-    systemMessage: string[] | null
-}
-
-const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = state => ({
-    systemMessage: state.wwaData !== null ? state.wwaData.systemMessage : null
-});
-
-const mapDispatchToProps = (dispatch: Dispatch) => {
-    return bindActionCreators({
-        setSystemMessage: setSystemMessage
-    }, dispatch);
-}
-
-type Props = StateProps & ReturnType<typeof mapDispatchToProps>;
-
-export type SystemMessageField = {
-    messages: string[]
-};
 
 /**
  * 対応しているシステムメッセージの一覧です。
@@ -79,40 +57,22 @@ function createEmptyMessages() {
     return emptyMessages;
 }
 
-class SystemMessage extends React.Component<Props, SystemMessageField> {
+const SystemMessage: React.FC = () => {
+
+    const [editingField, updateEditingField] = useState<string[]>(createEmptyMessages());
     
-    public static defaultProps: StateProps = {
-        systemMessage: []
-    }
+    const systemMessages = useSelector(state => state.wwaData?.systemMessage) ?? null;
+    const dispatch = useDispatch();
 
-    constructor(props: Props) {
-        super(props);
-        this.state = this.receive();
-    }
+    const receive: () => string[] = () => {
+        return systemMessages ?? createEmptyMessages();
+    };
 
-    public componentDidUpdate(prevProps: StateProps) {
-        if (this.props !== prevProps) {
-            this.setState(this.receive());
-        }
-    }
+    const send = () => {
+        dispatch(setSystemMessage(editingField));
+    };
 
-    private receive(): SystemMessageField {
-        if (this.props.systemMessage === null) {
-            return {
-                messages: createEmptyMessages()
-            }
-        }
-
-        return {
-            messages: this.props.systemMessage
-        }
-    }
-
-    private send() {
-        this.props.setSystemMessage(this.state.messages);
-    }
-
-    private handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const targetMessageId = parseInt(event.target.name);
         if (!getSystemMessageIds().includes(targetMessageId)) {
             return;
@@ -120,63 +80,57 @@ class SystemMessage extends React.Component<Props, SystemMessageField> {
 
         // FIXME: setState のメソッドの中に直接 event.target.value で値を入れると event.target が無いと例外が起こる
         const messageValue = event.target.value;
-        this.setState(prevState => {
-            const newMessages = prevState.messages.slice();
-            newMessages[targetMessageId] = messageValue;
-            return {
-                messages: newMessages
-            };
-        });
+        
+        // TODO: setState メソッドにあった prevState が関数コンポーネントには多分ないので、挙動が変わるかもしれない
+        const newMessages = editingField.slice();
+        newMessages[targetMessageId] = messageValue;
+        updateEditingField(newMessages);
     }
 
-    private handleResetButtonClick() {
-        this.setState(this.receive());
+    const handleResetButtonClick = () => {
+        updateEditingField(receive());
     }
 
-    public render() {
-        const handleInputChange = this.handleInputChange.bind(this);
-
-        return (
+    return (
+        <div>
+            <Form>
+                {AvailabeSystemMessages.map((messageLabelItem, messageLabelIndex) => {
+                    return (
+                        <Form.Field key={messageLabelIndex}>
+                            <label>
+                                {messageLabelItem.label.map((labelLine: string, labelIndex: number) => (
+                                    <div key={labelIndex}>{labelLine}</div>
+                                ))}
+                            </label>
+                            <input
+                                type="text"
+                                name={`${messageLabelItem.id}`}
+                                value={editingField[messageLabelItem.id]}
+                                onChange={handleInputChange}
+                            />
+                        </Form.Field>
+                    );
+                })}
+            </Form>
+            <Message>
+                <Message.Header>ゲーム中で使用される基本メッセージを変更することができます。</Message.Header>
+                <Message.List>
+                    <Message.Item>標準のままで良いときは空白にしておいてください。</Message.Item>
+                    <Message.Item>何も表示したくないときは <code>BLANK</code> (半角)と入力してください。</Message.Item>
+                </Message.List>
+            </Message>
             <div>
-                <Form>
-                    {AvailabeSystemMessages.map((messageLabelItem, messageLabelIndex) => {
-                        return (
-                            <Form.Field key={messageLabelIndex}>
-                                <label>
-                                    {messageLabelItem.label.map((labelLine: string, labelIndex: number) => (
-                                        <div key={labelIndex}>{labelLine}</div>
-                                    ))}
-                                </label>
-                                <input
-                                    type="text"
-                                    name={`${messageLabelItem.id}`}
-                                    value={this.state.messages[messageLabelItem.id]}
-                                    onChange={handleInputChange}
-                                />
-                            </Form.Field>
-                        );
-                    })}
-                </Form>
-                <Message>
-                    <Message.Header>ゲーム中で使用される基本メッセージを変更することができます。</Message.Header>
-                    <Message.List>
-                        <Message.Item>標準のままで良いときは空白にしておいてください。</Message.Item>
-                        <Message.Item>何も表示したくないときは <code>BLANK</code> (半角)と入力してください。</Message.Item>
-                    </Message.List>
-                </Message>
-                <div>
-                    <Button primary onClick={() => this.send()}>
-                        <Icon name="check" />
-                        決定
-                    </Button>
-                    <Button onClick={this.handleResetButtonClick.bind(this)}>
-                        <Icon name="check" />
-                        リセット
-                    </Button>
-                </div>
+                <Button primary onClick={send}>
+                    <Icon name="check" />
+                    決定
+                </Button>
+                <Button onClick={handleResetButtonClick}>
+                    <Icon name="check" />
+                    リセット
+                </Button>
             </div>
-        );
-    }
+        </div>
+    );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SystemMessage);
+export default SystemMessage;

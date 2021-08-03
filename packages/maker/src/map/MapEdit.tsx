@@ -1,151 +1,93 @@
-import React from 'react';
-import { connect, MapStateToProps } from 'react-redux';
-import { StoreType } from '../State';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import MapView, { TargetParts, SelectRectProps } from '../common/MapView';
 import { PartsType } from '../classes/WWAData';
-import { Dispatch, bindActionCreators } from 'redux';
 import { setCurrentPos, EditMode, setEditMode } from './MapStates';
 import { putParts } from '../wwadata/WWADataState';
 import getRect from '../common/getRect';
-import { showPartsEdit } from '../info/InfoPanelState';
-import { selectObjectParts, selectMapParts } from '../parts/PartsState';
 import checkPartsEdit from '../info/checkPartsEdit';
+import { showPartsEdit } from '../info/InfoPanelState';
+import { selectMapParts, selectObjectParts } from '../parts/PartsState';
 
-interface StateProps {
-    editParts: {
-        editMode: EditMode,
-        objNumber: number,
-        mapNumber: number
-    },
-    currentPos?: {
-        chipX: number,
-        chipY: number
-    }
-}
+const MapEdit: React.FC = () => {
 
-const mapStateToProps: MapStateToProps<StateProps, StateProps, StoreType> = state => {
-    return {
-        editParts: {
-            editMode: state.map.editMode,
-            objNumber: state.objParts.number,
-            mapNumber: state.mapParts.number
-        },
-        currentPos: state.map.currentPos
-    };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => {
-    return bindActionCreators({
-        setCurrentPos: setCurrentPos,
-        putParts: putParts,
-        showPartsEdit: showPartsEdit,
-        selectObjectParts: selectObjectParts,
-        selectMapParts: selectMapParts,
-        setEditMode: setEditMode
-    }, dispatch);
-}
-
-type DispatchProps = ReturnType<typeof mapDispatchToProps>;
-type Props = StateProps & DispatchProps;
-
-interface State {
     /**
      * 現在編集している編集モード
      *     ドラッグ操作がない場合は null になります。
      *     予めステートとして用意することで、対応していない編集モードでのドラッグ操作を防ぐことができます。
      */
-    editPartsType: PartsType | null,
+    const [editPartsType, setEditPartsType] = useState<PartsType | null>(null);
     /**
      * ドラッグ操作を開始した座標 (マス単位)
      *     ドラッグ操作がない場合は null になります。
      */
-    startEditMapPos: {
+    const [startEditMapPos, startEditingMapPos] = useState<{
         chipX: number,
         chipY: number
-    } | null
-}
+    } | null>(null);
 
-class MapEdit extends React.Component<Props, State> {
-    public static defaultProps: StateProps = {
-        editParts: {
-            editMode: EditMode.PUT_MAP,
-            objNumber: 0,
-            mapNumber: 0
-        },
-        currentPos: undefined
-    }
+    const editMode = useSelector(state => state.map.editMode);
+    const objNumber = useSelector(state => state.objParts.number);
+    const mapNumber = useSelector(state => state.mapParts.number);
+    const currentPos = useSelector(state => state.map.currentPos);
 
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            editPartsType: null,
-            startEditMapPos: null
-        };
-        this.handleMouseDown = this.handleMouseDown.bind(this);
-        this.setCurrentPos = this.setCurrentPos.bind(this);
-        this.endMapEdit = this.endMapEdit.bind(this);
-        this.openEdit = this.openEdit.bind(this);
-    }
+    const dispatch = useDispatch();
 
-    private handleMouseDown(chipX: number, chipY: number, targetParts: TargetParts) {
-        switch (this.props.editParts.editMode) {
+    const handleMouseDown = (chipX: number, chipY: number, targetParts: TargetParts) => {
+        switch (editMode) {
             case EditMode.PUT_MAP:
             case EditMode.PUT_OBJECT:
             case EditMode.DELETE_OBJECT: {
-                const partsType = getEditPartsType(this.props.editParts.editMode);
+                const partsType = getEditPartsType(editMode);
                 if (partsType === null) {
                     return;
                 }
-                this.startMapEdit(chipX, chipY, partsType);
+                startMapEdit(chipX, chipY, partsType);
                 break;
             }
             case EditMode.EDIT_MAP:
-                this.openEdit(chipX, chipY, targetParts, PartsType.MAP);
+                openEdit(chipX, chipY, targetParts, PartsType.MAP);
                 break;
             case EditMode.EDIT_OBJECT:
-                this.openEdit(chipX, chipY, targetParts, PartsType.OBJECT);
+                openEdit(chipX, chipY, targetParts, PartsType.OBJECT);
         }
-    }
+    };
 
     /**
      * パーツの矩形配置を開始します。
      */
-    private startMapEdit(chipX: number, chipY: number, partsType: PartsType) {
-        this.setState({
-            editPartsType: partsType,
-            startEditMapPos: {
-                chipX: chipX,
-                chipY: chipY
-            }
+    const startMapEdit = (chipX: number, chipY: number, partsType: PartsType) => {
+        setEditPartsType(partsType);
+        startEditingMapPos({
+            chipX,
+            chipY
         });
-    }
+    };
 
     /**
      * パーツの矩形配置を終了します。
      */
-    private endMapEdit(mouseChipX: number, mouseChipY: number) {
-        if (this.state.editPartsType === null) {
+    const endMapEdit = (mouseChipX: number, mouseChipY: number) => {
+        if (editPartsType === null) {
             return;
         }
 
         const [chipX, chipY, chipWidth, chipHeight] = getRect(
             mouseChipX,
             mouseChipY,
-            this.state.startEditMapPos?.chipX,
-            this.state.startEditMapPos?.chipY
+            startEditMapPos?.chipX,
+            startEditMapPos?.chipY
         );
 
-        this.props.putParts({
+        dispatch(putParts({
             x: chipX,
             y: chipY,
             width: chipWidth,
             height: chipHeight,
-            partsType: this.state.editPartsType,
-            partsNumber: this.getEditPartsNumber()
-        });
-        this.setState({
-            startEditMapPos: null
-        });
+            partsType: editPartsType,
+            partsNumber: getEditPartsNumber()
+        }));
+        startEditingMapPos(null);
     }
 
     /**
@@ -154,43 +96,43 @@ class MapEdit extends React.Component<Props, State> {
      * @param y MapCanvas の Y座標 (px単位)
      * @param hasClick
      */
-    private setCurrentPos(chipX: number, chipY: number) {
-        if (chipX === this.props.currentPos?.chipX && chipY === this.props.currentPos?.chipY) {
+    const updateCurrentPos = (chipX: number, chipY: number) => {
+        if (chipX === currentPos?.chipX && chipY === currentPos?.chipY) {
             return;
         }
 
-        this.props.setCurrentPos({
+        dispatch(setCurrentPos({
             chipX: chipX,
             chipY: chipY
-        });
+        }));
     }
 
     /**
      * 編集に使用するパーツ番号を取り出します。
      */
-    private getEditPartsNumber(): number {
-        switch (this.state.editPartsType) {
+    const getEditPartsNumber: () => number = () => {
+        switch (editPartsType) {
             case PartsType.OBJECT:
-                if (this.props.editParts.editMode === EditMode.DELETE_OBJECT) {
+                if (editMode === EditMode.DELETE_OBJECT) {
                     return 0;
                 }
-                return this.props.editParts.objNumber;
+                return objNumber;
             case PartsType.MAP:
-                return this.props.editParts.mapNumber;
+                return mapNumber;
         }
         return 0;
     }
 
-    private getSelectRect(): SelectRectProps | undefined {
-        if (this.props.currentPos === undefined) {
+    const getSelectRect: () => SelectRectProps | undefined = () => {
+        if (currentPos === undefined) {
             return undefined;
         }
 
         const [chipX, chipY, chipWidth, chipHeight] = getRect(
-            this.props.currentPos.chipX,
-            this.props.currentPos.chipY,
-            this.state.startEditMapPos?.chipX,
-            this.state.startEditMapPos?.chipY
+            currentPos.chipX,
+            currentPos.chipY,
+            startEditMapPos?.chipX,
+            startEditMapPos?.chipY
         );
 
         return { chipX, chipY, chipWidth, chipHeight };
@@ -200,7 +142,7 @@ class MapEdit extends React.Component<Props, State> {
      * 現在の座標からパーツの情報を取得し、パーツの編集画面を開きます。
      * @param type 編集中に選択しているパーツ種類 (指定がなければ物体パーツ→背景パーツ)
      */
-    private openEdit(chipX: number, chipY: number, targetParts: TargetParts, type?: PartsType) {
+    const openEdit = (chipX: number, chipY: number, targetParts: TargetParts, type?: PartsType) => {
         let targetPartsType: PartsType;
         let targetPartsNumber: number;
 
@@ -210,15 +152,15 @@ class MapEdit extends React.Component<Props, State> {
             if (targetParts[PartsType.OBJECT] !== 0) {
                 targetPartsType = PartsType.OBJECT;
                 targetPartsNumber = targetParts[PartsType.OBJECT];
-                this.props.setEditMode(EditMode.PUT_OBJECT);
+                dispatch(setEditMode(EditMode.PUT_OBJECT));
             } else {
                 targetPartsType = PartsType.MAP;
                 targetPartsNumber = targetParts[PartsType.MAP];
-                this.props.setEditMode(EditMode.PUT_MAP);
+                dispatch(setEditMode(EditMode.PUT_MAP));
             }
         } else {
             targetPartsType = type;
-            switch (this.props.editParts.editMode) {
+            switch (editMode) {
                 case EditMode.EDIT_MAP:
                     targetPartsNumber = targetParts[PartsType.MAP];
                     break;
@@ -231,33 +173,31 @@ class MapEdit extends React.Component<Props, State> {
         }
 
         checkPartsEdit(targetPartsType, targetPartsNumber, () => {
-            this.props.showPartsEdit({
+            dispatch(showPartsEdit({
                 type: targetPartsType,
                 number: targetPartsNumber
-            });
+            }));
             switch (targetPartsType) {
                 case PartsType.OBJECT:
-                    this.props.selectObjectParts(targetPartsNumber);
+                    dispatch(selectObjectParts(targetPartsNumber));
                     break;
                 case PartsType.MAP:
-                    this.props.selectMapParts(targetPartsNumber);
+                    dispatch(selectMapParts(targetPartsNumber));
             }
         });
 
     }
 
-    public render() {
-        return (
-            <MapView
-                onMouseDown={this.handleMouseDown}
-                onMouseMove={this.setCurrentPos}
-                onMouseDrag={this.setCurrentPos}
-                onMouseUp={this.endMapEdit}
-                onContextMenu={this.openEdit}
-                selectRect={this.getSelectRect()}
-            />
-        );
-    }
+    return (
+        <MapView
+            onMouseDown={handleMouseDown}
+            onMouseMove={updateCurrentPos}
+            onMouseDrag={updateCurrentPos}
+            onMouseUp={endMapEdit}
+            onContextMenu={openEdit}
+            selectRect={getSelectRect()}
+        />
+    );
 }
 
 /**
@@ -276,4 +216,4 @@ function getEditPartsType(editMode: EditMode): PartsType | null {
     return null
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MapEdit);
+export default MapEdit;
