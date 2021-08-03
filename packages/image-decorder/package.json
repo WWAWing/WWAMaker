@@ -11,8 +11,8 @@
     "packages/*"
   ],
   "dependencies": {
-    "react": "^16.8.6",
-    "typescript": "^3.4.5"
+    "react": "^17.0.2",
+    "typescript": "^4.3.5"
   },
   "scripts": {
     "build": "tsc -p ."
