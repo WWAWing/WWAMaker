@@ -6,7 +6,6 @@
       "dom.iterable",
       "esnext"
     ],
-    "noEmit": true,
     "jsx": "preserve"
   },
   "include": [

@@ -85,13 +85,14 @@
     "wwamaker-saver": "^0.0.1"
   },
   "devDependencies": {
+    "ts-loader": "9.2.5",
     "electron": "^13.1.2",
     "webpack-cli": "4.7.2"
   },
   "scripts": {
-    "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "start": "webpack-cli serve --mode development",
+    "build": "webpack --mode production",
+    "test": "jest"
   },
   "eslintConfig": {
     "extends": "react-app"
