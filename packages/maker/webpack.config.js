@@ -1,37 +1,66 @@
 const path = require("path");
 const webpack = require("webpack");
 
+const enableSourceMap = true;
+
 module.exports = {
   entry: "./src/index.tsx",
   mode: "development",
+  devtool: "source-map",
+  target: "electron-renderer",
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        exclude: /node_modules/,
         loader: "ts-loader"
       },
       {
-        test: /(\.module)?\.css$/,
+        test: /\.css$/,
         use: [
           "style-loader",
+          "css-loader",
           {
-            loader: "css-loader",
+            loader: "resolve-url-loader",
             options: {
-              modules: true
+              sourceMap: enableSourceMap
             }
           },
-          {
-            loader: "sass-loader",
-            options: {
-              modules: true
-            }
-          }
         ]
+      },
+      {
+        test: /(\.module)?\.scss$/,
+        use: [
+          "style-loader",
+          "css-loader",
+          {
+            loader: "resolve-url-loader",
+            options: {
+              sourceMap: enableSourceMap
+            }
+          },
+          "sass-loader"
+        ]
+      },
+      {
+        test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+        loader: "url-loader"
       }
     ]
   },
-  resolve: { extensions: ["*", ".ts", ".tsx"] },
+  resolve: {
+    extensions: ["*", ".js", ".ts", ".tsx"],
+    fallback: {
+      module: false,
+      dgram: false,
+      dns:false,
+      fs: false,
+      http2: false,
+      net: false,
+      tls: false,
+      child_process: false,
+      path: false
+    },
+  },
   output: {
     path: path.resolve(__dirname, "build/"),
     publicPath: "/build/",
