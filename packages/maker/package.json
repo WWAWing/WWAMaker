@@ -24,7 +24,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.0.3",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^4.0.3",
     "react-split-pane": "^0.1.87",
     "redux": "^4.0.1",
     "redux-devtools-extension": "^2.13.8",
