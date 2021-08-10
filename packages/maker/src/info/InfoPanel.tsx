@@ -17,7 +17,7 @@ const InfoPanel: React.FC = () => {
 
     const dispatch = useDispatch();
 
-    if (hasMapdata) {
+    if (!hasMapdata) {
         return (
             <Segment placeholder>
                 <Header icon>
