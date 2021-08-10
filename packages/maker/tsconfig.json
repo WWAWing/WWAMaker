@@ -6,7 +6,9 @@
       "dom.iterable",
       "esnext"
     ],
-    "jsx": "react"
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "noFallthroughCasesInSwitch": true
   },
   "include": [
     "src"
