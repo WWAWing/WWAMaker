@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { ipcRenderer } from "electron";
 import { Modal } from "semantic-ui-react";
 import { closeModal } from "./ModalState";
-import BrowseMap from "./BrowseMap";
 
+// 多分使わないかもしれないです
 const ModalComponent: React.FC<{}> = () => {
     const dispatch = useDispatch();
     const isOpened = useSelector(state => state.modal.open);
@@ -13,7 +13,7 @@ const ModalComponent: React.FC<{}> = () => {
     const ContentComponent: React.FC<{ currentMode: typeof mode }> = props => {
         switch (props.currentMode) {
             case "BROWSE_MAP":
-                return <BrowseMap />;
+                return null;
             case "BROWSE_PARTS":
                 return null;
             default:
@@ -32,9 +32,7 @@ const ModalComponent: React.FC<{}> = () => {
             open={isOpened}
             onClose={onClose}
         >
-            <Modal.Content>
-                <ContentComponent currentMode={mode} />
-            </Modal.Content>
+            <ContentComponent currentMode={mode} />
         </Modal>
     );
 };

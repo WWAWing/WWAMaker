@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { URLInput, StringInput, CoordInput } from "./EditFormUtils";
+import { URLInput, StringInput, CoordInput, NewCoordInput } from "./EditFormUtils";
 import { PartsEditComponent } from "./PartsEditComponent";
 import WWAConsts from "../../classes/WWAConsts";
 import { convertRelativeValueFromCoord } from "../../common/convertRelativeValue";
@@ -44,17 +44,15 @@ export const URLGateEdit: PartsEditComponent = ({attribute, message, onAttribute
  * ジャンプゲートの編集画面のコンポーネントです。
  */
 export const LocalGateEdit: PartsEditComponent = ({attribute, message, onAttributeChange}) => {
+    // FIXME: X 座標が変わってくれない
     return (
         <>
-            <CoordInput
-                label="ジャンプ先X座標"
-                value={convertRelativeValueFromCoord(attribute[WWAConsts.ATR_JUMP_X])}
-                onChange={value => onAttributeChange(value, WWAConsts.ATR_JUMP_X)}
-            />
-            <CoordInput
-                label="ジャンプ先Y座標"
-                value={convertRelativeValueFromCoord(attribute[WWAConsts.ATR_JUMP_Y])}
-                onChange={value => onAttributeChange(value, WWAConsts.ATR_JUMP_Y)}
+            <NewCoordInput
+                label="ジャンプ先座標"
+                x={convertRelativeValueFromCoord(attribute[WWAConsts.ATR_JUMP_X])}
+                y={convertRelativeValueFromCoord(attribute[WWAConsts.ATR_JUMP_Y])}
+                onSubmitX={value => onAttributeChange(value, WWAConsts.ATR_JUMP_X)}
+                onSubmitY={value => onAttributeChange(value, WWAConsts.ATR_JUMP_Y)}
             />
         </>
     );
