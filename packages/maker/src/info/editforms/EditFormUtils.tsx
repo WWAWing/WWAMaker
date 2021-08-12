@@ -1,7 +1,7 @@
 import React from "react";
 import WWAConsts from "../../classes/WWAConsts";
 import { MoveType } from "../../classes/WWAData";
-import { Input, Dropdown, DropdownItemProps, Form, TextArea, StrictFormFieldProps, Icon, StrictIconProps, Modal, Label, Button } from "semantic-ui-react";
+import { Input, Dropdown, DropdownItemProps, Form, TextArea, StrictFormFieldProps, Icon, StrictIconProps, Label, Button } from "semantic-ui-react";
 import { RelativeValue, convertDataValueFromRelativeCoord, convertRelativeValueFromStatus, convertDataValueFromRelativeStatus } from "../../common/convertRelativeValue";
 import { useSelector } from "react-redux";
 import BrowseMap from "../../common/BrowseMap";

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { URLInput, StringInput, CoordInput, NewCoordInput } from "./EditFormUtils";
+import { URLInput, StringInput, NewCoordInput } from "./EditFormUtils";
 import { PartsEditComponent } from "./PartsEditComponent";
 import WWAConsts from "../../classes/WWAConsts";
 import { convertRelativeValueFromCoord } from "../../common/convertRelativeValue";

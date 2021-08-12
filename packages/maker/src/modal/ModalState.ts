@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { PartsType } from "../classes/WWAData";
 
 export type ModalPartsType = "OBJECT" | "MAP" | "BOTH";
 
