@@ -44,7 +44,6 @@ export const URLGateEdit: PartsEditComponent = ({attribute, message, onAttribute
  * ジャンプゲートの編集画面のコンポーネントです。
  */
 export const LocalGateEdit: PartsEditComponent = ({attribute, message, onAttributeChange}) => {
-    // FIXME: X 座標が変わってくれない
     return (
         <>
             <NewCoordInput

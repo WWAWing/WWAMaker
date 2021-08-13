@@ -116,14 +116,11 @@ const PartsEdit: React.FC = () => {
             return;
         }
 
-        let newAttribute = editingParts.attribute.slice();
+        let newEditingParts = Object.assign({}, editingParts);
         const parsedValue = parseInt(value);
-        newAttribute[attributeIndex] = Number.isNaN(parsedValue) ? 0 : parsedValue;
+        newEditingParts.attribute[attributeIndex] = Number.isNaN(parsedValue) ? 0 : parsedValue;
 
-        updatePartsEdit({
-            ...editingParts,
-            attribute: newAttribute
-        });
+        updatePartsEdit(newEditingParts);
     };
 
     /**
