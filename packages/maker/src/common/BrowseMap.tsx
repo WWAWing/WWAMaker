@@ -1,7 +1,5 @@
 import React from "react";
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { Message, Modal } from "semantic-ui-react";
 import { RelativeValue } from "./convertRelativeValue";
 import makeBrowseModal from "./makeBrowseModal";
 import MapView from "./MapView";
@@ -11,8 +9,6 @@ const BrowseMap: React.FC<{
     onSubmit: (x: RelativeValue, y: RelativeValue) => void,
     onClose: () => void
 }> = props => {
-    const map = useSelector(state => state.wwaData?.map);
-    const mapObject = useSelector(state => state.wwaData?.mapObject);
 
     const [hoveringX, hoverX] = useState(0);
     const [hoveringY, hoverY] = useState(0);
@@ -21,22 +17,6 @@ const BrowseMap: React.FC<{
     const [selectingY, selectY] = useState(0);
 
     const BrowseModal = makeBrowseModal("マップ座標を選択");
-
-    if (!map || !mapObject) {
-        return (
-            <BrowseModal
-                isOpen={props.isOpen}
-                onClose={props.onClose}
-            >
-                <Modal.Description>
-                    <Message negative>
-                        <Message.Header>マップ情報が取得できませんでした。</Message.Header>
-                        <p>マップデータファイルを開いているか確認してください。</p>
-                    </Message>
-                </Modal.Description>
-            </BrowseModal>
-        );
-    }
 
     // FIXME: マップ内でカーソルを移動するたびに再描画が頻発していて遅い
     return (

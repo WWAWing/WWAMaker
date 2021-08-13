@@ -11,7 +11,6 @@ import "semantic-ui-css/semantic.min.css";
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import WhyDidYouRender from "@welldone-software/why-did-you-render";
 
 ReactDOM.render(
     <Provider store={Store}>
@@ -19,12 +18,6 @@ ReactDOM.render(
     </Provider>,
     document.getElementById('root')
 );
-
-if (process.env.NODE_ENV === "development") {
-    WhyDidYouRender(React, {
-        trackHooks: false
-    });
-}
 
 declare module "react-redux" {
     interface DefaultRootState extends StoreType {}

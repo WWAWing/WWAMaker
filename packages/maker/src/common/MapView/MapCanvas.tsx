@@ -6,7 +6,7 @@ import MapChunk from './MapChunk';
 import { PartsType } from '../../classes/WWAData';
 import getPosEachChip from '../getPosEachChip';
 import { useImage } from "wwamaker-image-decorder";
-import { useSelector, shallowEqual } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Coord } from '@wwawing/common-interface';
 
 /**
@@ -36,14 +36,15 @@ export interface Props {
  */
 const MapCanvas: React.FC<Props> = props => {
 
-    const map = useSelector(state => state.wwaData?.map) ?? [];
-    const mapObject = useSelector(state => state.wwaData?.mapObject) ?? [];
-    const mapAttribute = useSelector(state => state.wwaData?.mapAttribute) ?? [];
-    const objectAttribute = useSelector(state => state.wwaData?.objectAttribute) ?? [];
-    const playerX = useSelector(state => state.wwaData?.playerX) ?? 0;
-    const playerY = useSelector(state => state.wwaData?.playerY) ?? 0;
+    const wwaData = useSelector(state => state.wwaData);
+    const map = useMemo(() => wwaData?.map ?? [], [wwaData]);
+    const mapObject = useMemo(() => wwaData?.mapObject ?? [], [wwaData]);
+    const mapAttribute = useMemo(() => wwaData?.mapAttribute ?? [], [wwaData]);
+    const objectAttribute = useMemo(() => wwaData?.objectAttribute ?? [], [wwaData]);
+    const playerX = wwaData?.playerX ?? 0;
+    const playerY = wwaData?.playerY ?? 0;
+    const mapWidth = wwaData?.mapWidth ?? 0;
 
-    const mapWidth = useSelector(state => state.wwaData?.mapWidth, shallowEqual) ?? 0;
     const showGrid = useSelector(state => state.map.showGrid);
     const imageUrl = useSelector(state => state.image);
     const image = useImage(imageUrl ?? "");
@@ -102,23 +103,9 @@ const MapCanvas: React.FC<Props> = props => {
 
         const [chipX, chipY] = getPosEachChip(event.clientX - clientRect.left, event.clientY - clientRect.top);
         func(chipX, chipY, {
-            [PartsType.MAP]: getPartsNumberOnTarget(chipX, chipY, PartsType.MAP),
-            [PartsType.OBJECT]: getPartsNumberOnTarget(chipX, chipY, PartsType.OBJECT)
+            [PartsType.MAP]: map[chipY][chipX],
+            [PartsType.OBJECT]: mapObject[chipY][chipX]
         });
-    };
-
-    /**
-     * 指定した座標から各パーツ種類のパーツ番号を取得します
-     * @param chipX 
-     * @param chipY 
-     */
-    const getPartsNumberOnTarget = (chipX: number, chipY: number, type: PartsType) => {
-        switch (type) {
-            case PartsType.MAP:
-                return map[chipY][chipX];
-            case PartsType.OBJECT:
-                return mapObject[chipY][chipX];
-        }
     };
 
     const chunkMap = useMemo(() => {
