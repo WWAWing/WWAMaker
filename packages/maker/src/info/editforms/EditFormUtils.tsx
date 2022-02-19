@@ -376,6 +376,7 @@ export const CoordInput: React.FunctionComponent<{
                     <Dropdown
                         button
                         basic
+                        compact
                         options={coordOptions}
                         value={props.value.type}
                         trigger={<PartsTypeDropdownLabel />}

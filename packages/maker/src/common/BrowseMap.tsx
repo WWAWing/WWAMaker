@@ -1,12 +1,15 @@
 import React from "react";
 import { useState } from "react";
-import { RelativeValue } from "./convertRelativeValue";
+import { RelativeAbsoluteValue } from "./convertRelativeValue";
 import BrowseModal from "./BrowseModal";
 import MapView from "./MapView";
 
+/**
+ * @todo 座標の初期値を設定するようにする
+ */
 const BrowseMap: React.FC<{
     isOpen: boolean,
-    onSubmit: (x: RelativeValue, y: RelativeValue) => void,
+    onSubmit: (x: RelativeAbsoluteValue, y: RelativeAbsoluteValue) => void,
     onClose: () => void
 }> = props => {
 

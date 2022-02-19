@@ -7,10 +7,22 @@ import WWAConsts from "../classes/WWAConsts";
 /**
  * 相対値の型情報です。
  */
-export type RelativeValue = {
-    type: "ABSOLUTE" | "RELATIVE",
+export type RelativeValue =
+    | RelativeAbsoluteValue
+    | RelativeRelativeValue
+    | RelativePlayerValue;
+
+export type RelativeAbsoluteValue = {
+    type: "ABSOLUTE",
     value: number
-} | {
+};
+
+export type RelativeRelativeValue = {
+    type: "RELATIVE",
+    value: number
+};
+
+export type RelativePlayerValue = {
     type: "PLAYER"
 };
 

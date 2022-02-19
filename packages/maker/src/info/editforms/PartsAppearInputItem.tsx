@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { PartsType } from "../../classes/WWAData";
 import { AppearPartsItem } from "./utils";
 import WWAConsts from "../../classes/WWAConsts";
 import { InputChangeFunctionWithIndex } from "./utils";
-import { Form, Dropdown } from "semantic-ui-react";
+import { Form, Dropdown, Divider } from "semantic-ui-react";
 import { CoordInput } from "./EditFormUtils";
+import { BrowseParts } from "../../common/BrowseParts";
+import BrowseMap from "../../common/BrowseMap";
 
 /**
  * パーツ種類のドロップダウンで使用するオプション値です。
@@ -23,7 +25,6 @@ const PartsTypeOptions = [
  * 指定位置にパーツを出現の1パーツ分の項目です。
  * @param props 
  * @todo onChange の処理内容を正しく整える
- * @todo 参照ボタンを実装する
  */
 const PartsAppearInputItem: React.FC<{
     item: AppearPartsItem,
@@ -33,6 +34,9 @@ const PartsAppearInputItem: React.FC<{
 }> = props => {
 
     const { number, chipX, chipY, type } = props.item;
+    const [browsePartsOpen, setBrowsePartsOpen] = useState(false);
+    const [browseMapOpen, setBrowseMapOpen] = useState(false);
+
     return (
         <>
             <Form.Group>
@@ -51,6 +55,7 @@ const PartsAppearInputItem: React.FC<{
                     <Dropdown
                         button
                         basic
+                        compact
                         options={PartsTypeOptions}
                         value={type.toString()}
                         onChange={(event, data) => {
@@ -59,20 +64,60 @@ const PartsAppearInputItem: React.FC<{
                     />
                     <input />
                 </Form.Input>
-                <Form.Button width={5}>参照</Form.Button>
+                <Form.Button
+                    width={5}
+                    onClick={() => {
+                        setBrowsePartsOpen(true);
+                    }}
+                >
+                    参照
+                </Form.Button>
             </Form.Group>
             <Form.Group>
                 <CoordInput
-                    width={12}
+                    width={11}
                     value={chipX}
                     onChange={(value) => props.onChange(value, props.index + WWAConsts.REL_ATR_APPERANCE_X)}
                 />
+            </Form.Group>
+            <Form.Group>
                 <CoordInput
-                    width={12}
+                    width={11}
                     value={chipY}
                     onChange={(value) => props.onChange(value, props.index + WWAConsts.REL_ATR_APPERANCE_Y)}
                 />
+                <Form.Button
+                    width={5}
+                    onClick={() => {
+                        setBrowseMapOpen(true);
+                    }}
+                >
+                    参照
+                </Form.Button>
             </Form.Group>
+            <BrowseParts
+                isOpen={browsePartsOpen}
+                onClose={() => {
+                    setBrowsePartsOpen(false);
+                }}
+                selectingPartsNumber={number}
+                selectingPartsType={type}
+                onSubmit={(partsNumber, partsType) => {
+                    props.onChange(partsNumber.toString(), props.index + WWAConsts.REL_ATR_APPERANCE_ID);
+                    props.onChange(partsType.toString(), props.index + WWAConsts.REL_ATR_APPERANCE_TYPE);
+                }}
+            />
+            <BrowseMap
+                isOpen={browseMapOpen}
+                onClose={() => {
+                    setBrowseMapOpen(false);
+                }}
+                onSubmit={(x, y) => {
+                    props.onChange(x.value.toString(), props.index + WWAConsts.REL_ATR_APPERANCE_X);
+                    props.onChange(y.value.toString(), props.index + WWAConsts.REL_ATR_APPERANCE_Y);
+                }}
+            />
+            <Divider />
         </>
     );
 }

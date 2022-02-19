@@ -1,5 +1,5 @@
 import WWAConsts from "../../classes/WWAConsts";
-import React from "react";
+import React, { useState } from "react";
 import {
     MoveTypeInput,
     PassableInput,
@@ -17,6 +17,7 @@ import { ItemMode } from "../../classes/WWAData";
 import { URLGateEdit, LocalGateEdit } from "./CommonEditForm";
 import { Input, Form } from "semantic-ui-react";
 import { PartsAppearInput, PartsAppearSelectInput } from "./PartsAppearInput";
+import { ObjectPartsBrowse } from "../../common/BrowseParts";
 
 /**
  * StatusInput で与えられた各入力欄の名前に対し、属性のインデックスを見つけ出します。
@@ -338,21 +339,43 @@ const ObjectRandomEdit: PartsEditComponent = ({attribute, message, onAttributeCh
         return result;
     }
 
+    const [browseOpenNumber, setBrowseOpenNumber] = useState(0);
+
     return (
         <>
+            <label>選択するパーツの物体番号</label>
             {createCountUpArray(WWAConsts.ATR_RANDOM_BASE, WWAConsts.RANDOM_ITERATION_MAX).map(index => (
-                <Form.Field key={index}>
-                    {index === WWAConsts.ATR_RANDOM_BASE &&
-                        <label>選択するパーツの物体番号</label>
-                    }
-                    <Input
-                        type="number"
-                        value={attribute[index]}
-                        onChange={(event, data) => {
-                            onAttributeChange(data.value, index);
+                <Form.Group key={index}>
+                    <Form.Input
+                        width={7}
+                    >
+                        <Input
+                            type="number"
+                            value={attribute[index]}
+                            onChange={(event, data) => {
+                                onAttributeChange(data.value, index);
+                            }}
+                        />
+                    </Form.Input>
+                    <Form.Button
+                        width={5}
+                        onClick={() => {
+                            setBrowseOpenNumber(index);
                         }}
-                    ></Input>
-                </Form.Field>
+                    >
+                        参照
+                    </Form.Button>
+                    <ObjectPartsBrowse
+                        isOpen={browseOpenNumber === index}
+                        selectingPartsNumber={attribute[index]}
+                        onSubmit={(partsNumber) => {
+                            onAttributeChange(partsNumber.toString(), index);
+                        }}
+                        onClose={() => {
+                            setBrowseOpenNumber(0);
+                        }}
+                    />
+                </Form.Group>
             ))}
         </>
     );

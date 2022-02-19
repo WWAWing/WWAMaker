@@ -1,9 +1,43 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { DefaultRootState, useSelector } from "react-redux";
 import BrowseModal from "./BrowseModal";
 import { PartsType } from "../classes/WWAData";
 import PartsList from "./PartsList";
+
+/**
+ * パーツ一覧のコンポーネントを作成します。
+ * @param type 対象のパーツ種類
+ * @param selector パーツ属性情報を取り出す関数
+ * @returns パーツ一覧のコンポーネント
+ */
+ function makePartsList(type: PartsType, selector: (state: DefaultRootState) => number[][] | undefined): React.FC<{
+    partsNumber?: number,
+    onSelect: (partsNumber: number) => void
+}> {
+    return props => {
+        const attributes = useSelector(selector);
+        
+        if (!attributes) {
+            return null;
+        }
+        
+        return (
+            <div style={{ height: "30vh" }}>
+                <PartsList
+                    type={type}
+                    attribute={attributes}
+                    selectPartsNumber={props.partsNumber}
+                    onPartsSelect={props.onSelect}
+                    onPartsEdit={props.onSelect}
+                />
+            </div>
+        );
+    };
+}
+
+const ObjectPartsList = makePartsList(PartsType.OBJECT, state => state.wwaData?.objectAttribute);
+const MapPartsList = makePartsList(PartsType.MAP, state => state.wwaData?.mapAttribute);
 
 type BaseProps = {
     /** 開いているかどうか？ */
@@ -32,17 +66,23 @@ type BothProps = BaseProps & {
  * 物体パーツあるいは背景パーツを参照選択するモーダルです。
  */
 export const BrowseParts: React.FC<BothProps> = props => {
-    const ObjectPartsList = makePartsList(PartsType.OBJECT, state => state.wwaData?.objectAttribute);
-    const MapPartsList = makePartsList(PartsType.MAP, state => state.wwaData?.mapAttribute);
-
-    const [selectingPartsNumber, selectPartsNumber] = useState(0);
-    const [selectingPartsType, selectPartsType] = useState<PartsType | null>(null);
+    const [selectingPartsNumber, selectPartsNumber] = useState(props.selectingPartsNumber);
+    const [selectingPartsType, selectPartsType] = useState<PartsType | null>(props.selectingPartsType);
 
     const partsTypeText = {
         [PartsType.OBJECT]: "物体",
         [PartsType.MAP]: "背景",
         "": ""
     }[selectingPartsType ?? ""];
+
+    useEffect(() => {
+        // モーダルが開いた場合は同期する
+        if (props.isOpen) {
+            selectPartsNumber(props.selectingPartsNumber);
+            selectPartsType(props.selectingPartsType);
+        }
+    // eslint-disable-next-line
+    }, [props.isOpen]);
 
     return (
         <BrowseModal
@@ -59,7 +99,7 @@ export const BrowseParts: React.FC<BothProps> = props => {
             <div>
                 物体
                 <ObjectPartsList
-                    partsNumber={props.selectingPartsType === PartsType.OBJECT ? props.selectingPartsNumber : undefined}
+                    partsNumber={selectingPartsType === PartsType.OBJECT ? selectingPartsNumber : undefined}
                     onSelect={number => {
                         selectPartsNumber(number);
                         selectPartsType(PartsType.OBJECT);
@@ -69,7 +109,7 @@ export const BrowseParts: React.FC<BothProps> = props => {
             <div>
                 背景
                 <MapPartsList
-                    partsNumber={props.selectingPartsType === PartsType.MAP ? props.selectingPartsNumber : undefined}
+                    partsNumber={selectingPartsType === PartsType.MAP ? selectingPartsNumber : undefined}
                     onSelect={number => {
                         selectPartsNumber(number);
                         selectPartsType(PartsType.MAP);
@@ -77,7 +117,7 @@ export const BrowseParts: React.FC<BothProps> = props => {
                 />
             </div>
             <div>
-                {partsTypeText}パーツ {selectPartsNumber} 番
+                {partsTypeText}パーツ {selectingPartsNumber} 番
             </div>
         </BrowseModal>
     );
@@ -87,8 +127,14 @@ export const BrowseParts: React.FC<BothProps> = props => {
  * 物体パーツを参照選択するモーダルです。
  */
 export const ObjectPartsBrowse: React.FC<ObjectProps> = props => {
-    const ObjectPartsList = makePartsList(PartsType.OBJECT, state => state.wwaData?.objectAttribute);
-    const [objectSelectingPartsNumber, selectObjectPartsNumber] = useState(0);
+    const [objectSelectingPartsNumber, selectObjectPartsNumber] = useState(props.selectingPartsNumber);
+
+    useEffect(() => {
+        if (props.isOpen) {
+            selectObjectPartsNumber(props.selectingPartsNumber);
+        }
+    // eslint-disable-next-line
+    }, [props.isOpen]);
 
     return (
         <BrowseModal
@@ -107,32 +153,3 @@ export const ObjectPartsBrowse: React.FC<ObjectProps> = props => {
         </BrowseModal>
     );
 };
-
-/**
- * パーツ一覧のコンポーネントを作成します。
- * @param type 対象のパーツ種類
- * @param selector パーツ属性情報を取り出す関数
- * @returns パーツ一覧のコンポーネント
- */
-function makePartsList(type: PartsType, selector: (state: DefaultRootState) => number[][] | undefined): React.FC<{
-    partsNumber?: number,
-    onSelect: (partsNumber: number) => void
-}> {
-    return props => {
-        const attributes = useSelector(selector);
-        
-        if (!attributes) {
-            return null;
-        }
-        
-        return (
-            <PartsList
-                type={type}
-                attribute={attributes}
-                selectPartsNumber={props.partsNumber}
-                onPartsSelect={props.onSelect}
-                onPartsEdit={props.onSelect}
-            />
-        );
-    };
-}
