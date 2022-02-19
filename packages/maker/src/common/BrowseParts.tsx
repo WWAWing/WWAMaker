@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { DefaultRootState, useSelector } from "react-redux";
-import makeBrowseModal from "./makeBrowseModal";
+import BrowseModal from "./BrowseModal";
 import { PartsType } from "../classes/WWAData";
 import PartsList from "./PartsList";
 
@@ -32,7 +32,6 @@ type BothProps = BaseProps & {
  * 物体パーツあるいは背景パーツを参照選択するモーダルです。
  */
 export const BrowseParts: React.FC<BothProps> = props => {
-    const BrowseModal = makeBrowseModal("パーツ番号を選択");
     const ObjectPartsList = makePartsList(PartsType.OBJECT, state => state.wwaData?.objectAttribute);
     const MapPartsList = makePartsList(PartsType.MAP, state => state.wwaData?.mapAttribute);
 
@@ -48,6 +47,7 @@ export const BrowseParts: React.FC<BothProps> = props => {
     return (
         <BrowseModal
             isOpen={props.isOpen}
+            title="パーツ番号を選択"
             onSubmit={() => {
                 if (selectingPartsType === null) {
                     return;
@@ -87,13 +87,13 @@ export const BrowseParts: React.FC<BothProps> = props => {
  * 物体パーツを参照選択するモーダルです。
  */
 export const ObjectPartsBrowse: React.FC<ObjectProps> = props => {
-    const BrowseModal = makeBrowseModal("パーツ番号を選択");
     const ObjectPartsList = makePartsList(PartsType.OBJECT, state => state.wwaData?.objectAttribute);
     const [objectSelectingPartsNumber, selectObjectPartsNumber] = useState(0);
 
     return (
         <BrowseModal
             isOpen={props.isOpen}
+            title="パーツ番号を選択"
             onSubmit={() => props.onSubmit(objectSelectingPartsNumber)}
             onClose={props.onClose}
         >

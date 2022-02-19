@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { RelativeValue } from "./convertRelativeValue";
-import makeBrowseModal from "./makeBrowseModal";
+import BrowseModal from "./BrowseModal";
 import MapView from "./MapView";
 
 const BrowseMap: React.FC<{
@@ -16,12 +16,10 @@ const BrowseMap: React.FC<{
     const [selectingX, selectX] = useState(0);
     const [selectingY, selectY] = useState(0);
 
-    const BrowseModal = makeBrowseModal("マップ座標を選択");
-
-    // FIXME: マップ内でカーソルを移動するたびに再描画が頻発していて遅い
     return (
         <BrowseModal
             isOpen={props.isOpen}
+            title="マップ座標を選択"
             onSubmit={() => {
                 props.onSubmit({
                     type: "ABSOLUTE",
