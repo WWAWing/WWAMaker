@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { PartsType } from "../../classes/WWAData";
-import { AppearPartsItem } from "./utils";
-import WWAConsts from "../../classes/WWAConsts";
-import { InputChangeFunctionWithIndex } from "./utils";
 import { Form, Dropdown, Divider } from "semantic-ui-react";
-import { CoordInput } from "./EditFormUtils";
+import WWAConsts from "../../classes/WWAConsts";
+import { PartsType } from "../../classes/WWAData";
 import { BrowseParts } from "../../common/BrowseParts";
+import { CoordInput } from "./utils";
+import { AppearPartsItem, InputChangeFunctionWithIndex } from "./utils/definitions";
 
 /**
  * パーツ種類のドロップダウンで使用するオプション値です。

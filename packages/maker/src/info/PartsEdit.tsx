@@ -6,7 +6,7 @@ import { PartsType, createEmptyPartsAttribute } from "../classes/WWAData";
 import WWAConsts from "../classes/WWAConsts";
 import { ObjectEditTable } from "./editforms/ObjectEditForm";
 import { MapEditTable } from "./editforms/MapEditForm";
-import { PartsEditAttributeChange, PartsEditMessageChange } from "./editforms/PartsEditComponent";
+import { PartsEditAttributeChange, PartsEditMessageChange } from "./editforms/definitions";
 import { Form, Portal, Button, Icon, Dropdown, DropdownItemProps } from "semantic-ui-react";
 import PartsChip from "../common/PartsChip";
 import { GraphicSelect } from "../common/GraphicSelect";

@@ -80,7 +80,7 @@ const wwaDataSlice = createSlice({
             const { payload } = action;
             const [newAttribute, messageEditResult] = editPartsAttribute(
                 payload.attributes,
-                payload.message.length > 0,
+                payload.message.length <= 0,
                 payload.number,
                 state.messageNum - 1
             );
