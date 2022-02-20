@@ -7,6 +7,7 @@ import { Form, Dropdown, Divider } from "semantic-ui-react";
 import { CoordInput } from "./EditFormUtils";
 import { BrowseParts } from "../../common/BrowseParts";
 import BrowseMap from "../../common/BrowseMap";
+import { convertDataValueFromRelativeCoord } from "../../common/convertRelativeValue";
 
 /**
  * パーツ種類のドロップダウンで使用するオプション値です。
@@ -109,12 +110,19 @@ const PartsAppearInputItem: React.FC<{
             />
             <BrowseMap
                 isOpen={browseMapOpen}
+                defaultValue={{ x: chipX, y: chipY }}
                 onClose={() => {
                     setBrowseMapOpen(false);
                 }}
                 onSubmit={(x, y) => {
-                    props.onChange(x.value.toString(), props.index + WWAConsts.REL_ATR_APPERANCE_X);
-                    props.onChange(y.value.toString(), props.index + WWAConsts.REL_ATR_APPERANCE_Y);
+                    props.onChange(
+                        convertDataValueFromRelativeCoord(x).toString(),
+                        props.index + WWAConsts.REL_ATR_APPERANCE_X
+                    );
+                    props.onChange(
+                        convertDataValueFromRelativeCoord(y).toString(),
+                        props.index + WWAConsts.REL_ATR_APPERANCE_Y
+                    );
                 }}
             />
             <Divider />

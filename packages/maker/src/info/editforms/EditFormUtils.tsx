@@ -306,6 +306,8 @@ export const CoordInput: React.FunctionComponent<{
     width?: StrictFormFieldProps["width"],
     value: RelativeValue,
     onChange: InputChangeFunction
+    /** 座標データそのままを引数とした関数 */
+    onChangeRaw?: (changedValue: RelativeValue) => void;
 }> = props => {
     /**
      * coordOptions は座標の種別を選択するドロップダウンの項目定数です。
@@ -381,10 +383,14 @@ export const CoordInput: React.FunctionComponent<{
                         value={props.value.type}
                         trigger={<PartsTypeDropdownLabel />}
                         onChange={(event, { value }) => {
-                            props.onChange(convertDataValueFromRelativeCoord({
+                            const relativeValue = {
                                 type: value as RelativeValue["type"],
                                 value: props.value.type === "PLAYER" ? 0 : props.value.value
-                            }).toString());
+                            };
+                            props.onChange(
+                                convertDataValueFromRelativeCoord(relativeValue).toString()
+                            );
+                            props.onChangeRaw?.(relativeValue);
                         }}
                     />
                 }
@@ -399,10 +405,12 @@ export const CoordInput: React.FunctionComponent<{
                     }
                     // 空欄のように、 parseInt では NaN になる値は 0 にリセット
                     const parsedValue = parseInt(value);
-                    props.onChange(convertDataValueFromRelativeCoord({
+                    const relativeValue = {
                         ...props.value,
                         value: Number.isNaN(parsedValue) ? 0 : parsedValue
-                    }).toString());
+                    };
+                    props.onChange(convertDataValueFromRelativeCoord(relativeValue).toString());
+                    props.onChangeRaw?.(relativeValue);
                 }}
             />
         </Form.Field>
@@ -461,6 +469,7 @@ export const NewCoordInput: React.FC<{
             >参照</Button>
             <BrowseMap
                 isOpen={isBrowseOpen}
+                defaultValue={{ x: props.x, y: props.y }}
                 onSubmit={(x, y) => {
                     // TODO: 空欄の値では NaN が入ってくる可能性がある
                     props.onSubmitX(convertDataValueFromRelativeCoord(x).toString());
