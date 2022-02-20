@@ -6,7 +6,6 @@ import InfoPanel from './info/InfoPanel';
 import MapEdit from './map/MapEdit';
 import './common/SplitPane.scss';
 import { useSelector } from 'react-redux';
-import ModalComponent from './modal/ModalComponent';
 
 /**
  * WWA Maker 全体のコンポーネントです。
@@ -38,7 +37,6 @@ const App: React.FC = () => {
             <div className={getInfoPanelClassName()}>
                 <InfoPanel></InfoPanel>
             </div>
-            <ModalComponent />
         </div>
     );
 }

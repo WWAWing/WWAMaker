@@ -6,7 +6,6 @@ import { wwaDataReducer } from "./wwadata/WWADataState";
 import thunkMiddleware from 'redux-thunk';
 import { combineReducers, configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import { imageReducer } from "./image/ImageState";
-import { modalReducer } from "./modal/ModalState";
 
 const reducer = combineReducers({
     load: loadReducer,
@@ -16,7 +15,6 @@ const reducer = combineReducers({
     mapParts: mapPartsReducer,
     image: imageReducer,
     info: infoPanelReducer,
-    modal: modalReducer
 });
 
 /**
