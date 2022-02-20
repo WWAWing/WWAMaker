@@ -101,9 +101,6 @@ const ManualBrowseMap: BrowseMapPaneComponent = ({ value, onChange }) => {
     );
 };
 
-/**
- * @todo 座標の初期値を設定するようにする
- */
 const BrowseMap: React.FC<{
     isOpen: boolean,
     defaultValue: { x: RelativeValue, y: RelativeValue },
