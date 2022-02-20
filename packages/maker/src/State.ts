@@ -14,7 +14,7 @@ const reducer = combineReducers({
     objParts: objectPartsReducer,
     mapParts: mapPartsReducer,
     image: imageReducer,
-    info: infoPanelReducer
+    info: infoPanelReducer,
 });
 
 /**

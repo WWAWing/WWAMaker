@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { PartsType } from "../../classes/WWAData";
 import { AppearPartsItem } from "./utils";
 import WWAConsts from "../../classes/WWAConsts";
 import { InputChangeFunctionWithIndex } from "./utils";
-import { Form, Dropdown } from "semantic-ui-react";
+import { Form, Dropdown, Divider } from "semantic-ui-react";
 import { CoordInput } from "./EditFormUtils";
+import { BrowseParts } from "../../common/BrowseParts";
 
 /**
  * パーツ種類のドロップダウンで使用するオプション値です。
@@ -23,7 +24,6 @@ const PartsTypeOptions = [
  * 指定位置にパーツを出現の1パーツ分の項目です。
  * @param props 
  * @todo onChange の処理内容を正しく整える
- * @todo 参照ボタンを実装する
  */
 const PartsAppearInputItem: React.FC<{
     item: AppearPartsItem,
@@ -33,6 +33,8 @@ const PartsAppearInputItem: React.FC<{
 }> = props => {
 
     const { number, chipX, chipY, type } = props.item;
+    const [browsePartsOpen, setBrowsePartsOpen] = useState(false);
+
     return (
         <>
             <Form.Group>
@@ -45,34 +47,69 @@ const PartsAppearInputItem: React.FC<{
                     actionPosition="left"
                     value={number}
                     onChange={(event, data) => {
-                        props.onChange(data.value as string, props.index + WWAConsts.REL_ATR_APPERANCE_ID)
+                        props.onChange({
+                            value: data.value as string,
+                            attributeIndex: props.index + WWAConsts.REL_ATR_APPERANCE_ID
+                        });
                     }}
                 >
                     <Dropdown
                         button
                         basic
+                        compact
                         options={PartsTypeOptions}
                         value={type.toString()}
                         onChange={(event, data) => {
-                            props.onChange(data.value as string, props.index + WWAConsts.REL_ATR_APPERANCE_TYPE);
+                            props.onChange({
+                                value: data.value as string,
+                                attributeIndex: props.index + WWAConsts.REL_ATR_APPERANCE_TYPE
+                            });
                         }}
                     />
                     <input />
                 </Form.Input>
-                <Form.Button width={5}>参照</Form.Button>
+                <Form.Button
+                    width={5}
+                    onClick={() => {
+                        setBrowsePartsOpen(true);
+                    }}
+                >
+                    参照
+                </Form.Button>
             </Form.Group>
             <Form.Group>
                 <CoordInput
-                    width={12}
-                    value={chipX}
-                    onChange={(value) => props.onChange(value, props.index + WWAConsts.REL_ATR_APPERANCE_X)}
-                />
-                <CoordInput
-                    width={12}
-                    value={chipY}
-                    onChange={(value) => props.onChange(value, props.index + WWAConsts.REL_ATR_APPERANCE_Y)}
+                    x={chipX}
+                    y={chipY}
+                    onSubmit={(x, y) => {
+                        props.onChange(
+                            { value: x, attributeIndex: props.index + WWAConsts.REL_ATR_APPERANCE_X },
+                            { value: y, attributeIndex: props.index + WWAConsts.REL_ATR_APPERANCE_Y },
+                        )
+                    }}
                 />
             </Form.Group>
+            <BrowseParts
+                isOpen={browsePartsOpen}
+                onClose={() => {
+                    setBrowsePartsOpen(false);
+                }}
+                selectingPartsNumber={number}
+                selectingPartsType={type}
+                onSubmit={(partsNumber, partsType) => {
+                    props.onChange(
+                        {
+                            value: partsNumber.toString(),
+                            attributeIndex: props.index + WWAConsts.REL_ATR_APPERANCE_ID
+                        },
+                        {
+                            value: partsType.toString(),
+                            attributeIndex: props.index + WWAConsts.REL_ATR_APPERANCE_TYPE
+                        }
+                    );
+                }}
+            />
+            <Divider />
         </>
     );
 }

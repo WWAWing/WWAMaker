@@ -1,7 +1,7 @@
 import makeMenu from './makeMenu';
 import WWAMakerApp from '../core/WWAMakerApp';
 import { app, BrowserWindow, Menu } from 'electron';
-import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer';
+import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 import messages from "../messages";
 
 function createWindow () {
@@ -37,7 +37,7 @@ function createWindow () {
 }
 
 app.whenReady().then(() => {
-    installExtension(REDUX_DEVTOOLS)
+    installExtension([REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS])
         .then(name => console.log(`Added Extension: ${name}`))
         .catch(error => console.error(`An error occured: `, error));
     createWindow();

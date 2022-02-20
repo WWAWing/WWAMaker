@@ -2,6 +2,7 @@
 
 import { PartsType } from "../../../classes/WWAData";
 import { RelativeValue } from "../../../common/convertRelativeValue";
+import { PartsEditAttributeItem } from "../PartsEditComponent";
 
 /**
  * テキストボックスやセレクトボックスで変更が生じた際に実行するコールバック関数の型です。
@@ -16,7 +17,7 @@ export type InputChangeFunctionWithName = (value: string, name: string) => void;
  * 仕様は InputChangeFunction と同じです。
  * index には主に指定位置にパーツを出現で何番目の項目かが含まれています。
  */
-export type InputChangeFunctionWithIndex = (value: string, index: number) => void;
+export type InputChangeFunctionWithIndex = (...values: PartsEditAttributeItem[]) => void;
 
 /**
  * 指定位置にパーツを出現の各項目を表した型です。

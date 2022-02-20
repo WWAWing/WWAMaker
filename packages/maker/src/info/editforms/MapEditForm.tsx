@@ -1,10 +1,10 @@
 import WWAConsts from "../../classes/WWAConsts"
 import React from "react";
 import {
-    NumberInput,
     WaitTimeInput,
     SoundNumberInput,
-    MessageInput
+    MessageInput,
+    ItemPartsInput
 } from "./EditFormUtils";
 import { PartsEditComponent, PartsEditComponentTable } from "./PartsEditComponent";
 import { LocalGateEdit, URLGateEdit } from "./CommonEditForm";
@@ -14,16 +14,18 @@ const MapStreetEdit: PartsEditComponent = ({attribute, message, onAttributeChang
     <>
         <WaitTimeInput
             value={attribute[WWAConsts.ATR_NUMBER]}
-            onChange={value => onAttributeChange(value, WWAConsts.ATR_NUMBER)}
+            onChange={value => onAttributeChange({ value, attributeIndex: WWAConsts.ATR_NUMBER })}
         />
-        <NumberInput
+        <ItemPartsInput
             label="反応するアイテム番号"
             value={attribute[WWAConsts.ATR_ITEM]}
-            onChange={value => onAttributeChange(value, WWAConsts.ATR_ITEM)}
+            onChange={value => {
+                onAttributeChange({ value, attributeIndex: WWAConsts.ATR_ITEM });
+            }}
         />
         <SoundNumberInput
             value={attribute[WWAConsts.ATR_SOUND]}
-            onChange={value => onAttributeChange(value, WWAConsts.ATR_SOUND)}
+            onChange={value => onAttributeChange({ value, attributeIndex: WWAConsts.ATR_SOUND })}
         />
         <MessageInput
             label="表示メッセージ"

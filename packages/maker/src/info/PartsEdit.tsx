@@ -111,14 +111,16 @@ const PartsEdit: React.FC = () => {
     /**
      * @see PartsEditAttributeChange
      */
-    const handleAttributeChange: PartsEditAttributeChange = (value, attributeIndex) => {
+    const handleAttributeChange: PartsEditAttributeChange = (...values) => {
         if (editingParts === null) {
             return;
         }
 
-        let newAttribute = editingParts.attribute.slice();
-        const parsedValue = parseInt(value);
-        newAttribute[attributeIndex] = Number.isNaN(parsedValue) ? 0 : parsedValue;
+        let newAttribute = [...editingParts.attribute];
+        values.forEach(attribute => {
+            const parsedValue = parseInt(attribute.value);
+            newAttribute[attribute.attributeIndex] = Number.isNaN(parsedValue) ? 0 : parsedValue;
+        });
 
         updatePartsEdit({
             ...editingParts,
@@ -186,7 +188,10 @@ const PartsEdit: React.FC = () => {
                 basic
                 options={partsEditOptions}
                 onChange={(event, data) => {
-                    handleAttributeChange(data.value as string, WWAConsts.ATR_TYPE);
+                    handleAttributeChange({
+                        value: data.value as string,
+                        attributeIndex: WWAConsts.ATR_TYPE
+                    });
                 }}
                 value={partsEditType}
             />
