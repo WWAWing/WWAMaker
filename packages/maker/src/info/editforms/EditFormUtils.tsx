@@ -1,9 +1,8 @@
 import React from "react";
 import WWAConsts from "../../classes/WWAConsts";
 import { MoveType } from "../../classes/WWAData";
-import { Input, Dropdown, DropdownItemProps, Form, TextArea, StrictFormFieldProps, Icon, StrictIconProps, Label, Button } from "semantic-ui-react";
+import { Input, Dropdown, DropdownItemProps, Form, TextArea, Icon, StrictIconProps, Label, Button } from "semantic-ui-react";
 import { RelativeValue, convertDataValueFromRelativeCoord, convertRelativeValueFromStatus, convertDataValueFromRelativeStatus } from "../../common/convertRelativeValue";
-import { useSelector } from "react-redux";
 import BrowseMap from "../../common/BrowseMap";
 import { useState } from "react";
 import { ItemPartsBrowse, ObjectPartsBrowse } from "../../common/BrowseParts";
@@ -373,132 +372,10 @@ export const ItemPartsInput: React.FC<{
     );
 };
 
-
-/**
- * 座標を入力するコンポーネントです。
- *     パーツ属性から利用する際は value プロパティに getPartsAppearValues を呼び出した状態でご利用ください。
- * @example <PartsApperarInput items={getPartsAppearValues(attribute)} onChange={onAttributeChange} />
- */
-export const CoordInput: React.FunctionComponent<{
-    label?: string,
-    width?: StrictFormFieldProps["width"],
-    value: RelativeValue,
-    onChange: InputChangeFunction
-    /** 座標データそのままを引数とした関数 */
-    onChangeRaw?: (changedValue: RelativeValue) => void;
-}> = props => {
-    /**
-     * coordOptions は座標の種別を選択するドロップダウンの項目定数です。
-     */
-    const coordOptions: { text: string, value: RelativeValue["type"], icon: StrictIconProps["name"] }[] = [{
-        text: "絶対",
-        value: "ABSOLUTE",
-        icon: "point"
-    }, {
-        text: "相対",
-        value: "RELATIVE",
-        icon: "arrows alternate"
-    }, {
-        text: "プレイヤー",
-        value: "PLAYER",
-        icon: "user"
-    }];
-
-    /**
-     * mapWidth はマップのサイズそのままです。
-     */
-    const mapWidthMax = useSelector(state => state.wwaData?.mapWidth) ?? 0;
-
-    /**
-     * 座標の種別で表示されるラベル部分のコンポーネントです。
-     */
-    const PartsTypeDropdownLabel = () => {
-        const coordOption = coordOptions.find(value => props.value.type === value.value);
-        return (
-            <>
-                <Icon name={coordOption?.icon} />
-                {coordOption?.text}
-            </>
-        );
-    };
-
-    /**
-     * 座標の最小値を指定します。
-     */
-    const getCoordMin = () => {
-        if (props.value.type === "RELATIVE") {
-            return -WWAConsts.RELATIVE_COORD_MAX;
-        } else if (props.value.type === "ABSOLUTE") {
-            return 0;
-        }
-        return undefined;
-    };
-
-    /**
-     * 座標の最大値を指定します。
-     */
-    const getCoordMax = () => {
-        if (props.value.type === "RELATIVE") {
-            return WWAConsts.RELATIVE_COORD_MAX;
-        } else if (props.value.type === "ABSOLUTE") {
-            return mapWidthMax;
-        }
-        return undefined;
-    };
-
-    return (
-        <Form.Field width={props.width}>
-            {props.label !== undefined &&
-                <label>{props.label}</label>
-            }
-            <Input
-                action={
-                    <Dropdown
-                        button
-                        basic
-                        compact
-                        options={coordOptions}
-                        value={props.value.type}
-                        trigger={<PartsTypeDropdownLabel />}
-                        onChange={(event, { value }) => {
-                            const relativeValue = {
-                                type: value as RelativeValue["type"],
-                                value: props.value.type === "PLAYER" ? 0 : props.value.value
-                            };
-                            props.onChange(
-                                convertDataValueFromRelativeCoord(relativeValue).toString()
-                            );
-                            props.onChangeRaw?.(relativeValue);
-                        }}
-                    />
-                }
-                actionPosition="left"
-                type="number"
-                value={props.value.type !== "PLAYER" ? props.value.value : ""}
-                min={getCoordMin()}
-                max={getCoordMax()}
-                onChange={(event, { value }) => {
-                    if (props.value.type === "PLAYER") {
-                        return;
-                    }
-                    // 空欄のように、 parseInt では NaN になる値は 0 にリセット
-                    const parsedValue = parseInt(value);
-                    const relativeValue = {
-                        ...props.value,
-                        value: Number.isNaN(parsedValue) ? 0 : parsedValue
-                    };
-                    props.onChange(convertDataValueFromRelativeCoord(relativeValue).toString());
-                    props.onChangeRaw?.(relativeValue);
-                }}
-            />
-        </Form.Field>
-    );
-};
-
 /**
  * CoordInput に参照機能をもたせた新しい入力コンポーネントです。
  */
-export const NewCoordInput: React.FC<{
+export const CoordInput: React.FC<{
     label?: string,
     x: RelativeValue,
     y: RelativeValue,
@@ -542,9 +419,7 @@ export const NewCoordInput: React.FC<{
         <Form.Field>
             <ValueLabel name="X" value={props.x} />
             <ValueLabel name="Y" value={props.y} />
-            <Button
-                onClick={() => setBrowseOpen(true)}
-            >参照</Button>
+            <Button onClick={() => setBrowseOpen(true)}>参照</Button>
             <BrowseMap
                 isOpen={isBrowseOpen}
                 defaultValue={{ x: props.x, y: props.y }}

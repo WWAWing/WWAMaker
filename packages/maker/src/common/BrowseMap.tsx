@@ -3,8 +3,9 @@ import { useState } from "react";
 import { RelativeValue } from "./convertRelativeValue";
 import BrowseModal from "./BrowseModal";
 import MapView from "./MapView";
-import { Form, Label, List, Tab } from "semantic-ui-react";
-import { CoordInput } from "../info/editforms/EditFormUtils";
+import { Dropdown, Form, Icon, Input, Label, List, StrictFormFieldProps, StrictIconProps, Tab } from "semantic-ui-react";
+import { useSelector } from "react-redux";
+import WWAConsts from "../classes/WWAConsts";
 
 type BrowseMapPaneComponent = React.FC<{
     value: { x: RelativeValue, y: RelativeValue },
@@ -68,6 +69,116 @@ const AbsoluteBrowseMap: BrowseMapPaneComponent = ({ value, onChange }) => {
     );
 };
 
+ const CoordInput: React.FunctionComponent<{
+    label?: string,
+    width?: StrictFormFieldProps["width"],
+    value: RelativeValue,
+    onChange: (changedValue: RelativeValue) => void;
+}> = props => {
+    /**
+     * coordOptions は座標の種別を選択するドロップダウンの項目定数です。
+     */
+    const coordOptions: { text: string, value: RelativeValue["type"], icon: StrictIconProps["name"] }[] = [{
+        text: "絶対",
+        value: "ABSOLUTE",
+        icon: "point"
+    }, {
+        text: "相対",
+        value: "RELATIVE",
+        icon: "arrows alternate"
+    }, {
+        text: "プレイヤー",
+        value: "PLAYER",
+        icon: "user"
+    }];
+
+    /**
+     * mapWidth はマップのサイズそのままです。
+     */
+    const mapWidthMax = useSelector(state => state.wwaData?.mapWidth) ?? 0;
+
+    /**
+     * 座標の種別で表示されるラベル部分のコンポーネントです。
+     */
+    const PartsTypeDropdownLabel = () => {
+        const coordOption = coordOptions.find(value => props.value.type === value.value);
+        return (
+            <>
+                <Icon name={coordOption?.icon} />
+                {coordOption?.text}
+            </>
+        );
+    };
+
+    /**
+     * 座標の最小値を指定します。
+     */
+    const getCoordMin = () => {
+        if (props.value.type === "RELATIVE") {
+            return -WWAConsts.RELATIVE_COORD_MAX;
+        } else if (props.value.type === "ABSOLUTE") {
+            return 0;
+        }
+        return undefined;
+    };
+
+    /**
+     * 座標の最大値を指定します。
+     */
+    const getCoordMax = () => {
+        if (props.value.type === "RELATIVE") {
+            return WWAConsts.RELATIVE_COORD_MAX;
+        } else if (props.value.type === "ABSOLUTE") {
+            return mapWidthMax;
+        }
+        return undefined;
+    };
+
+    return (
+        <Form.Field width={props.width}>
+            {props.label !== undefined &&
+                <label>{props.label}</label>
+            }
+            <Input
+                action={
+                    <Dropdown
+                        button
+                        basic
+                        compact
+                        options={coordOptions}
+                        value={props.value.type}
+                        trigger={<PartsTypeDropdownLabel />}
+                        onChange={(event, { value }) => {
+                            const relativeValue = {
+                                type: value as RelativeValue["type"],
+                                value: props.value.type === "PLAYER" ? 0 : props.value.value
+                            };
+                            props.onChange(relativeValue);
+                        }}
+                    />
+                }
+                actionPosition="left"
+                type="number"
+                value={props.value.type !== "PLAYER" ? props.value.value : ""}
+                min={getCoordMin()}
+                max={getCoordMax()}
+                onChange={(event, { value }) => {
+                    if (props.value.type === "PLAYER") {
+                        return;
+                    }
+                    // 空欄のように、 parseInt では NaN になる値は 0 にリセット
+                    const parsedValue = parseInt(value);
+                    const relativeValue = {
+                        ...props.value,
+                        value: Number.isNaN(parsedValue) ? 0 : parsedValue
+                    };
+                    props.onChange(relativeValue);
+                }}
+            />
+        </Form.Field>
+    );
+};
+
 const ManualBrowseMap: BrowseMapPaneComponent = ({ value, onChange }) => {
     return (
         <Form.Group>
@@ -76,10 +187,7 @@ const ManualBrowseMap: BrowseMapPaneComponent = ({ value, onChange }) => {
                     <List.Item>
                         <CoordInput
                             value={value.x}
-                            onChange={() => {
-                                // onChange は引数が変換後の値で使用できないので未使用
-                            }}
-                            onChangeRaw={(changedValue) => {
+                            onChange={(changedValue) => {
                                 onChange(changedValue, value.y);
                             }}
                         />
@@ -87,10 +195,7 @@ const ManualBrowseMap: BrowseMapPaneComponent = ({ value, onChange }) => {
                     <List.Item>
                         <CoordInput
                             value={value.y}
-                            onChange={() => {
-                                // onChange は引数が変換後の値で使用できないので未使用
-                            }}
-                            onChangeRaw={(changedValue) => {
+                            onChange={(changedValue) => {
                                 onChange(value.x, changedValue);
                             }}
                         />

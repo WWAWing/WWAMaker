@@ -6,8 +6,6 @@ import { InputChangeFunctionWithIndex } from "./utils";
 import { Form, Dropdown, Divider } from "semantic-ui-react";
 import { CoordInput } from "./EditFormUtils";
 import { BrowseParts } from "../../common/BrowseParts";
-import BrowseMap from "../../common/BrowseMap";
-import { convertDataValueFromRelativeCoord } from "../../common/convertRelativeValue";
 
 /**
  * パーツ種類のドロップダウンで使用するオプション値です。
@@ -36,7 +34,6 @@ const PartsAppearInputItem: React.FC<{
 
     const { number, chipX, chipY, type } = props.item;
     const [browsePartsOpen, setBrowsePartsOpen] = useState(false);
-    const [browseMapOpen, setBrowseMapOpen] = useState(false);
 
     return (
         <>
@@ -76,25 +73,11 @@ const PartsAppearInputItem: React.FC<{
             </Form.Group>
             <Form.Group>
                 <CoordInput
-                    width={11}
-                    value={chipX}
-                    onChange={(value) => props.onChange(value, props.index + WWAConsts.REL_ATR_APPERANCE_X)}
+                    x={chipX}
+                    y={chipY}
+                    onSubmitX={(value) => props.onChange(value, props.index + WWAConsts.REL_ATR_APPERANCE_X)}
+                    onSubmitY={(value) => props.onChange(value, props.index + WWAConsts.REL_ATR_APPERANCE_Y)}
                 />
-            </Form.Group>
-            <Form.Group>
-                <CoordInput
-                    width={11}
-                    value={chipY}
-                    onChange={(value) => props.onChange(value, props.index + WWAConsts.REL_ATR_APPERANCE_Y)}
-                />
-                <Form.Button
-                    width={5}
-                    onClick={() => {
-                        setBrowseMapOpen(true);
-                    }}
-                >
-                    参照
-                </Form.Button>
             </Form.Group>
             <BrowseParts
                 isOpen={browsePartsOpen}
@@ -106,23 +89,6 @@ const PartsAppearInputItem: React.FC<{
                 onSubmit={(partsNumber, partsType) => {
                     props.onChange(partsNumber.toString(), props.index + WWAConsts.REL_ATR_APPERANCE_ID);
                     props.onChange(partsType.toString(), props.index + WWAConsts.REL_ATR_APPERANCE_TYPE);
-                }}
-            />
-            <BrowseMap
-                isOpen={browseMapOpen}
-                defaultValue={{ x: chipX, y: chipY }}
-                onClose={() => {
-                    setBrowseMapOpen(false);
-                }}
-                onSubmit={(x, y) => {
-                    props.onChange(
-                        convertDataValueFromRelativeCoord(x).toString(),
-                        props.index + WWAConsts.REL_ATR_APPERANCE_X
-                    );
-                    props.onChange(
-                        convertDataValueFromRelativeCoord(y).toString(),
-                        props.index + WWAConsts.REL_ATR_APPERANCE_Y
-                    );
                 }}
             />
             <Divider />

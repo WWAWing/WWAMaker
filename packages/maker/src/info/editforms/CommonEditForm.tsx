@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { URLInput, StringInput, NewCoordInput } from "./EditFormUtils";
+import { URLInput, StringInput, CoordInput } from "./EditFormUtils";
 import { PartsEditComponent } from "./PartsEditComponent";
 import WWAConsts from "../../classes/WWAConsts";
 import { convertRelativeValueFromCoord } from "../../common/convertRelativeValue";
@@ -46,7 +46,7 @@ export const URLGateEdit: PartsEditComponent = ({attribute, message, onAttribute
 export const LocalGateEdit: PartsEditComponent = ({attribute, message, onAttributeChange}) => {
     return (
         <>
-            <NewCoordInput
+            <CoordInput
                 label="ジャンプ先座標"
                 x={convertRelativeValueFromCoord(attribute[WWAConsts.ATR_JUMP_X])}
                 y={convertRelativeValueFromCoord(attribute[WWAConsts.ATR_JUMP_Y])}
