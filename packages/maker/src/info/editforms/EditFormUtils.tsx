@@ -6,6 +6,7 @@ import { RelativeValue, convertDataValueFromRelativeCoord, convertRelativeValueF
 import { useSelector } from "react-redux";
 import BrowseMap from "../../common/BrowseMap";
 import { useState } from "react";
+import { ItemPartsBrowse, ObjectPartsBrowse } from "../../common/BrowseParts";
 
 /**
  * NOTE:
@@ -295,6 +296,83 @@ export const ObjectCommonInput: React.FunctionComponent<{
         />
     </>
 );
+
+/**
+ * 物体パーツ番号の参照機能が付いた入力コンポーネントです。
+ */
+export const ObjectPartsInput: React.FC<{
+    value: number,
+    label?: string,
+    onChange: InputChangeFunction
+}> = props => {
+    const [isBrowseOpen, setIsBrowseOpen] = useState(false);
+
+    return (
+        <Form.Field>
+            {props.label &&
+                <label>{props.label}</label>
+            }
+            <Label>
+                {props.value}
+            </Label>
+            <Button
+                onClick={() => {
+                    setIsBrowseOpen(true);
+                }}
+            >
+                参照
+            </Button>
+            <ObjectPartsBrowse
+                isOpen={isBrowseOpen}
+                onClose={() => {
+                    setIsBrowseOpen(false);
+                }}
+                onSubmit={(partsNumber) => {
+                    props.onChange(partsNumber.toString());
+                }}
+                selectingPartsNumber={props.value}
+            />
+        </Form.Field>
+    );
+};
+
+/**
+ * アイテムパーツ番号の参照機能が付いた入力コンポーネントです。
+ */
+export const ItemPartsInput: React.FC<{
+    value: number,
+    label: string,
+    onChange: InputChangeFunction
+}> = props => {
+    const [isBrowseOpen, setIsBrowseOpen] = useState(false);
+
+    return (
+        <Form.Field>
+            <label>{props.label}</label>
+            <Label>
+                {props.value}
+            </Label>
+            <Button
+                onClick={() => {
+                    setIsBrowseOpen(true);
+                }}
+            >
+                参照
+            </Button>
+            <ItemPartsBrowse
+                isOpen={isBrowseOpen}
+                onClose={() => {
+                    setIsBrowseOpen(false);
+                }}
+                onSubmit={(partsNumber) => {
+                    props.onChange(partsNumber.toString());
+                }}
+                selectingPartsNumber={props.value}
+            />
+        </Form.Field>
+    );
+};
+
 
 /**
  * 座標を入力するコンポーネントです。

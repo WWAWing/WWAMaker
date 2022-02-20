@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { DefaultRootState, useSelector } from "react-redux";
+import { Label, Message } from "semantic-ui-react";
 import BrowseModal from "./BrowseModal";
 import { PartsType } from "../classes/WWAData";
 import PartsList from "./PartsList";
+import WWAConsts from "../classes/WWAConsts";
 
 /**
  * パーツ一覧のコンポーネントを作成します。
@@ -13,7 +15,7 @@ import PartsList from "./PartsList";
  */
  function makePartsList(type: PartsType, selector: (state: DefaultRootState) => number[][] | undefined): React.FC<{
     partsNumber?: number,
-    onSelect: (partsNumber: number) => void
+    onSelect: (partsNumber: number, partsAttributes: number[]) => void
 }> {
     return props => {
         const attributes = useSelector(selector);
@@ -28,8 +30,12 @@ import PartsList from "./PartsList";
                     type={type}
                     attribute={attributes}
                     selectPartsNumber={props.partsNumber}
-                    onPartsSelect={props.onSelect}
-                    onPartsEdit={props.onSelect}
+                    onPartsSelect={(partsNumber) => {
+                        props.onSelect(partsNumber, attributes[partsNumber]);
+                    }}
+                    onPartsEdit={(partsNumber) => {
+                        props.onSelect(partsNumber, attributes[partsNumber]);
+                    }}
                 />
             </div>
         );
@@ -147,9 +153,53 @@ export const ObjectPartsBrowse: React.FC<ObjectProps> = props => {
                 partsNumber={objectSelectingPartsNumber}
                 onSelect={selectObjectPartsNumber}
             />
-            <div>
-                物体パーツ {objectSelectingPartsNumber} 番
-            </div>
+            <Label>
+                物体パーツ
+                <Label.Detail>{objectSelectingPartsNumber} 番</Label.Detail>
+            </Label>
+        </BrowseModal>
+    );
+};
+
+/**
+ * アイテムを参照選択するモーダルです。
+ * 機能は物体パーツのものと同じですが、アイテム以外を選択するとアラートが表示されます。
+ */
+export const ItemPartsBrowse: React.FC<ObjectProps> = props => {
+    const [objectSelectingPartsNumber, selectObjectPartsNumber] = useState(props.selectingPartsNumber);
+    const [isItem, setIsItem] = useState<boolean | null>(null);
+
+    useEffect(() => {
+        if (props.isOpen) {
+            selectObjectPartsNumber(props.selectingPartsNumber);
+        }
+    // eslint-disable-next-line
+    }, [props.isOpen]);
+
+    return (
+        <BrowseModal
+            isOpen={props.isOpen}
+            title="アイテムパーツ番号を選択"
+            onSubmit={() => props.onSubmit(objectSelectingPartsNumber)}
+            onClose={props.onClose}
+        >
+            <ObjectPartsList
+                partsNumber={objectSelectingPartsNumber}
+                onSelect={(partsNumber, partsAttributes) => {
+                    selectObjectPartsNumber(partsNumber);
+                    setIsItem(partsAttributes[WWAConsts.ATR_TYPE] === WWAConsts.OBJECT_ITEM);
+                }}
+            />
+            <Label>
+                物体パーツ
+                <Label.Detail>{objectSelectingPartsNumber} 番</Label.Detail>
+            </Label>
+            {objectSelectingPartsNumber !== 0 && isItem === false &&
+                <Message warning>
+                    <Message.Header>ステータス変化パーツなどのアイテム以外のパーツが指定されています</Message.Header>
+                    <p>後に設定する場合は、忘れずにパーツを編集しておきましょう。</p>
+                </Message>
+            }
         </BrowseModal>
     );
 };

@@ -1,5 +1,5 @@
 import WWAConsts from "../../classes/WWAConsts";
-import React, { useState } from "react";
+import React from "react";
 import {
     MoveTypeInput,
     PassableInput,
@@ -10,14 +10,15 @@ import {
     NumberInput,
     SelectInput,
     ObjectCommonInput,
-    AdjustStatusInput
+    AdjustStatusInput,
+    ItemPartsInput,
+    ObjectPartsInput
 } from "./EditFormUtils";
 import { PartsEditComponent, PartsEditComponentTable, PartsEditAttributeChange } from "./PartsEditComponent";
 import { ItemMode } from "../../classes/WWAData";
 import { URLGateEdit, LocalGateEdit } from "./CommonEditForm";
-import { Input, Form } from "semantic-ui-react";
+import { Form } from "semantic-ui-react";
 import { PartsAppearInput, PartsAppearSelectInput } from "./PartsAppearInput";
-import { ObjectPartsBrowse } from "../../common/BrowseParts";
 
 /**
  * StatusInput で与えられた各入力欄の名前に対し、属性のインデックスを見つけ出します。
@@ -92,10 +93,12 @@ const ObjectMonsterEdit: PartsEditComponent = ({attribute, message, onAttributeC
             }}
             onChange={(event, name) => handleStatusInputChange(event, name, onAttributeChange)}
         />
-        <NumberInput
+        <ItemPartsInput
             label="モンスター所持アイテムの物体番号"
             value={attribute[WWAConsts.ATR_ITEM]}
-            onChange={value => onAttributeChange(value, WWAConsts.ATR_ITEM)}
+            onChange={value => {
+                onAttributeChange(value, WWAConsts.ATR_ITEM);
+            }}
         />
         <ObjectCommonInput
             messageLabel="戦闘後表示メッセージ"
@@ -126,6 +129,8 @@ const ObjectItemEdit: PartsEditComponent = ({attribute, message, onAttributeChan
             label="アイテムボックスへの格納位置"
             value={attribute[WWAConsts.ATR_NUMBER]}
             onChange={value => onAttributeChange(value, WWAConsts.ATR_NUMBER)}
+            min={0}
+            max={WWAConsts.ITEMBOX_SIZE}
         />
         <SelectInput
             label="使用属性"
@@ -172,10 +177,12 @@ const ObjectDoorEdit: PartsEditComponent = ({attribute, message, onAttributeChan
             value={attribute[WWAConsts.ATR_MODE]}
             onChange={value => onAttributeChange(value, WWAConsts.ATR_MODE)}
         />
-        <NumberInput
+        <ItemPartsInput
             label="対応するアイテム(鍵)の物体番号"
             value={attribute[WWAConsts.ATR_ITEM]}
-            onChange={value => onAttributeChange(value, WWAConsts.ATR_ITEM)}
+            onChange={value => {
+                onAttributeChange(value, WWAConsts.ATR_ITEM);
+            }}
         />
         <PassableInput
             value={attribute[WWAConsts.ATR_MODE]}
@@ -231,7 +238,7 @@ const ObjectSellItemEdit: PartsEditComponent = ({attribute, message, onAttribute
             value={attribute[WWAConsts.ATR_GOLD]}
             onChange={value => onAttributeChange(value, WWAConsts.ATR_GOLD)}
         />
-        <NumberInput
+        <ItemPartsInput
             label="売るアイテムの物体番号"
             value={attribute[WWAConsts.ATR_ITEM]}
             onChange={value => onAttributeChange(value, WWAConsts.ATR_ITEM)}
@@ -272,10 +279,12 @@ const ObjectBuyItemEdit: PartsEditComponent = ({attribute, message, onAttributeC
             value={attribute[WWAConsts.ATR_GOLD]}
             onChange={value => onAttributeChange(value, WWAConsts.ATR_GOLD)}
         />
-        <NumberInput
+        <ItemPartsInput
             label="買うアイテムの物体番号"
             value={attribute[WWAConsts.ATR_ITEM]}
-            onChange={value => onAttributeChange(value, WWAConsts.ATR_ITEM)}
+            onChange={value => {
+                onAttributeChange(value, WWAConsts.ATR_ITEM);
+            }}
         />
         <ObjectCommonInput
             messageLabel="表示メッセージ"
@@ -339,40 +348,15 @@ const ObjectRandomEdit: PartsEditComponent = ({attribute, message, onAttributeCh
         return result;
     }
 
-    const [browseOpenNumber, setBrowseOpenNumber] = useState(0);
-
     return (
         <>
             <label>選択するパーツの物体番号</label>
             {createCountUpArray(WWAConsts.ATR_RANDOM_BASE, WWAConsts.RANDOM_ITERATION_MAX).map(index => (
                 <Form.Group key={index}>
-                    <Form.Input
-                        width={7}
-                    >
-                        <Input
-                            type="number"
-                            value={attribute[index]}
-                            onChange={(event, data) => {
-                                onAttributeChange(data.value, index);
-                            }}
-                        />
-                    </Form.Input>
-                    <Form.Button
-                        width={5}
-                        onClick={() => {
-                            setBrowseOpenNumber(index);
-                        }}
-                    >
-                        参照
-                    </Form.Button>
-                    <ObjectPartsBrowse
-                        isOpen={browseOpenNumber === index}
-                        selectingPartsNumber={attribute[index]}
-                        onSubmit={(partsNumber) => {
-                            onAttributeChange(partsNumber.toString(), index);
-                        }}
-                        onClose={() => {
-                            setBrowseOpenNumber(0);
+                    <ObjectPartsInput
+                        value={attribute[index]}
+                        onChange={(value) => {
+                            onAttributeChange(value, index);
                         }}
                     />
                 </Form.Group>

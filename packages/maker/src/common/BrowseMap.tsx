@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { RelativeValue } from "./convertRelativeValue";
 import BrowseModal from "./BrowseModal";
@@ -118,6 +118,14 @@ const BrowseMap: React.FC<{
         selectX(x);
         selectY(y);
     };
+
+    useEffect(() => {
+        if (props.isOpen) {
+            selectX(props.defaultValue.x);
+            selectY(props.defaultValue.y);
+        }
+    // eslint-disable-next-line
+    }, [props.isOpen]);
 
     return (
         <BrowseModal
