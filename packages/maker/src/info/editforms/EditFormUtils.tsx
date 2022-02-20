@@ -18,6 +18,7 @@ import { ItemPartsBrowse, ObjectPartsBrowse } from "../../common/BrowseParts";
  * テキストボックスやセレクトボックスで変更が生じた際に実行するコールバック関数の型です。
  */
 type InputChangeFunction = (value: string) => void;
+type CoordInputChangeFunction = (x: string, y: string) => void;
 type InputChangeFunctionWithName = (value: string, name: string) => void;
 
 /**
@@ -379,8 +380,7 @@ export const CoordInput: React.FC<{
     label?: string,
     x: RelativeValue,
     y: RelativeValue,
-    onSubmitX: InputChangeFunction,
-    onSubmitY: InputChangeFunction
+    onSubmit: CoordInputChangeFunction,
 }> = props => {
 
     /**
@@ -425,8 +425,10 @@ export const CoordInput: React.FC<{
                 defaultValue={{ x: props.x, y: props.y }}
                 onSubmit={(x, y) => {
                     // TODO: 空欄の値では NaN が入ってくる可能性がある
-                    props.onSubmitX(convertDataValueFromRelativeCoord(x).toString());
-                    props.onSubmitY(convertDataValueFromRelativeCoord(y).toString());
+                    props.onSubmit(
+                        convertDataValueFromRelativeCoord(x).toString(),
+                        convertDataValueFromRelativeCoord(y).toString()
+                    );
                 }}
                 onClose={() => setBrowseOpen(false)}
             />

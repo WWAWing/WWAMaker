@@ -47,7 +47,10 @@ const PartsAppearInputItem: React.FC<{
                     actionPosition="left"
                     value={number}
                     onChange={(event, data) => {
-                        props.onChange(data.value as string, props.index + WWAConsts.REL_ATR_APPERANCE_ID)
+                        props.onChange({
+                            value: data.value as string,
+                            attributeIndex: props.index + WWAConsts.REL_ATR_APPERANCE_ID
+                        });
                     }}
                 >
                     <Dropdown
@@ -57,7 +60,10 @@ const PartsAppearInputItem: React.FC<{
                         options={PartsTypeOptions}
                         value={type.toString()}
                         onChange={(event, data) => {
-                            props.onChange(data.value as string, props.index + WWAConsts.REL_ATR_APPERANCE_TYPE);
+                            props.onChange({
+                                value: data.value as string,
+                                attributeIndex: props.index + WWAConsts.REL_ATR_APPERANCE_TYPE
+                            });
                         }}
                     />
                     <input />
@@ -75,8 +81,12 @@ const PartsAppearInputItem: React.FC<{
                 <CoordInput
                     x={chipX}
                     y={chipY}
-                    onSubmitX={(value) => props.onChange(value, props.index + WWAConsts.REL_ATR_APPERANCE_X)}
-                    onSubmitY={(value) => props.onChange(value, props.index + WWAConsts.REL_ATR_APPERANCE_Y)}
+                    onSubmit={(x, y) => {
+                        props.onChange(
+                            { value: x, attributeIndex: props.index + WWAConsts.REL_ATR_APPERANCE_X },
+                            { value: y, attributeIndex: props.index + WWAConsts.REL_ATR_APPERANCE_Y },
+                        )
+                    }}
                 />
             </Form.Group>
             <BrowseParts
@@ -87,8 +97,16 @@ const PartsAppearInputItem: React.FC<{
                 selectingPartsNumber={number}
                 selectingPartsType={type}
                 onSubmit={(partsNumber, partsType) => {
-                    props.onChange(partsNumber.toString(), props.index + WWAConsts.REL_ATR_APPERANCE_ID);
-                    props.onChange(partsType.toString(), props.index + WWAConsts.REL_ATR_APPERANCE_TYPE);
+                    props.onChange(
+                        {
+                            value: partsNumber.toString(),
+                            attributeIndex: props.index + WWAConsts.REL_ATR_APPERANCE_ID
+                        },
+                        {
+                            value: partsType.toString(),
+                            attributeIndex: props.index + WWAConsts.REL_ATR_APPERANCE_TYPE
+                        }
+                    );
                 }}
             />
             <Divider />

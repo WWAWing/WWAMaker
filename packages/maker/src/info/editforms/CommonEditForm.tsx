@@ -50,8 +50,18 @@ export const LocalGateEdit: PartsEditComponent = ({attribute, message, onAttribu
                 label="ジャンプ先座標"
                 x={convertRelativeValueFromCoord(attribute[WWAConsts.ATR_JUMP_X])}
                 y={convertRelativeValueFromCoord(attribute[WWAConsts.ATR_JUMP_Y])}
-                onSubmitX={value => onAttributeChange(value, WWAConsts.ATR_JUMP_X)}
-                onSubmitY={value => onAttributeChange(value, WWAConsts.ATR_JUMP_Y)}
+                onSubmit={(x, y) => {
+                    onAttributeChange(
+                        {
+                            value: x,
+                            attributeIndex: WWAConsts.ATR_JUMP_X,
+                        },
+                        {
+                            value: y,
+                            attributeIndex: WWAConsts.ATR_JUMP_Y,
+                        }
+                    );
+                }}
             />
         </>
     );
