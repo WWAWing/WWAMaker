@@ -101,7 +101,10 @@ const MapCanvas: React.FC<Props> = props => {
             return;
         }
 
-        const [chipX, chipY] = getPosEachChip(event.clientX - clientRect.left, event.clientY - clientRect.top);
+        const [chipX, chipY] = getPosEachChip(
+            Math.max(event.clientX - clientRect.left, 0),
+            Math.max(event.clientY - clientRect.top, 0)
+        );
         func(chipX, chipY, {
             [PartsType.MAP]: map[chipY][chipX],
             [PartsType.OBJECT]: mapObject[chipY][chipX]
