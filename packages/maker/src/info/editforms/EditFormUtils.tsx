@@ -373,7 +373,7 @@ export const ItemPartsInput: React.FC<{
 };
 
 /**
- * CoordInput に参照機能をもたせた新しい入力コンポーネントです。
+ * 座標を入力あるいは参照するコンポーネントです。
  */
 export const CoordInput: React.FC<{
     label?: string,
@@ -386,7 +386,7 @@ export const CoordInput: React.FC<{
     /**
      * coordOptions は座標の種別を選択するドロップダウンの項目定数です。
      */
-     const coordOptions: { text: string, value: RelativeValue["type"], icon: StrictIconProps["name"] }[] = [{
+    const coordOptions: { text: string, value: RelativeValue["type"], icon: StrictIconProps["name"] }[] = [{
         text: "絶対",
         value: "ABSOLUTE",
         icon: "point"
@@ -432,4 +432,4 @@ export const CoordInput: React.FC<{
             />
         </Form.Field>
     );
-}
+};
