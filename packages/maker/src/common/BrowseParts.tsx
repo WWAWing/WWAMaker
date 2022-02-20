@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { DefaultRootState, useSelector } from "react-redux";
-import { Label, Message } from "semantic-ui-react";
+import { Grid, Header, Label, Message } from "semantic-ui-react";
 import BrowseModal from "./BrowseModal";
 import { PartsType } from "../classes/WWAData";
 import PartsList from "./PartsList";
@@ -102,29 +102,32 @@ export const BrowseParts: React.FC<BothProps> = props => {
             }}
             onClose={props.onClose}
         >
-            <div>
-                物体
-                <ObjectPartsList
-                    partsNumber={selectingPartsType === PartsType.OBJECT ? selectingPartsNumber : undefined}
-                    onSelect={number => {
-                        selectPartsNumber(number);
-                        selectPartsType(PartsType.OBJECT);
-                    }}
-                />
-            </div>
-            <div>
-                背景
-                <MapPartsList
-                    partsNumber={selectingPartsType === PartsType.MAP ? selectingPartsNumber : undefined}
-                    onSelect={number => {
-                        selectPartsNumber(number);
-                        selectPartsType(PartsType.MAP);
-                    }}
-                />
-            </div>
-            <div>
-                {partsTypeText}パーツ {selectingPartsNumber} 番
-            </div>
+            <Grid>
+                <Grid.Column width={8}>
+                    <Header>物体</Header>
+                    <ObjectPartsList
+                        partsNumber={selectingPartsType === PartsType.OBJECT ? selectingPartsNumber : undefined}
+                        onSelect={number => {
+                            selectPartsNumber(number);
+                            selectPartsType(PartsType.OBJECT);
+                        }}
+                    />
+                </Grid.Column>
+                <Grid.Column width={8}>
+                    <Header>背景</Header>
+                    <MapPartsList
+                        partsNumber={selectingPartsType === PartsType.MAP ? selectingPartsNumber : undefined}
+                        onSelect={number => {
+                            selectPartsNumber(number);
+                            selectPartsType(PartsType.MAP);
+                        }}
+                    />
+                </Grid.Column>
+            </Grid>
+            <Label>
+                {partsTypeText}パーツ
+                <Label.Detail>{selectingPartsNumber} 番</Label.Detail>
+            </Label>
         </BrowseModal>
     );
 };
