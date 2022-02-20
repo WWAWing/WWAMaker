@@ -3,7 +3,7 @@ import { PartsType, PartsAttributeItems } from "../../classes/WWAData";
 import { Accordion, Icon } from "semantic-ui-react";
 import WWAConsts from "../../classes/WWAConsts";
 import { convertRelativeValueFromCoord } from "../../common/convertRelativeValue";
-import { InputChangeFunctionWithIndex, AppearPartsItem } from "./utils";
+import { InputChangeFunctionWithIndex, AppearPartsItem } from "./utils/definitions";
 import PartsAppearInputItem from "./PartsAppearInputItem";
 
 // 指定位置にパーツを出現 関係のコンポーネントをまとめたファイルです。

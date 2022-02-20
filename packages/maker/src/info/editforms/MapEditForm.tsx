@@ -1,12 +1,7 @@
-import WWAConsts from "../../classes/WWAConsts"
 import React from "react";
-import {
-    WaitTimeInput,
-    SoundNumberInput,
-    MessageInput,
-    ItemPartsInput
-} from "./EditFormUtils";
-import { PartsEditComponent, PartsEditComponentTable } from "./PartsEditComponent";
+import WWAConsts from "../../classes/WWAConsts"
+import { WaitTimeInput, SoundNumberInput, ItemPartsInput, MessageInput } from "./utils";
+import { PartsEditComponent, PartsEditComponentTable } from "./definitions";
 import { LocalGateEdit, URLGateEdit } from "./CommonEditForm";
 import { PartsAppearInput } from "./PartsAppearInput";
 

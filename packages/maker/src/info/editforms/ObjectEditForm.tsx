@@ -1,23 +1,23 @@
-import WWAConsts from "../../classes/WWAConsts";
 import React from "react";
+import { Form } from "semantic-ui-react";
 import {
+    ItemPartsInput,
+    ObjectPartsInput,
+    ObjectCommonInput,
+    StatusInput,
+    AdjustStatusInput,
+    MessageInput,
     MoveTypeInput,
     PassableInput,
-    SoundNumberInput,
-    WaitTimeInput,
-    MessageInput,
-    StatusInput,
-    NumberInput,
     SelectInput,
-    ObjectCommonInput,
-    AdjustStatusInput,
-    ItemPartsInput,
-    ObjectPartsInput
-} from "./EditFormUtils";
-import { PartsEditComponent, PartsEditComponentTable, PartsEditAttributeChange } from "./PartsEditComponent";
+    NumberInput,
+    SoundNumberInput,
+    WaitTimeInput
+} from "./utils";
+import { PartsEditComponent, PartsEditComponentTable, PartsEditAttributeChange } from "./definitions";
+import WWAConsts from "../../classes/WWAConsts";
 import { ItemMode } from "../../classes/WWAData";
 import { URLGateEdit, LocalGateEdit } from "./CommonEditForm";
-import { Form } from "semantic-ui-react";
 import { PartsAppearInput, PartsAppearSelectInput } from "./PartsAppearInput";
 
 /**
