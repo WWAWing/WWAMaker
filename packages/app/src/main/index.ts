@@ -1,6 +1,7 @@
 import makeMenu from './makeMenu';
 import WWAMakerApp from '../core/WWAMakerApp';
 import { app, BrowserWindow, Menu } from 'electron';
+import path from 'path';
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer';
 import messages from "../messages";
 
@@ -18,9 +19,10 @@ function createWindow () {
 
     let app = new WWAMakerApp(win);
 
-    // TODO: production 時の URL も用意しておく
     // TODO: 今後は webpack-dev-server と組み込む形でなるように検討する
-    const url = "http://localhost:3000";
+    const url = process.env.NODE_ENV === "development"
+        ? "http://localhost:3000"
+        : path.join(__dirname, "../../../maker/public/index.html");
 
     // そしてこのアプリの index.html をロード
     win.loadURL(url);

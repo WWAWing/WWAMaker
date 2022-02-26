@@ -9,7 +9,9 @@
   "scripts": {
     "electron": "electron ./lib/main/index.js",
     "start": "electron-webpack dev",
-    "build": "shx rm -rf lib && tsc -p ."
+    "build": "shx rm -rf lib && tsc -p .",
+    "app:dir": "electron-builder --dir",
+    "app:dist": "electron-builder"
   },
   "dependencies": {
     "@wwawing/common-interface": "^3.5.11-publishtest.1",
@@ -24,6 +26,10 @@
   "devDependencies": {
     "@types/express": "^4.17.13",
     "electron": "^13.1.2",
-    "electron-devtools-installer": "3.2.0"
+    "electron-devtools-installer": "3.2.0",
+    "electron-builder": "22.14.13"
+  },
+  "build": {
+    "appId": "com.wwawing.wwamaker"
   }
 }
