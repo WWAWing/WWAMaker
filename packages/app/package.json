@@ -16,7 +16,7 @@
     "@wwawing/event-emitter": "^3.5.11-publishtest.1",
     "@wwawing/loader": "^3.5.11-publishtest.1",
     "@wwawing/page-generator": "3.5.11",
-    "express": "4.17.1",
+    "express": "4.17.3",
     "shx": "^0.3.2",
     "typescript": "^4.3.5",
     "wwamaker-saver": "^0.0.1"
